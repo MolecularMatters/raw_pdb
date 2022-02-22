@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\PDB.cpp" />
+    <ClCompile Include="..\src\PDB_CoalescedMSFStream.cpp" />
+    <ClCompile Include="..\src\PDB_DBIStream.cpp" />
+    <ClCompile Include="..\src\PDB_DirectMSFStream.cpp" />
+    <ClCompile Include="..\src\PDB_GlobalSymbolStream.cpp" />
+    <ClCompile Include="..\src\PDB_ImageSectionStream.cpp" />
+    <ClCompile Include="..\src\PDB_InfoStream.cpp" />
+    <ClCompile Include="..\src\PDB_IPIStream.cpp" />
+    <ClCompile Include="..\src\PDB_ModuleInfoStream.cpp" />
+    <ClCompile Include="..\src\PDB_ModuleSymbolStream.cpp" />
+    <ClCompile Include="..\src\PDB_PCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\PDB_PublicSymbolStream.cpp" />
+    <ClCompile Include="..\src\PDB_RawFile.cpp" />
+    <ClCompile Include="..\src\PDB_SectionContributionStream.cpp" />
+    <ClCompile Include="..\src\PDB_SourceFileStream.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\PDB.h" />
+    <ClInclude Include="..\src\PDB_ArrayView.h" />
+    <ClInclude Include="..\src\PDB_Assert.h" />
+    <ClInclude Include="..\src\PDB_BitUtil.h" />
+    <ClInclude Include="..\src\PDB_CoalescedMSFStream.h" />
+    <ClInclude Include="..\src\PDB_DBIStream.h" />
+    <ClInclude Include="..\src\PDB_DBITypes.h" />
+    <ClInclude Include="..\src\PDB_DirectMSFStream.h" />
+    <ClInclude Include="..\src\PDB_DisableWarningsPop.h" />
+    <ClInclude Include="..\src\PDB_DisableWarningsPush.h" />
+    <ClInclude Include="..\src\PDB_Forward.h" />
+    <ClInclude Include="..\src\PDB_GlobalSymbolStream.h" />
+    <ClInclude Include="..\src\PDB_ImageSectionStream.h" />
+    <ClInclude Include="..\src\PDB_InfoStream.h" />
+    <ClInclude Include="..\src\PDB_IPIStream.h" />
+    <ClInclude Include="..\src\PDB_IPITypes.h" />
+    <ClInclude Include="..\src\PDB_Log.h" />
+    <ClInclude Include="..\src\PDB_Memory.h" />
+    <ClInclude Include="..\src\PDB_ModuleInfoStream.h" />
+    <ClInclude Include="..\src\PDB_ModuleSymbolStream.h" />
+    <ClInclude Include="..\src\PDB_Move.h" />
+    <ClInclude Include="..\src\PDB_PCH.h" />
+    <ClInclude Include="..\src\PDB_PointerUtil.h" />
+    <ClInclude Include="..\src\PDB_PublicSymbolStream.h" />
+    <ClInclude Include="..\src\PDB_RawFile.h" />
+    <ClInclude Include="..\src\PDB_SectionContributionStream.h" />
+    <ClInclude Include="..\src\PDB_SourceFileStream.h" />
+    <ClInclude Include="..\src\PDB_Types.h" />
+    <ClInclude Include="..\src\PDB_Util.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{FBE3DBFA-20A7-4F99-9326-ED82C8B7B910}</ProjectGuid>
+    <RootNamespace>RawPDB</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)..\lib\$(PlatformName)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\temp\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>RawPDB</TargetName>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)..\lib\$(PlatformName)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\temp\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>RawPDB</TargetName>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <OmitFramePointers>false</OmitFramePointers>
+      <PrecompiledHeaderFile>PDB_PCH.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <ExceptionHandling>false</ExceptionHandling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <AdditionalIncludeDirectories>..\src</AdditionalIncludeDirectories>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Gw /wd4577 %(AdditionalOptions)</AdditionalOptions>
+      <SDLCheck>true</SDLCheck>
+      <StringPooling>false</StringPooling>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <GuardEHContMetadata>true</GuardEHContMetadata>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <ShowProgress>NotSet</ShowProgress>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <OmitFramePointers>true</OmitFramePointers>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <OpenMPSupport>false</OpenMPSupport>
+      <AdditionalIncludeDirectories>..\src</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>PDB_PCH.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Gw /wd4577 %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <GuardEHContMetadata>false</GuardEHContMetadata>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <ShowProgress>NotSet</ShowProgress>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
