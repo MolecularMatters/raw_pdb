@@ -98,6 +98,8 @@ int main(void)
 		return 4;
 	}
 
+	// in order to keep the example easy to understand, we load the PDB data serially.
+	// note that this can be improved a lot by reading streams concurrently.
 
 	// prepare the image section stream first. it is needed for converting section + offset into an RVA
 	printf("Reading image section stream...");
