@@ -127,6 +127,8 @@
 
 	// ignore purely informational warnings
 #	pragma warning (disable : 4514)		// unreferenced inline function has been removed
+#	pragma warning (disable : 4710)		// function not inlined
+#	pragma warning (disable : 4711)		// function selected for automatic inline expansion
 #	pragma warning (disable : 4820)		// 'N' bytes padding added after data member 'm_member'
 #	pragma warning (disable : 5045)		// Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
 #elif PDB_COMPILER_CLANG
