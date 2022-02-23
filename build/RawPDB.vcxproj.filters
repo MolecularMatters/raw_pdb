@@ -4,6 +4,9 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{230ed13c-dce7-4e9f-be4d-7f677b87f1e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Foundation">
+      <UniqueIdentifier>{57dcde6f-1d23-4eec-b0a4-8e232ef2cc64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\PDB.cpp">
@@ -110,35 +113,35 @@
     <ClInclude Include="..\src\PDB_Util.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\PDB_PointerUtil.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PDB_ArrayView.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PDB_BitUtil.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PDB_Forward.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PDB_Move.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PDB_Assert.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PDB_Log.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PDB_Memory.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\PDB_DisableWarningsPop.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\PDB_DisableWarningsPush.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_Forward.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_Log.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_Memory.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_Move.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_PointerUtil.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_ArrayView.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_Assert.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_BitUtil.h">
+      <Filter>Source Files\Foundation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
