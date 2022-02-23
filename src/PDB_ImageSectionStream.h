@@ -3,15 +3,14 @@
 
 #pragma once
 
+#include "PDB_Types.h"
 #include "PDB_CoalescedMSFStream.h"
-
-struct _IMAGE_SECTION_HEADER;
-typedef struct _IMAGE_SECTION_HEADER IMAGE_SECTION_HEADER;
 
 
 namespace PDB
 {
 	class RawFile;
+	struct IMAGE_SECTION_HEADER;
 
 
 	class PDB_NO_DISCARD ImageSectionStream

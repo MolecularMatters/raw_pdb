@@ -4,9 +4,6 @@
 #include "PDB_PCH.h"
 #include "PDB_ImageSectionStream.h"
 #include "PDB_RawFile.h"
-#include "PDB_DisableWarningsPush.h"
-#include <Windows.h>
-#include "PDB_DisableWarningsPop.h"
 
 
 // ------------------------------------------------------------------------------------------------

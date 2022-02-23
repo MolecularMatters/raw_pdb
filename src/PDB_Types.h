@@ -6,6 +6,7 @@
 
 namespace PDB
 {
+	// this matches the definition in guiddef.h, but we don't want to pull that in
 	struct GUID
 	{
 		unsigned long  Data1;
@@ -13,6 +14,29 @@ namespace PDB
 		unsigned short Data3;
 		unsigned char  Data4[8];
 	};
+
+	static_assert(sizeof(GUID) == 16u, "Size mismatch.");
+
+	// this matches the definition in winnt.h, but we don't want to pull that in
+	struct IMAGE_SECTION_HEADER
+	{
+		unsigned char Name[8];
+		union
+		{
+			unsigned long PhysicalAddress;
+			unsigned long VirtualSize;
+		} Misc;
+		unsigned long VirtualAddress;
+		unsigned long SizeOfRawData;
+		unsigned long PointerToRawData;
+		unsigned long PointerToRelocations;
+		unsigned long PointerToLinenumbers;
+		unsigned short NumberOfRelocations;
+		unsigned short NumberOfLinenumbers;
+		unsigned long Characteristics;
+	};
+
+	static_assert(sizeof(IMAGE_SECTION_HEADER) == 40u, "Size mismatch.");
 
 	// https://llvm.org/docs/PDB/MsfFile.html#msf-superblock
 	struct PDB_NO_DISCARD SuperBlock
@@ -128,38 +152,4 @@ namespace PDB
 		uint32_t offset;		// offset into the symbol record stream
 		uint32_t cref;
 	};
-
-
-	namespace CodeView
-	{
-		// leaf types that are contained in other type or symbol records
-		// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L937
-		enum class PDB_NO_DISCARD NumericLeafType : uint16_t
-		{
-			LF_NUMERIC = 0x8000u,
-			LF_CHAR = 0x8000u,
-			LF_SHORT = 0x8001u,
-			LF_USHORT = 0x8002u,
-			LF_LONG = 0x8003u,
-			LF_ULONG = 0x8004u,
-			LF_REAL32 = 0x8005u,
-			LF_REAL64 = 0x8006u,
-			LF_REAL80 = 0x8007u,
-			LF_REAL128 = 0x8008u,
-			LF_QUADWORD = 0x8009u,
-			LF_UQUADWORD = 0x800au,
-			LF_REAL48 = 0x800bu,
-			LF_COMPLEX32 = 0x800cu,
-			LF_COMPLEX64 = 0x800du,
-			LF_COMPLEX80 = 0x800eu,
-			LF_COMPLEX128 = 0x800fu,
-			LF_VARSTRING = 0x8010u,
-			LF_OCTWORD = 0x8017u,
-			LF_UOCTWORD = 0x8018u,
-			LF_DECIMAL = 0x8019u,
-			LF_DATE = 0x801au,
-			LF_UTF8STRING = 0x801bu,
-			LF_REAL16 = 0x801cu
-		};
-	}
 }
