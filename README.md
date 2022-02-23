@@ -89,4 +89,4 @@ A simple example that shows how to load contributions and symbols from public, g
 
 ## Sponsoring or supporting RawPDB
 
-Please feel free to use RawPDB in a commercial application. If you would like to support its development, consider licensing <a href="https://liveplusplus.tech/">Live++</a> instead. Not only do you give something back, but get a great productivity enhancement on top!
+We have chosen a very liberal license to let **RawPDB** be used in as many scenarios as possible, including commercial applications. If you would like to support its development, consider licensing <a href="https://liveplusplus.tech/">Live++</a> instead. Not only do you give something back, but get a great productivity enhancement on top!
