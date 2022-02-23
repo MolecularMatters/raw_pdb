@@ -7,7 +7,7 @@ extern unsigned char _BitScanForward(unsigned long* _Index, unsigned long _Mask)
 #pragma intrinsic(_BitScanForward)
 
 
-namespace BitUtil
+namespace PDB::BitUtil
 {
 	template <typename T>
 	PDB_NO_DISCARD inline constexpr bool IsPowerOfTwo(T value) PDB_NO_EXCEPT

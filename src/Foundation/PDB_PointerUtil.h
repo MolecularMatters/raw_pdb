@@ -4,7 +4,7 @@
 #pragma once
 
 
-namespace Pointer
+namespace PDB::Pointer
 {
 	// Offsets any pointer by a given number of bytes.
 	template <typename T, typename U, typename V>

@@ -25,7 +25,7 @@ namespace
 	PDB_NO_DISCARD static const uint32_t* GetDirectoryBlockIndices(const void* data, const PDB::SuperBlock* superBlock) PDB_NO_EXCEPT
 	{
 		const size_t directoryIndicesFileOffset = PDB::ConvertBlockIndexToFileOffset(superBlock->directoryIndicesBlockIndex, superBlock->blockSize);
-		const uint32_t* directoryBlockIndices = Pointer::Offset<const uint32_t*>(data, directoryIndicesFileOffset);
+		const uint32_t* directoryBlockIndices = PDB::Pointer::Offset<const uint32_t*>(data, directoryIndicesFileOffset);
 
 		return directoryBlockIndices;
 	}

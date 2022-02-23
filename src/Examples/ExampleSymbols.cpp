@@ -120,7 +120,7 @@ int main(void)
 
 	std::vector<Contribution> contributions;
 	{
-		const ArrayView<PDB::DBI::SectionContribution> sectionContributions = sectionContributionStream.GetContributions();
+		const PDB::ArrayView<PDB::DBI::SectionContribution> sectionContributions = sectionContributionStream.GetContributions();
 		const size_t count = sectionContributions.GetLength();
 
 		printf("Storing %zu section contributions...", count);
@@ -156,7 +156,7 @@ int main(void)
 	const PDB::PublicSymbolStream publicSymbolStream = dbiStream.CreatePublicSymbolStream(rawPdbFile);
 	printf("done\n");
 	{
-		const ArrayView<PDB::HashRecord> hashRecords = publicSymbolStream.GetRecords();
+		const PDB::ArrayView<PDB::HashRecord> hashRecords = publicSymbolStream.GetRecords();
 		const size_t count = hashRecords.GetLength();
 
 		printf("Parsing %zu public symbols...", count);
@@ -184,7 +184,7 @@ int main(void)
 	const PDB::GlobalSymbolStream globalSymbolStream = dbiStream.CreateGlobalSymbolStream(rawPdbFile);
 	printf("done\n");
 	{
-		const ArrayView<PDB::HashRecord> hashRecords = globalSymbolStream.GetRecords();
+		const PDB::ArrayView<PDB::HashRecord> hashRecords = globalSymbolStream.GetRecords();
 		const size_t count = hashRecords.GetLength();
 
 		printf("Parsing %zu global symbols...", count);
@@ -232,7 +232,7 @@ int main(void)
 
 	// read module symbols
 	{
-		const ArrayView<PDB::ModuleInfoStream::Module> modules = moduleInfoStream.GetModules();
+		const PDB::ArrayView<PDB::ModuleInfoStream::Module> modules = moduleInfoStream.GetModules();
 
 		printf("Reading and parsing %zu module streams...", modules.GetLength());
 		for (const PDB::ModuleInfoStream::Module& module : modules)
