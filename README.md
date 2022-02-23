@@ -27,25 +27,70 @@ Eventually, we want **RawPDB** to become the de-facto replacement of <a href="ht
 
 ## Performance
 
-Running the **Symbols** example on a 2GiB PDB yields the following output:
+Running the **Symbols** and **Contributions** examples on a 1GiB PDB yields the following output:
 
 <pre>
-Opening PDB file C:\dev\2GiB.pdb
-Reading image section stream...done
-Reading module info stream...done
-Reading section contribution stream...done
-Storing 3780654 section contributions...done
-Reading symbol record stream...done
-Reading public symbol stream...done
-Parsing 1804791 public symbols...done
-Reading global symbol stream...done
-Parsing 3948114 global symbols...done
-Reading and parsing 4848 module streams...done
-Stored 3798885 symbols in std::vector using std::string
-Running time: 1679.323ms
+Opening PDB file C:\Development\llvm-project\build\tools\clang\unittests\Tooling\RelWithDebInfo\ToolingTests.pdb
+
+Running example "Symbols"
+| Reading image section stream
+| ---> done in 0.066ms
+| Reading module info stream
+| ---> done in 0.562ms
+| Reading symbol record stream
+| ---> done in 25.185ms
+| Reading public symbol stream
+| ---> done in 1.133ms
+| Storing public symbols
+| ---> done in 46.171ms (212023 elements)
+| Reading global symbol stream
+| ---> done in 1.381ms
+| Storing global symbols
+| ---> done in 12.769ms (448957 elements)
+| Storing symbols from modules
+| ---> done in 145.849ms (2243 elements)
+---> done in 233.694ms (539611 elements)
 </pre>
 
-This is at least an order of magnitude faster than DIA, even though the example code is completely serial and uses std::vector and std::string, which are used for illustration purposes only.
+<pre>
+Opening PDB file C:\Development\llvm-project\build\tools\clang\unittests\Tooling\RelWithDebInfo\ToolingTests.pdb
+
+Running example "Contributions"
+| Reading image section stream
+| ---> done in 0.066ms
+| Reading module info stream
+| ---> done in 0.594ms
+| Reading section contribution stream
+| ---> done in 9.839ms
+| Storing contributions
+| ---> done in 67.346ms (630924 elements)
+| std::sort contributions
+| ---> done in 19.218ms
+---> done in 97.283ms
+20 largest contributions:
+1: 1896496 bytes from LLVMAMDGPUCodeGen.dir\RelWithDebInfo\AMDGPUInstructionSelector.obj
+2: 1700720 bytes from LLVMHexagonCodeGen.dir\RelWithDebInfo\HexagonInstrInfo.obj
+3: 1536470 bytes from LLVMRISCVCodeGen.dir\RelWithDebInfo\RISCVISelDAGToDAG.obj
+4: 1441408 bytes from LLVMAArch64CodeGen.dir\RelWithDebInfo\AArch64InstructionSelector.obj
+5: 1187048 bytes from LLVMRISCVCodeGen.dir\RelWithDebInfo\RISCVInstructionSelector.obj
+6: 1026504 bytes from LLVMARMCodeGen.dir\RelWithDebInfo\ARMInstructionSelector.obj
+7: 952080 bytes from LLVMAMDGPUDesc.dir\RelWithDebInfo\AMDGPUMCTargetDesc.obj
+8: 849888 bytes from LLVMX86Desc.dir\RelWithDebInfo\X86MCTargetDesc.obj
+9: 712176 bytes from LLVMHexagonCodeGen.dir\RelWithDebInfo\HexagonInstrInfo.obj
+10: 679035 bytes from LLVMX86CodeGen.dir\RelWithDebInfo\X86ISelDAGToDAG.obj
+11: 525174 bytes from LLVMAMDGPUDesc.dir\RelWithDebInfo\AMDGPUMCTargetDesc.obj
+12: 523035 bytes from * Linker *
+13: 519312 bytes from LLVMRISCVDesc.dir\RelWithDebInfo\RISCVMCTargetDesc.obj
+14: 512496 bytes from LLVMVEDesc.dir\RelWithDebInfo\VEMCTargetDesc.obj
+15: 498768 bytes from LLVMX86CodeGen.dir\RelWithDebInfo\X86InstructionSelector.obj
+16: 483528 bytes from LLVMMipsCodeGen.dir\RelWithDebInfo\MipsInstructionSelector.obj
+17: 449472 bytes from LLVMAMDGPUCodeGen.dir\RelWithDebInfo\AMDGPUISelDAGToDAG.obj
+18: 444246 bytes from C:\Development\llvm-project\build\tools\clang\lib\Basic\obj.clangBasic.dir\RelWithDebInfo\DiagnosticIDs.obj
+19: 371584 bytes from LLVMAArch64CodeGen.dir\RelWithDebInfo\AArch64ISelDAGToDAG.obj
+20: 370272 bytes from LLVMNVPTXDesc.dir\RelWithDebInfo\NVPTXMCTargetDesc.obj
+</pre>
+
+This is at least an order of magnitude faster than DIA, even though the example code is completely serial and uses std::vector, std::string, and std::sort, which are used for illustration purposes only.
 
 When reading streams in a concurrent fashion, you will most likely be limited by the speed at which the OS can bring the data into your process.
 
@@ -83,9 +128,13 @@ Consult the example code to see how to read and parse the PDB streams.
 
 ## Examples
 
-### Symbols
+### Symbols (ExampleSymbols.cpp)
 
-A simple example that shows how to load contributions and symbols from public, global, and module streams.
+A basic example that shows how to load and symbols from public, global, and module streams.
+
+### Contributions (ExampleContributions.cpp)
+
+A basic example that shows how to load contributions, sort them by size, and output the 20 largest ones along with the object file they originated from.
 
 ## Sponsoring or supporting RawPDB
 

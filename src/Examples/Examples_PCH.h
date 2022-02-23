@@ -18,7 +18,10 @@
 #include <vector>
 #include <chrono>
 #include <string>
+#include <algorithm>
 #include "Foundation/PDB_DisableWarningsPop.h"
+#undef min
+#undef max
 
 // this needs to be the first include before including anything from the RawPDB library,
 // so it makes sense to put it into the PCH for all examples

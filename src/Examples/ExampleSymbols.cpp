@@ -2,88 +2,17 @@
 // See LICENSE.txt for licensing details (2-clause BSD License: https://opensource.org/licenses/BSD-2-Clause)
 
 #include "Examples_PCH.h"
-#include "ExampleMemoryMappedFile.h"
 #include "ExampleTimedScope.h"
-#include "PDB.h"
 #include "PDB_RawFile.h"
 #include "PDB_DBIStream.h"
 
 
 namespace
 {
-	PDB_NO_DISCARD static bool IsError(PDB::ErrorCode errorCode)
-	{
-		switch (errorCode)
-		{
-			case PDB::ErrorCode::Success:
-				return false;
-
-			case PDB::ErrorCode::InvalidSuperBlock:
-				PDB_LOG_ERROR("Invalid Superblock");
-				return true;
-
-			case PDB::ErrorCode::InvalidFreeBlockMap:
-				PDB_LOG_ERROR("Invalid free block map");
-				return true;
-
-			case PDB::ErrorCode::UnhandledDirectorySize:
-				PDB_LOG_ERROR("Directory is too large");
-				return true;
-
-			case PDB::ErrorCode::InvalidSignature:
-				PDB_LOG_ERROR("Invalid stream signature");
-				return true;
-
-			case PDB::ErrorCode::InvalidStreamIndex:
-				PDB_LOG_ERROR("Invalid stream index");
-				return true;
-
-			case PDB::ErrorCode::UnknownVersion:
-				PDB_LOG_ERROR("Unknown version");
-				return true;
-		}
-
-		// only ErrorCode::Success means there wasn't an error, so all other paths have to assume there was an error
-		return true;
-	}
-
-	PDB_NO_DISCARD static bool HasValidDBIStreams(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream)
-	{
-		// check whether the DBI stream offers all sub-streams we need
-		if (IsError(dbiStream.HasValidImageSectionStream(rawPdbFile)))
-		{
-			return false;
-		}
-		
-		if (IsError(dbiStream.HasValidPublicSymbolStream(rawPdbFile)))
-		{
-			return false;
-		}
-
-		if (IsError(dbiStream.HasValidGlobalSymbolStream(rawPdbFile)))
-		{
-			return false;
-		}
-
-		if (IsError(dbiStream.HasValidSectionContributionStream(rawPdbFile)))
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	// we don't have to store std::string in the contributions or symbols, since all the data is memory-mapped anyway.
+	// we don't have to store std::string in the symbols, since all the data is memory-mapped anyway.
 	// we do it in this example to ensure that we don't "cheat" when reading the PDB file. memory-mapped data will only
 	// be faulted into the process once it's touched, so actually copying the string data makes us touch the needed data,
 	// giving us a real performance measurement.
-	struct Contribution
-	{
-		std::string objectFile;
-		uint32_t rva;
-		uint32_t size;
-	};
-
 	struct Symbol
 	{
 		std::string name;
@@ -92,116 +21,41 @@ namespace
 }
 
 
-int main(void)
+void ExampleSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream)
 {
-	TimedScope total("Total");
-
-#ifdef _DEBUG
-	const wchar_t* const pdbPath = LR"(..\bin\x64\Debug\ExampleSymbols.pdb)";
-#else
-	const wchar_t* const pdbPath = LR"(..\bin\x64\Release\ExampleSymbols.pdb)";
-#endif
-	
-	printf("Opening PDB file %ls\n", pdbPath);
-
-	// try to open the PDB file and check whether all the data we need is available
-	MemoryMappedFile::Handle pdbFile = MemoryMappedFile::Open(pdbPath);
-	if (!pdbFile.baseAddress)
-	{
-		return 1;
-	}
-
-	if (IsError(PDB::ValidateFile(pdbFile.baseAddress)))
-	{
-		MemoryMappedFile::Close(pdbFile);
-
-		return 2;
-	}
-
-	const PDB::RawFile rawPdbFile = PDB::CreateRawFile(pdbFile.baseAddress);
-	if (IsError(PDB::HasValidDBIStream(rawPdbFile)))
-	{
-		MemoryMappedFile::Close(pdbFile);
-
-		return 3;
-	}
-
-	const PDB::DBIStream dbiStream = PDB::CreateDBIStream(rawPdbFile);
-	if (!HasValidDBIStreams(rawPdbFile, dbiStream))
-	{
-		MemoryMappedFile::Close(pdbFile);
-
-		return 4;
-	}
+	TimedScope total("\nRunning example \"Symbols\"");
 
 	// in order to keep the example easy to understand, we load the PDB data serially.
 	// note that this can be improved a lot by reading streams concurrently.
 
 	// prepare the image section stream first. it is needed for converting section + offset into an RVA
-	printf("Reading image section stream...");
+	TimedScope sectionScope("Reading image section stream");
 	const PDB::ImageSectionStream imageSectionStream = dbiStream.CreateImageSectionStream(rawPdbFile);
-	printf("done\n");
+	sectionScope.Done();
 
 
 	// prepare the module info stream for matching contributions against files
-	printf("Reading module info stream...");
+	TimedScope moduleScope("Reading module info stream");
 	const PDB::ModuleInfoStream moduleInfoStream = dbiStream.CreateModuleInfoStream(rawPdbFile);
-	printf("done\n");
-
-
-	// read contribution stream
-	printf("Reading section contribution stream...");
-	const PDB::SectionContributionStream sectionContributionStream = dbiStream.CreateSectionContributionStream(rawPdbFile);
-	printf("done\n");
-
-	std::vector<Contribution> contributions;
-	{
-		TimedScope scope("Contributions");
-
-		const PDB::ArrayView<PDB::DBI::SectionContribution> sectionContributions = sectionContributionStream.GetContributions();
-		const size_t count = sectionContributions.GetLength();
-
-		printf("Storing %zu section contributions...", count);
-
-		contributions.reserve(count);
-
-		for (const PDB::DBI::SectionContribution& contribution : sectionContributions)
-		{
-			const uint32_t rva = imageSectionStream.ConvertSectionOffsetToRVA(contribution.section, contribution.offset);
-			if (rva == 0u)
-			{
-				printf("Contribution has invalid RVA\n");
-				continue;
-			}
-
-			const PDB::ModuleInfoStream::Module& module = moduleInfoStream.GetModule(contribution.moduleIndex);
-
-			contributions.push_back(Contribution { module.GetName().Decay(), rva, contribution.size });
-		}
-		printf("done\n");
-
-		scope.Print();
-	}
+	moduleScope.Done();
 
 
 	// prepare symbol record stream needed by both public and global streams
-	printf("Reading symbol record stream...");
+	TimedScope symbolStreamScope("Reading symbol record stream");
 	const PDB::CoalescedMSFStream symbolRecordStream = dbiStream.CreateSymbolRecordStream(rawPdbFile);
-	printf("done\n");
+	symbolStreamScope.Done();
 
 	std::vector<Symbol> symbols;
 
 	// read public symbols
-	printf("Reading public symbol stream...");
+	TimedScope publicScope("Reading public symbol stream");
 	const PDB::PublicSymbolStream publicSymbolStream = dbiStream.CreatePublicSymbolStream(rawPdbFile);
-	printf("done\n");
+	publicScope.Done();
 	{
-		TimedScope scope("Public symbols");
+		TimedScope scope("Storing public symbols");
 
 		const PDB::ArrayView<PDB::HashRecord> hashRecords = publicSymbolStream.GetRecords();
 		const size_t count = hashRecords.GetLength();
-
-		printf("Parsing %zu public symbols...", count);
 
 		symbols.reserve(count);
 
@@ -217,23 +71,20 @@ int main(void)
 
 			symbols.push_back(Symbol { record->data.S_PUB32.name, rva });
 		}
-		printf("done\n");
 
-		scope.Print();
+		scope.Done(count);
 	}
 
 
 	// read global symbols
-	printf("Reading global symbol stream...");
+	TimedScope globalScope("Reading global symbol stream");
 	const PDB::GlobalSymbolStream globalSymbolStream = dbiStream.CreateGlobalSymbolStream(rawPdbFile);
-	printf("done\n");
+	globalScope.Done();
 	{
-		TimedScope scope("Global symbols");
+		TimedScope scope("Storing global symbols");
 
 		const PDB::ArrayView<PDB::HashRecord> hashRecords = globalSymbolStream.GetRecords();
 		const size_t count = hashRecords.GetLength();
-
-		printf("Parsing %zu global symbols...", count);
 
 		symbols.reserve(symbols.size() + count);
 
@@ -272,19 +123,17 @@ int main(void)
 
 			symbols.push_back(Symbol { name, rva });
 		}
-		printf("done\n");
 
-		scope.Print();
+		scope.Done(count);
 	}
 
 
 	// read module symbols
 	{
-		TimedScope scope("Module symbols");
+		TimedScope scope("Storing symbols from modules");
 
 		const PDB::ArrayView<PDB::ModuleInfoStream::Module> modules = moduleInfoStream.GetModules();
 
-		printf("Reading and parsing %zu module streams...", modules.GetLength());
 		for (const PDB::ModuleInfoStream::Module& module : modules)
 		{
 			if (!module.HasSymbolStream())
@@ -351,16 +200,9 @@ int main(void)
 				symbols.push_back(Symbol { name, rva });
 			});
 		}
-		printf("done\n");
 
-		scope.Print();
+		scope.Done(modules.GetLength());
 	}
 
-	MemoryMappedFile::Close(pdbFile);
-
-	printf("Stored %zu symbols in std::vector using std::string\n", symbols.size());
-
-	total.Print();
-
-	return 0;
+	total.Done(symbols.size());
 }

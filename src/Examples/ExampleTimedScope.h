@@ -7,12 +7,14 @@
 class TimedScope
 {
 public:
-	explicit TimedScope(const char* scope);
+	explicit TimedScope(const char* message);
 
-	void Print(void) const;
+	void Done(void) const;
+	void Done(size_t count) const;
 
 private:
-	const char* const m_scope;
+	double ReadMilliseconds(void) const;
+
 	const std::chrono::high_resolution_clock::time_point m_begin;
 
 	PDB_DISABLE_COPY_MOVE(TimedScope);

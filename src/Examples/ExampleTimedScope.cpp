@@ -4,19 +4,51 @@
 #include "Examples_PCH.h"
 #include "ExampleTimedScope.h"
 
-
-TimedScope::TimedScope(const char* scope)
-	: m_scope(scope)
-	, m_begin(std::chrono::high_resolution_clock::now())
+namespace
 {
+	static unsigned int g_indent = 0u;
+
+	static void PrintIndent(void)
+	{
+		printf("%.*s", g_indent * 2u, "| | | | | | | | ");
+	}
 }
 
 
-void TimedScope::Print(void) const
+TimedScope::TimedScope(const char* message)
+	: m_begin(std::chrono::high_resolution_clock::now())
+{
+	PrintIndent();
+	++g_indent;
+
+	printf("%s\n", message);
+}
+
+
+void TimedScope::Done(void) const
+{
+	--g_indent;
+	PrintIndent();
+
+	const double milliSeconds = ReadMilliseconds();
+	printf("---> done in %.3fms\n", milliSeconds);
+}
+
+
+void TimedScope::Done(size_t count) const
+{
+	--g_indent;
+	PrintIndent();
+
+	const double milliSeconds = ReadMilliseconds();
+	printf("---> done in %.3fms (%zu elements)\n", milliSeconds, count);
+}
+
+
+double TimedScope::ReadMilliseconds(void) const
 {
 	const std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
 	const std::chrono::duration<float> seconds = now - m_begin;
-	const double milliSeconds = seconds.count() * 1000.0;
-
-	printf("[PERF] Scope \"%s\" took %.3fms\n", m_scope, milliSeconds);
+	
+	return seconds.count() * 1000.0;
 }
