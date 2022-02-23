@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "PDB_ErrorCodes.h"
 #include "PDB_IPITypes.h"
 #include "PDB_CoalescedMSFStream.h"
 
@@ -57,7 +58,7 @@ namespace PDB
 	// General
 	// ------------------------------------------------------------------------------------------------
 
-	PDB_NO_DISCARD bool HasValidIPIStream(const RawFile& file) PDB_NO_EXCEPT;
+	PDB_NO_DISCARD ErrorCode HasValidIPIStream(const RawFile& file) PDB_NO_EXCEPT;
 
 	PDB_NO_DISCARD IPIStream CreateIPIStream(const RawFile& file) PDB_NO_EXCEPT;
 }

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "PDB_ErrorCodes.h"
 #include "PDB_DBITypes.h"
 #include "PDB_CoalescedMSFStream.h"
 #include "PDB_DirectMSFStream.h"
@@ -29,10 +30,10 @@ namespace PDB
 
 		PDB_DEFAULT_MOVE(DBIStream);
 
-		PDB_NO_DISCARD bool HasValidImageSectionStream(const RawFile& file) const PDB_NO_EXCEPT;
-		PDB_NO_DISCARD bool HasValidPublicSymbolStream(const RawFile& file) const PDB_NO_EXCEPT;
-		PDB_NO_DISCARD bool HasValidGlobalSymbolStream(const RawFile& file) const PDB_NO_EXCEPT;
-		PDB_NO_DISCARD bool HasValidSectionContributionStream(const RawFile& file) const PDB_NO_EXCEPT;
+		PDB_NO_DISCARD ErrorCode HasValidImageSectionStream(const RawFile& file) const PDB_NO_EXCEPT;
+		PDB_NO_DISCARD ErrorCode HasValidPublicSymbolStream(const RawFile& file) const PDB_NO_EXCEPT;
+		PDB_NO_DISCARD ErrorCode HasValidGlobalSymbolStream(const RawFile& file) const PDB_NO_EXCEPT;
+		PDB_NO_DISCARD ErrorCode HasValidSectionContributionStream(const RawFile& file) const PDB_NO_EXCEPT;
 
 		PDB_NO_DISCARD CoalescedMSFStream CreateSymbolRecordStream(const RawFile& file) const PDB_NO_EXCEPT;
 		PDB_NO_DISCARD ImageSectionStream CreateImageSectionStream(const RawFile& file) const PDB_NO_EXCEPT;
@@ -50,7 +51,7 @@ namespace PDB
 	};
 
 	// Returns whether the given raw file provides a valid DBI stream.
-	PDB_NO_DISCARD bool HasValidDBIStream(const RawFile& file) PDB_NO_EXCEPT;
+	PDB_NO_DISCARD ErrorCode HasValidDBIStream(const RawFile& file) PDB_NO_EXCEPT;
 
 	// Creates the DBI stream from a raw file.
 	PDB_NO_DISCARD DBIStream CreateDBIStream(const RawFile& file) PDB_NO_EXCEPT;

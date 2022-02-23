@@ -51,6 +51,7 @@
     <ClInclude Include="..\src\PDB_DBIStream.h" />
     <ClInclude Include="..\src\PDB_DBITypes.h" />
     <ClInclude Include="..\src\PDB_DirectMSFStream.h" />
+    <ClInclude Include="..\src\PDB_ErrorCodes.h" />
     <ClInclude Include="..\src\PDB_GlobalSymbolStream.h" />
     <ClInclude Include="..\src\PDB_ImageSectionStream.h" />
     <ClInclude Include="..\src\PDB_InfoStream.h" />

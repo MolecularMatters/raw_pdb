@@ -10,17 +10,16 @@
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD bool PDB::ValidateFile(const wchar_t* const path, const void* data) PDB_NO_EXCEPT
+PDB_NO_DISCARD PDB::ErrorCode PDB::ValidateFile(const void* data) PDB_NO_EXCEPT
 {
 	// validate the super block
 	const SuperBlock* superBlock = Pointer::Offset<const SuperBlock*>(data, 0u);
 	const uint32_t directoryBlockCount = ConvertSizeToBlockCount(superBlock->directorySize, superBlock->blockSize);
 	{
-		// validate header magic		
+		// validate header magic
 		if (std::memcmp(superBlock->fileMagic, SuperBlock::MAGIC, sizeof(SuperBlock::MAGIC) != 0))
 		{
-			PDB_LOG_ERROR("Invalid Superblock in PDB file %ls", path);
-			return false;
+			return ErrorCode::InvalidSuperBlock;
 		}
 
 		// validate directory
@@ -30,8 +29,7 @@ PDB_NO_DISCARD bool PDB::ValidateFile(const wchar_t* const path, const void* dat
 			const uint32_t blockIndicesPerBlock = superBlock->blockSize / sizeof(uint32_t);
 			if (directoryBlockCount > blockIndicesPerBlock)
 			{
-				PDB_LOG_ERROR("Directory is too large in PDB file %ls", path);
-				return false;
+				return ErrorCode::UnhandledDirectorySize;
 			}
 		}
 
@@ -39,12 +37,11 @@ PDB_NO_DISCARD bool PDB::ValidateFile(const wchar_t* const path, const void* dat
 		// the free block map should always reside at either index 1 or 2.
 		if (superBlock->freeBlockMapIndex != 1u && superBlock->freeBlockMapIndex != 2u)
 		{
-			PDB_LOG_ERROR("Invalid free block map in PDB file %ls", path);
-			return false;
+			return ErrorCode::InvalidFreeBlockMap;
 		}
 	}
 
-	return true;
+	return ErrorCode::Success;
 }
 
 

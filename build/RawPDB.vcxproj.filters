@@ -158,5 +158,8 @@
     <ClInclude Include="..\src\PDB_ClientInclude.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\PDB_ErrorCodes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

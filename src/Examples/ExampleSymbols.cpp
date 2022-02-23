@@ -10,25 +10,61 @@
 
 namespace
 {
-	PDB_NO_DISCARD static bool HasValidDBIStreams(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream) PDB_NO_EXCEPT
+	PDB_NO_DISCARD static bool IsError(PDB::ErrorCode errorCode)
+	{
+		switch (errorCode)
+		{
+			case PDB::ErrorCode::Success:
+				return false;
+
+			case PDB::ErrorCode::InvalidSuperBlock:
+				PDB_LOG_ERROR("Invalid Superblock");
+				return true;
+
+			case PDB::ErrorCode::InvalidFreeBlockMap:
+				PDB_LOG_ERROR("Invalid free block map");
+				return true;
+
+			case PDB::ErrorCode::UnhandledDirectorySize:
+				PDB_LOG_ERROR("Directory is too large");
+				return true;
+
+			case PDB::ErrorCode::InvalidSignature:
+				PDB_LOG_ERROR("Invalid stream signature");
+				return true;
+
+			case PDB::ErrorCode::InvalidStreamIndex:
+				PDB_LOG_ERROR("Invalid stream index");
+				return true;
+
+			case PDB::ErrorCode::UnknownVersion:
+				PDB_LOG_ERROR("Unknown version");
+				return true;
+		}
+
+		// only ErrorCode::Success means there wasn't an error, so all other paths have to assume there was an error
+		return true;
+	}
+
+	PDB_NO_DISCARD static bool HasValidDBIStreams(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream)
 	{
 		// check whether the DBI stream offers all sub-streams we need
-		if (!dbiStream.HasValidImageSectionStream(rawPdbFile))
+		if (IsError(dbiStream.HasValidImageSectionStream(rawPdbFile)))
+		{
+			return false;
+		}
+		
+		if (IsError(dbiStream.HasValidPublicSymbolStream(rawPdbFile)))
 		{
 			return false;
 		}
 
-		if (!dbiStream.HasValidPublicSymbolStream(rawPdbFile))
+		if (IsError(dbiStream.HasValidGlobalSymbolStream(rawPdbFile)))
 		{
 			return false;
 		}
 
-		if (!dbiStream.HasValidGlobalSymbolStream(rawPdbFile))
-		{
-			return false;
-		}
-
-		if (!dbiStream.HasValidSectionContributionStream(rawPdbFile))
+		if (IsError(dbiStream.HasValidSectionContributionStream(rawPdbFile)))
 		{
 			return false;
 		}
@@ -74,8 +110,7 @@ int main(void)
 		return 1;
 	}
 
-	const bool isValid = PDB::ValidateFile(pdbPath, pdbFile.baseAddress);
-	if (!isValid)
+	if (IsError(PDB::ValidateFile(pdbFile.baseAddress)))
 	{
 		MemoryMappedFile::Close(pdbFile);
 
@@ -83,7 +118,7 @@ int main(void)
 	}
 
 	const PDB::RawFile rawPdbFile = PDB::CreateRawFile(pdbFile.baseAddress);
-	if (!PDB::HasValidDBIStream(rawPdbFile))
+	if (IsError(PDB::HasValidDBIStream(rawPdbFile)))
 	{
 		MemoryMappedFile::Close(pdbFile);
 

@@ -89,25 +89,21 @@ PDB::DBIStream::DBIStream(const RawFile& file, const DBI::StreamHeader& header) 
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD bool PDB::HasValidDBIStream(const RawFile& file) PDB_NO_EXCEPT
+PDB_NO_DISCARD PDB::ErrorCode PDB::HasValidDBIStream(const RawFile& file) PDB_NO_EXCEPT
 {
 	DirectMSFStream stream = file.CreateMSFStream<DirectMSFStream>(DBIStreamIndex);
 
 	const DBI::StreamHeader header = stream.ReadAtOffset<DBI::StreamHeader>(0u);
 	if (header.signature != DBI::StreamHeader::Signature)
 	{
-		PDB_LOG_ERROR("Invalid DBI stream signature");
-
-		return false;
+		return ErrorCode::InvalidSignature;
 	}
 	else if (header.version != DBI::StreamHeader::Version::V70)
 	{
-		PDB_LOG_ERROR("Unknown DBI stream version");
-
-		return false;
+		return ErrorCode::UnknownVersion;
 	}
 
-	return true;
+	return ErrorCode::Success;
 }
 
 
@@ -124,7 +120,7 @@ PDB_NO_DISCARD PDB::DBIStream PDB::CreateDBIStream(const RawFile& file) PDB_NO_E
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD bool PDB::DBIStream::HasValidImageSectionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
+PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidImageSectionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
 {
 	// find the debug header sub-stream
 	const uint32_t debugHeaderOffset = GetDebugHeaderSubstreamOffset(m_header);
@@ -132,18 +128,16 @@ PDB_NO_DISCARD bool PDB::DBIStream::HasValidImageSectionStream(const RawFile& /*
 
 	if (debugHeader.sectionHeaderStreamIndex == DBI::DebugHeader::InvalidStreamIndex)
 	{
-		PDB_LOG_ERROR("Invalid section header stream index in DBI stream");
-
-		return false;
+		return ErrorCode::InvalidStreamIndex;
 	}
 
-	return true;
+	return ErrorCode::Success;
 }
 
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD bool PDB::DBIStream::HasValidPublicSymbolStream(const RawFile& file) const PDB_NO_EXCEPT
+PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidPublicSymbolStream(const RawFile& file) const PDB_NO_EXCEPT
 {
 	DirectMSFStream publicStream = file.CreateMSFStream<DirectMSFStream>(m_header.publicStreamIndex);
 
@@ -152,24 +146,20 @@ PDB_NO_DISCARD bool PDB::DBIStream::HasValidPublicSymbolStream(const RawFile& fi
 	const HashTableHeader hashHeader = publicStream.ReadAtOffset<HashTableHeader>(sizeof(PublicStreamHeader));
 	if (hashHeader.signature != HashTableHeader::Signature)
 	{
-		PDB_LOG_ERROR("Invalid public symbol stream signature");
-
-		return false;
+		return ErrorCode::InvalidSignature;
 	}
 	else if (hashHeader.version != HashTableHeader::Version)
 	{
-		PDB_LOG_ERROR("Unknown public symbol stream version");
-
-		return false;
+		return ErrorCode::UnknownVersion;
 	}
 
-	return true;
+	return ErrorCode::Success;
 }
 
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD bool PDB::DBIStream::HasValidGlobalSymbolStream(const RawFile& file) const PDB_NO_EXCEPT
+PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidGlobalSymbolStream(const RawFile& file) const PDB_NO_EXCEPT
 {
 	DirectMSFStream globalStream = file.CreateMSFStream<DirectMSFStream>(m_header.globalStreamIndex);
 
@@ -177,24 +167,20 @@ PDB_NO_DISCARD bool PDB::DBIStream::HasValidGlobalSymbolStream(const RawFile& fi
 	const HashTableHeader hashHeader = globalStream.ReadAtOffset<HashTableHeader>(0u);
 	if (hashHeader.signature != HashTableHeader::Signature)
 	{
-		PDB_LOG_ERROR("Invalid global symbol stream signature");
-
-		return false;
+		return ErrorCode::InvalidSignature;
 	}
 	else if (hashHeader.version != HashTableHeader::Version)
 	{
-		PDB_LOG_ERROR("Unknown global symbol stream version");
-
-		return false;
+		return ErrorCode::UnknownVersion;
 	}
 
-	return true;
+	return ErrorCode::Success;
 }
 
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD bool PDB::DBIStream::HasValidSectionContributionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
+PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidSectionContributionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
 {
 	// find the section contribution sub-stream
 	// https://llvm.org/docs/PDB/DbiStream.html#section-contribution-substream
@@ -203,12 +189,10 @@ PDB_NO_DISCARD bool PDB::DBIStream::HasValidSectionContributionStream(const RawF
 	const DBI::SectionContribution::Version version = m_stream.ReadAtOffset<DBI::SectionContribution::Version>(streamOffset);
 	if (version != DBI::SectionContribution::Version::Ver60)
 	{
-		PDB_LOG_ERROR("Unknown section contribution version in DBI stream");
-
-		return false;
+		return ErrorCode::UnknownVersion;
 	}
 
-	return true;
+	return ErrorCode::Success;
 }
 
 

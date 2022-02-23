@@ -70,19 +70,17 @@ PDB::IPIStream::~IPIStream(void) PDB_NO_EXCEPT
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD bool PDB::HasValidIPIStream(const RawFile& file) PDB_NO_EXCEPT
+PDB_NO_DISCARD PDB::ErrorCode PDB::HasValidIPIStream(const RawFile& file) PDB_NO_EXCEPT
 {
 	DirectMSFStream stream = file.CreateMSFStream<DirectMSFStream>(IPIStreamIndex);
 
 	const IPI::StreamHeader header = stream.ReadAtOffset<IPI::StreamHeader>(0u);
 	if (header.version != IPI::StreamHeader::Version::V80)
 	{
-		PDB_LOG_ERROR("Unknown IPI stream version");
-
-		return false;
+		return ErrorCode::UnknownVersion;
 	}
 
-	return true;
+	return ErrorCode::Success;
 }
 
 
