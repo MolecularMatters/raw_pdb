@@ -3,6 +3,7 @@
 
 #include "Examples_PCH.h"
 #include "ExampleMemoryMappedFile.h"
+#include "ExampleTimedScope.h"
 #include "PDB.h"
 #include "PDB_RawFile.h"
 #include "PDB_DBIStream.h"
@@ -93,7 +94,7 @@ namespace
 
 int main(void)
 {
-	const auto timestampBegin = std::chrono::high_resolution_clock::now();
+	TimedScope total("Total");
 
 #ifdef _DEBUG
 	const wchar_t* const pdbPath = LR"(..\bin\x64\Debug\ExampleSymbols.pdb)";
@@ -155,6 +156,8 @@ int main(void)
 
 	std::vector<Contribution> contributions;
 	{
+		TimedScope scope("Contributions");
+
 		const PDB::ArrayView<PDB::DBI::SectionContribution> sectionContributions = sectionContributionStream.GetContributions();
 		const size_t count = sectionContributions.GetLength();
 
@@ -176,6 +179,8 @@ int main(void)
 			contributions.push_back(Contribution { module.GetName().Decay(), rva, contribution.size });
 		}
 		printf("done\n");
+
+		scope.Print();
 	}
 
 
@@ -191,6 +196,8 @@ int main(void)
 	const PDB::PublicSymbolStream publicSymbolStream = dbiStream.CreatePublicSymbolStream(rawPdbFile);
 	printf("done\n");
 	{
+		TimedScope scope("Public symbols");
+
 		const PDB::ArrayView<PDB::HashRecord> hashRecords = publicSymbolStream.GetRecords();
 		const size_t count = hashRecords.GetLength();
 
@@ -211,6 +218,8 @@ int main(void)
 			symbols.push_back(Symbol { record->data.S_PUB32.name, rva });
 		}
 		printf("done\n");
+
+		scope.Print();
 	}
 
 
@@ -219,6 +228,8 @@ int main(void)
 	const PDB::GlobalSymbolStream globalSymbolStream = dbiStream.CreateGlobalSymbolStream(rawPdbFile);
 	printf("done\n");
 	{
+		TimedScope scope("Global symbols");
+
 		const PDB::ArrayView<PDB::HashRecord> hashRecords = globalSymbolStream.GetRecords();
 		const size_t count = hashRecords.GetLength();
 
@@ -262,11 +273,15 @@ int main(void)
 			symbols.push_back(Symbol { name, rva });
 		}
 		printf("done\n");
+
+		scope.Print();
 	}
 
 
 	// read module symbols
 	{
+		TimedScope scope("Module symbols");
+
 		const PDB::ArrayView<PDB::ModuleInfoStream::Module> modules = moduleInfoStream.GetModules();
 
 		printf("Reading and parsing %zu module streams...", modules.GetLength());
@@ -337,15 +352,15 @@ int main(void)
 			});
 		}
 		printf("done\n");
+
+		scope.Print();
 	}
 
 	MemoryMappedFile::Close(pdbFile);
 
-	const auto timestampNow = std::chrono::high_resolution_clock::now();
-	const std::chrono::duration<float> seconds = timestampNow - timestampBegin;
-
 	printf("Stored %zu symbols in std::vector using std::string\n", symbols.size());
-	printf("Running time: %.3fms\n", seconds.count()*1000.0);
+
+	total.Print();
 
 	return 0;
 }
