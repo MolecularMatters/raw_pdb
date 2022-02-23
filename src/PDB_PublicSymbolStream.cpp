@@ -38,7 +38,12 @@ PDB_NO_DISCARD const PDB::CodeView::DBI::Record* PDB::PublicSymbolStream::GetRec
 	// the offset doesn't point to the public symbol directly, but to the CodeView record:
 	// https://llvm.org/docs/PDB/CodeViewSymbols.html
 	const CodeView::DBI::Record* record = symbolRecordStream.GetDataAtOffset<const CodeView::DBI::Record>(headerOffset);
-	PDB_ASSERT(record->header.kind == CodeView::DBI::SymbolRecordKind::S_PUB32, "Invalid public symbol kind.");
+
+	if (record->header.kind != CodeView::DBI::SymbolRecordKind::S_PUB32)
+	{
+		// malformed data
+		return nullptr;
+	}
 
 	return record;
 }
