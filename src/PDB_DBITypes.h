@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "Foundation/PDB_BitOperators.h"
+
 
 namespace PDB
 {

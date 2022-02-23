@@ -33,19 +33,24 @@
   <ItemGroup>
     <ClInclude Include="..\src\Foundation\PDB_ArrayView.h" />
     <ClInclude Include="..\src\Foundation\PDB_Assert.h" />
+    <ClInclude Include="..\src\Foundation\PDB_BitOperators.h" />
     <ClInclude Include="..\src\Foundation\PDB_BitUtil.h" />
+    <ClInclude Include="..\src\Foundation\PDB_DisableWarningsPop.h" />
+    <ClInclude Include="..\src\Foundation\PDB_DisableWarningsPush.h" />
     <ClInclude Include="..\src\Foundation\PDB_Forward.h" />
     <ClInclude Include="..\src\Foundation\PDB_Log.h" />
+    <ClInclude Include="..\src\Foundation\PDB_Macros.h" />
     <ClInclude Include="..\src\Foundation\PDB_Memory.h" />
     <ClInclude Include="..\src\Foundation\PDB_Move.h" />
+    <ClInclude Include="..\src\Foundation\PDB_Platform.h" />
     <ClInclude Include="..\src\Foundation\PDB_PointerUtil.h" />
+    <ClInclude Include="..\src\Foundation\PDB_Warnings.h" />
     <ClInclude Include="..\src\PDB.h" />
+    <ClInclude Include="..\src\PDB_ClientInclude.h" />
     <ClInclude Include="..\src\PDB_CoalescedMSFStream.h" />
     <ClInclude Include="..\src\PDB_DBIStream.h" />
     <ClInclude Include="..\src\PDB_DBITypes.h" />
     <ClInclude Include="..\src\PDB_DirectMSFStream.h" />
-    <ClInclude Include="..\src\PDB_DisableWarningsPop.h" />
-    <ClInclude Include="..\src\PDB_DisableWarningsPush.h" />
     <ClInclude Include="..\src\PDB_GlobalSymbolStream.h" />
     <ClInclude Include="..\src\PDB_ImageSectionStream.h" />
     <ClInclude Include="..\src\PDB_InfoStream.h" />

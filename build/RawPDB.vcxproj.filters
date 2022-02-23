@@ -113,12 +113,6 @@
     <ClInclude Include="..\src\PDB_Util.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\PDB_DisableWarningsPop.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PDB_DisableWarningsPush.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Foundation\PDB_Forward.h">
       <Filter>Source Files\Foundation</Filter>
     </ClInclude>
@@ -142,6 +136,27 @@
     </ClInclude>
     <ClInclude Include="..\src\Foundation\PDB_BitUtil.h">
       <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_Macros.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_DisableWarningsPop.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_DisableWarningsPush.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_Warnings.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_Platform.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_BitOperators.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PDB_ClientInclude.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

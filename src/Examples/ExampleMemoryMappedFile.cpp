@@ -3,12 +3,9 @@
 
 #include "Examples_PCH.h"
 #include "ExampleMemoryMappedFile.h"
-#include "PDB_DisableWarningsPush.h"
-#include <Windows.h>
-#include "PDB_DisableWarningsPop.h"
 
 
-PDB_NO_DISCARD MemoryMappedFile::Handle MemoryMappedFile::Open(const wchar_t* path) PDB_NO_EXCEPT
+MemoryMappedFile::Handle MemoryMappedFile::Open(const wchar_t* path)
 {
 	HANDLE file = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, nullptr);
 	if (file == INVALID_HANDLE_VALUE)
@@ -37,7 +34,7 @@ PDB_NO_DISCARD MemoryMappedFile::Handle MemoryMappedFile::Open(const wchar_t* pa
 }
 
 
-void MemoryMappedFile::Close(Handle& handle) PDB_NO_EXCEPT
+void MemoryMappedFile::Close(Handle& handle)
 {
 	UnmapViewOfFile(handle.baseAddress);
 	CloseHandle(handle.fileMapping);

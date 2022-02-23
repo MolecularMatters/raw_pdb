@@ -3,6 +3,7 @@
 
 #include "PDB_PCH.h"
 #include "PDB.h"
+#include "PDB_Types.h"
 #include "PDB_Util.h"
 #include "PDB_RawFile.h"
 

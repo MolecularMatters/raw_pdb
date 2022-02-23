@@ -47,19 +47,3 @@ namespace PDB::BitUtil
 		return result;
 	}
 }
-
-#define PDB_DEFINE_BIT_OPERATORS(_type)															\
-	PDB_NO_DISCARD inline constexpr _type operator|(_type lhs, _type rhs) PDB_NO_EXCEPT			\
-	{																							\
-		return static_cast<_type>(PDB_AS_UNDERLYING(lhs) | PDB_AS_UNDERLYING(rhs));				\
-	}																							\
-																								\
-	PDB_NO_DISCARD inline constexpr _type operator&(_type lhs, _type rhs) PDB_NO_EXCEPT			\
-	{																							\
-		return static_cast<_type>(PDB_AS_UNDERLYING(lhs) & PDB_AS_UNDERLYING(rhs));				\
-	}																							\
-																								\
-	PDB_NO_DISCARD inline constexpr _type operator~(_type value) PDB_NO_EXCEPT					\
-	{																							\
-		return static_cast<_type>(~PDB_AS_UNDERLYING(value));									\
-	}
