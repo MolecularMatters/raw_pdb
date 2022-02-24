@@ -54,17 +54,15 @@ PDB::CoalescedMSFStream::CoalescedMSFStream(const void* data, uint32_t blockSize
 		// instead, we directly point into the memory-mapped file at the correct offset.
 		const uint32_t index = blockIndices[0];
 		const size_t fileOffset = PDB::ConvertBlockIndexToFileOffset(index, blockSize);
-		m_data = Pointer::Offset<const std::uint8_t*>(data, fileOffset);
+		m_data = Pointer::Offset<const Byte*>(data, fileOffset);
 	}
 	else
 	{
-		const uint32_t blockSizeLog2 = BitUtil::FindFirstSetBit(blockSize);
-
 		// slower path, we need to copy disjunct blocks into our own data array, block by block
-		m_ownedData = PDB_NEW_ARRAY(std::uint8_t, streamSize);
+		m_ownedData = PDB_NEW_ARRAY(Byte, streamSize);
 		m_data = m_ownedData;
 
-		std::uint8_t* destination = m_ownedData;
+		Byte* destination = m_ownedData;
 
 		// copy full blocks first
 		const uint32_t fullBlockCount = streamSize / blockSize;
@@ -108,12 +106,12 @@ PDB::CoalescedMSFStream::CoalescedMSFStream(const DirectMSFStream& directStream,
 	{
 		// fast path, all block indices inside the direct stream from (data + offset) to (data + offset + size) are contiguous
 		const size_t offsetWithinData = directStream.GetDataOffsetForOffset(offset);
-		m_data = Pointer::Offset<const std::uint8_t*>(directStream.GetData(), offsetWithinData);
+		m_data = Pointer::Offset<const Byte*>(directStream.GetData(), offsetWithinData);
 	}
 	else
 	{
 		// slower path, we need to copy from disjunct blocks, which is performed by the direct stream
-		m_ownedData = PDB_NEW_ARRAY(std::uint8_t, size);
+		m_ownedData = PDB_NEW_ARRAY(Byte, size);
 		m_data = m_ownedData;
 
 		directStream.ReadAtOffset(m_ownedData, size, offset);
