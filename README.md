@@ -1,6 +1,6 @@
 # RawPDB
 
-**RawPDB** is a C++17 library that directly reads Microsoft Program Debug Database PDB files. The code is extracted almost directly from the upcoming 2.0 release of <a href="https://liveplusplus.tech/">Live++</a>.
+**RawPDB** is a C++11 library that directly reads Microsoft Program DataBase PDB files. The code is extracted almost directly from the upcoming 2.0 release of <a href="https://liveplusplus.tech/">Live++</a>.
 
 ## Design
 
@@ -23,7 +23,11 @@ Eventually, we want **RawPDB** to become the de-facto replacement of <a href="ht
 * No STL - **RawPDB** does not need any STL containers or algorithms
 * No exceptions - **RawPDB** does not use exceptions
 * No RTTI - **RawPDB** does not need RTTI or use class hierarchies
-* High quality code - **RawPDB** compiles clean under -Wall
+* High-quality code - **RawPDB** compiles clean under -Wall
+
+## Building
+
+The code compiles clean under Visual Studio 2015, 2017, 2019, or 2022. A solution for Visual Studio 2019 is included.
 
 ## Performance
 
