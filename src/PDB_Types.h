@@ -42,7 +42,7 @@ namespace PDB
 	struct PDB_NO_DISCARD SuperBlock
 	{
 		// https://github.com/Microsoft/microsoft-pdb/blob/master/PDB/msf/msf.cpp#L962
-		static inline constexpr const char MAGIC[30u] = "Microsoft C/C++ MSF 7.00\r\n\x1a\x44\x53";
+		static constexpr const char MAGIC[30u] = "Microsoft C/C++ MSF 7.00\r\n\x1a\x44\x53";
 
 		char fileMagic[30u];
 		char padding[2u];
@@ -136,8 +136,8 @@ namespace PDB
 	// https://github.com/Microsoft/microsoft-pdb/blob/master/PDB/dbi/gsi.h#L62
 	struct HashTableHeader
 	{
-		static inline constexpr const uint32_t Signature = 0xffffffffu;
-		static inline constexpr const uint32_t Version = 0xeffe0000u + 19990810u;
+		static constexpr const uint32_t Signature = 0xffffffffu;
+		static constexpr const uint32_t Version = 0xeffe0000u + 19990810u;
 
 		uint32_t signature;
 		uint32_t version;
