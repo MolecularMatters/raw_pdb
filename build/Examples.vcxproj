@@ -92,7 +92,7 @@
       <AdditionalIncludeDirectories>..\src</AdditionalIncludeDirectories>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>/Gw /wd4577 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Gw /Zc:__cplusplus /wd4577 %(AdditionalOptions)</AdditionalOptions>
       <SDLCheck>true</SDLCheck>
       <StringPooling>false</StringPooling>
       <ControlFlowGuard>Guard</ControlFlowGuard>
@@ -130,7 +130,7 @@
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <OpenMPSupport>false</OpenMPSupport>
       <AdditionalIncludeDirectories>..\src</AdditionalIncludeDirectories>
-      <AdditionalOptions>/Gw /wd4577 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Gw /Zc:__cplusplus /wd4577 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>

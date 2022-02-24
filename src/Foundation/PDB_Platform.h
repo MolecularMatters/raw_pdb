@@ -14,3 +14,10 @@
 #else
 #	error("Unknown compiler.");
 #endif
+
+// check whether C++17 is available
+#if __cplusplus >= 201703L
+#	define PDB_CPP_17						1
+#else
+#	define PDB_CPP_17						0
+#endif

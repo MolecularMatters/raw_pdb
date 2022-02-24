@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "PDB_Types.h"
+
 
 // https://llvm.org/docs/PDB/index.html#the-msf-container
 // https://llvm.org/docs/PDB/MsfFile.html
@@ -43,11 +45,11 @@ namespace PDB
 
 	private:
 		// contiguous, coalesced data, can be null
-		std::byte* m_ownedData;
+		Byte* m_ownedData;
 
 		// either points to the owned data that has been copied from disjunct blocks, or points to the
 		// memory-mapped data directly in case all stream blocks are contiguous.
-		const std::byte* m_data;
+		const Byte* m_data;
 		size_t m_size;
 
 		PDB_DISABLE_COPY(CoalescedMSFStream);

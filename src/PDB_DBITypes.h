@@ -14,7 +14,7 @@ namespace PDB
 		// https://github.com/microsoft/microsoft-pdb/blob/master/PDB/dbi/dbi.h#L124
 		struct StreamHeader
 		{
-			static inline constexpr const uint32_t Signature = 0xffffffffu;
+			static const uint32_t Signature;
 
 			enum class PDB_NO_DISCARD Version : uint32_t
 			{
@@ -50,7 +50,7 @@ namespace PDB
 		// https://llvm.org/docs/PDB/DbiStream.html#optional-debug-header-stream
 		struct DebugHeader
 		{
-			static inline constexpr const uint16_t InvalidStreamIndex = 0xFFFFu;
+			static const uint16_t InvalidStreamIndex;
 
 			uint16_t fpoDataStreamIndex;						// IMAGE_DEBUG_TYPE_FPO
 			uint16_t exceptionDataStreamIndex;					// IMAGE_DEBUG_TYPE_EXCEPTION

@@ -10,7 +10,7 @@
 
 // third-party includes
 #include "Foundation/PDB_DisableWarningsPush.h"
-#include <cstddef>
+#include <intrin.h>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>

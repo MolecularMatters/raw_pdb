@@ -7,8 +7,12 @@
 
 
 #if PDB_COMPILER_MSVC
+	// some warnings were introduced with different versions of Visual Studio, so we disable this warning instead of using a bunch of #if/#endif
+#	pragma warning (disable : 4619)		// there is no warning number N
+
 	// we compile with exceptions disabled
-#	pragma warning(disable : 4577)		// warning C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed. Specify /EHsc
+#	pragma warning (disable : 4530)		// C++ exception handler used, but unwind semantics are not enabled.Specify / EHsc
+#	pragma warning (disable : 4577)		// 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed. Specify /EHsc
 
 	// ignore purely informational warnings
 #	pragma warning (disable : 4514)		// unreferenced inline function has been removed

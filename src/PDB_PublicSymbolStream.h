@@ -11,9 +11,12 @@ namespace PDB
 	class RawFile;
 	struct HashRecord;
 
-	namespace CodeView::DBI
+	namespace CodeView
 	{
-		struct Record;
+		namespace DBI
+		{
+			struct Record;
+		}		
 	}
 
 

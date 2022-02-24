@@ -14,6 +14,7 @@
     <ClCompile Include="..\src\PDB.cpp" />
     <ClCompile Include="..\src\PDB_CoalescedMSFStream.cpp" />
     <ClCompile Include="..\src\PDB_DBIStream.cpp" />
+    <ClCompile Include="..\src\PDB_DBITypes.cpp" />
     <ClCompile Include="..\src\PDB_DirectMSFStream.cpp" />
     <ClCompile Include="..\src\PDB_GlobalSymbolStream.cpp" />
     <ClCompile Include="..\src\PDB_ImageSectionStream.cpp" />
@@ -29,6 +30,7 @@
     <ClCompile Include="..\src\PDB_RawFile.cpp" />
     <ClCompile Include="..\src\PDB_SectionContributionStream.cpp" />
     <ClCompile Include="..\src\PDB_SourceFileStream.cpp" />
+    <ClCompile Include="..\src\PDB_Types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Foundation\PDB_ArrayView.h" />
@@ -132,7 +134,7 @@
       <AdditionalIncludeDirectories>..\src</AdditionalIncludeDirectories>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>/Gw /wd4577 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Gw /Zc:__cplusplus /wd4577 %(AdditionalOptions)</AdditionalOptions>
       <SDLCheck>true</SDLCheck>
       <StringPooling>false</StringPooling>
       <ControlFlowGuard>Guard</ControlFlowGuard>
@@ -170,7 +172,7 @@
       <OpenMPSupport>false</OpenMPSupport>
       <AdditionalIncludeDirectories>..\src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>PDB_PCH.h</PrecompiledHeaderFile>
-      <AdditionalOptions>/Gw /wd4577 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Gw /Zc:__cplusplus /wd4577 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
