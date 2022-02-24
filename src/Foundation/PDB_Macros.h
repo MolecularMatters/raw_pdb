@@ -14,9 +14,14 @@
 #define PDB_NO_ALIAS								__declspec(restrict)
 
 // Indicates to the compiler that the return value of a function or class should not be ignored.
-#if PDB_CPP_17
-#	define PDB_NO_DISCARD							[[nodiscard]]
-#else
+#ifdef __has_cpp_attribute
+#	if __has_cpp_attribute(nodiscard)
+#		define PDB_NO_DISCARD						[[nodiscard]]
+#	endif
+#endif
+
+// If PDB_NO_DISCARD is not defined because this compiler does not support it, define it to be empty
+#ifndef PDB_NO_DISCARD
 #	define PDB_NO_DISCARD
 #endif
 
