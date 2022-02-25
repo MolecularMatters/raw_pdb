@@ -148,9 +148,18 @@ void ExampleSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStr
 				uint32_t rva = 0u;
 				if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_THUNK32)
 				{
+					if (record->data.S_THUNK32.thunk == PDB::CodeView::DBI::ThunkOrdinal::TrampolineIncremental)
+					{
+						// we have never seen incremental linking thunks stored inside a S_THUNK32 symbol, but better be safe than sorry
+						name = "ILT";
+						rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_THUNK32.section, record->data.S_THUNK32.offset);
+					}
+				}
+				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_TRAMPOLINE)
+				{
 					// incremental linking thunks are stored in the linker module
 					name = "ILT";
-					rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_THUNK32.section, record->data.S_THUNK32.offset);
+					rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_TRAMPOLINE.thunkSection, record->data.S_TRAMPOLINE.thunkOffset);
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_BLOCK32)
 				{

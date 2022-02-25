@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Examples\ExampleContributions.cpp" />
+    <ClCompile Include="..\src\Examples\ExampleFunctionSymbols.cpp" />
     <ClCompile Include="..\src\Examples\ExampleMain.cpp" />
     <ClCompile Include="..\src\Examples\ExampleMemoryMappedFile.cpp" />
     <ClCompile Include="..\src\Examples\ExampleSymbols.cpp" />
@@ -60,7 +61,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\bin\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\temp\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Examples</TargetName>
