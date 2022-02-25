@@ -22,6 +22,8 @@ namespace PDB
 
 		PDB_DEFAULT_MOVE(InfoStream);
 
+		const Header* GetHeader() const { return m_header; }
+
 	private:
 		CoalescedMSFStream m_stream;
 		const Header* m_header;
