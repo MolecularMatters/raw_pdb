@@ -132,13 +132,17 @@ Consult the example code to see how to read and parse the PDB streams.
 
 ## Examples
 
-### Symbols (ExampleSymbols.cpp)
+### Symbols (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleSymbols.cpp">ExampleSymbols.cpp</a>)
 
 A basic example that shows how to load and symbols from public, global, and module streams.
 
-### Contributions (ExampleContributions.cpp)
+### Contributions (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleContributions.cpp">ExampleContributions.cpp</a>)
 
 A basic example that shows how to load contributions, sort them by size, and output the 20 largest ones along with the object file they originated from.
+
+### Function symbols (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleFunctionSymbols.cpp">ExampleFunctionSymbols.cpp</a>)
+
+An example intended for profiler developers that shows how to enumerate all function symbols and retrieve or compute their code size.
 
 ## Sponsoring or supporting RawPDB
 
