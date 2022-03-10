@@ -5,6 +5,7 @@
 #include "ExampleMemoryMappedFile.h"
 #include "PDB.h"
 #include "PDB_RawFile.h"
+#include "PDB_InfoStream.h"
 #include "PDB_DBIStream.h"
 
 
@@ -18,23 +19,23 @@ namespace
 				return false;
 
 			case PDB::ErrorCode::InvalidSuperBlock:
-				PDB_LOG_ERROR("Invalid Superblock\n");
+				printf("Invalid Superblock\n");
 				return true;
 
 			case PDB::ErrorCode::InvalidFreeBlockMap:
-				PDB_LOG_ERROR("Invalid free block map\n");
+				printf("Invalid free block map\n");
 				return true;
 
 			case PDB::ErrorCode::InvalidSignature:
-				PDB_LOG_ERROR("Invalid stream signature\n");
+				printf("Invalid stream signature\n");
 				return true;
 
 			case PDB::ErrorCode::InvalidStreamIndex:
-				PDB_LOG_ERROR("Invalid stream index\n");
+				printf("Invalid stream index\n");
 				return true;
 
 			case PDB::ErrorCode::UnknownVersion:
-				PDB_LOG_ERROR("Unknown version\n");
+				printf("Unknown version\n");
 				return true;
 		}
 
@@ -90,6 +91,8 @@ int main(void)
 	MemoryMappedFile::Handle pdbFile = MemoryMappedFile::Open(pdbPath);
 	if (!pdbFile.baseAddress)
 	{
+		printf("Cannot memory-map file %ls\n", pdbPath);
+
 		return 1;
 	}
 
@@ -108,12 +111,22 @@ int main(void)
 		return 3;
 	}
 
+	const PDB::InfoStream infoStream(rawPdbFile);
+	if (infoStream.UsesDebugFastLink())
+	{
+		printf("PDB was linked using unsupported option /DEBUG:FASTLINK\n");
+
+		MemoryMappedFile::Close(pdbFile);
+
+		return 4;
+	}
+
 	const PDB::DBIStream dbiStream = PDB::CreateDBIStream(rawPdbFile);
 	if (!HasValidDBIStreams(rawPdbFile, dbiStream))
 	{
 		MemoryMappedFile::Close(pdbFile);
 
-		return 4;
+		return 5;
 	}
 
 	// run all examples

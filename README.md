@@ -116,6 +116,8 @@ When reading streams in a concurrent fashion, you will most likely be limited by
 
 At the moment, there is no support for C13 line information and the TPI type stream data, because Live++ does not make use of that information yet. However, we will gladly accept PRs, or implement support in the future.
 
+Furthermore, PDBs linked using /DEBUG:FASTLINK are not supported. These PDBs do not contain much information, since private symbol information is distributed among object files and library files.
+
 ## Documentation
 
 If you are unfamiliar with the basic structure of a PDB file, the <a href="https://llvm.org/docs/PDB/index.html">LLVM documentation</a> serves as a good introduction.

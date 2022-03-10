@@ -29,6 +29,12 @@ namespace PDB
 			return m_header;
 		}
 
+		// Returns whether the PDB file was linked using /DEBUG:FASTLINK.
+		PDB_NO_DISCARD inline bool UsesDebugFastLink(void) const PDB_NO_EXCEPT
+		{
+			return m_usesDebugFastlink;
+		}
+
 	private:
 		CoalescedMSFStream m_stream;
 		const Header* m_header;
