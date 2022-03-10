@@ -83,6 +83,38 @@ PDB::ModuleInfoStream::ModuleInfoStream(void) PDB_NO_EXCEPT
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+PDB::ModuleInfoStream::ModuleInfoStream(ModuleInfoStream&& other) PDB_NO_EXCEPT
+	: m_stream(PDB_MOVE(other.m_stream))
+	, m_modules(PDB_MOVE(other.m_modules))
+	, m_moduleCount(PDB_MOVE(other.m_moduleCount))
+{
+	other.m_modules = nullptr;
+	other.m_moduleCount = 0u;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+PDB::ModuleInfoStream& PDB::ModuleInfoStream::operator=(ModuleInfoStream&& other) PDB_NO_EXCEPT
+{
+	if (this != &other)
+	{
+		PDB_DELETE_ARRAY(m_modules);
+
+		m_stream = PDB_MOVE(other.m_stream);
+		m_modules = PDB_MOVE(other.m_modules);
+		m_moduleCount = PDB_MOVE(other.m_moduleCount);
+
+		other.m_modules = nullptr;
+		other.m_moduleCount = 0u;
+	}
+
+	return *this;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 PDB::ModuleInfoStream::ModuleInfoStream(const DirectMSFStream& directStream, uint32_t size, uint32_t offset) PDB_NO_EXCEPT
 	: m_stream(directStream, size, offset)
 	, m_modules(nullptr)
@@ -110,6 +142,14 @@ PDB::ModuleInfoStream::ModuleInfoStream(const DirectMSFStream& directStream, uin
 		m_modules[m_moduleCount] = Module(moduleInfo, name, nameLength, objectName, objectNameLength);
 		++m_moduleCount;
 	}
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+PDB::ModuleInfoStream::~ModuleInfoStream(void) PDB_NO_EXCEPT
+{
+	PDB_DELETE_ARRAY(m_modules);
 }
 
 

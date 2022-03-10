@@ -22,12 +22,13 @@ namespace PDB
 	{
 	public:
 		CoalescedMSFStream(void) PDB_NO_EXCEPT;
+		CoalescedMSFStream(CoalescedMSFStream&& other) PDB_NO_EXCEPT;
+		CoalescedMSFStream& operator=(CoalescedMSFStream&& other) PDB_NO_EXCEPT;
+
 		explicit CoalescedMSFStream(const void* data, uint32_t blockSize, const uint32_t* blockIndices, uint32_t streamSize) PDB_NO_EXCEPT;
 
 		// Creates a coalesced stream from a direct stream at any offset.
 		explicit CoalescedMSFStream(const DirectMSFStream& directStream, uint32_t size, uint32_t offset) PDB_NO_EXCEPT;
-
-		PDB_DEFAULT_MOVE(CoalescedMSFStream);
 
 		~CoalescedMSFStream(void) PDB_NO_EXCEPT;
 

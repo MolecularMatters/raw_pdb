@@ -21,10 +21,10 @@ namespace PDB
 	{
 	public:
 		IPIStream(void) PDB_NO_EXCEPT;
+		IPIStream(IPIStream&& other) PDB_NO_EXCEPT;
+		IPIStream& operator=(IPIStream&& other) PDB_NO_EXCEPT;
+
 		explicit IPIStream(const RawFile& file, const IPI::StreamHeader& header) PDB_NO_EXCEPT;
-
-		PDB_DEFAULT_MOVE(IPIStream);
-
 		~IPIStream(void) PDB_NO_EXCEPT;
 
 		// Returns the index of the first type, which is not necessarily zero.

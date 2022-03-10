@@ -60,9 +60,12 @@ namespace PDB
 		};
 
 		ModuleInfoStream(void) PDB_NO_EXCEPT;
+		ModuleInfoStream(ModuleInfoStream&& other) PDB_NO_EXCEPT;
+		ModuleInfoStream& operator=(ModuleInfoStream&& other) PDB_NO_EXCEPT;
+
 		explicit ModuleInfoStream(const DirectMSFStream& directStream, uint32_t size, uint32_t offset) PDB_NO_EXCEPT;
 
-		PDB_DEFAULT_MOVE(ModuleInfoStream);
+		~ModuleInfoStream(void) PDB_NO_EXCEPT;
 
 		// Tries to find the linker module corresponding to the linker, i.e. the module named "* Linker *".
 		PDB_NO_DISCARD const Module* FindLinkerModule(void) const PDB_NO_EXCEPT;

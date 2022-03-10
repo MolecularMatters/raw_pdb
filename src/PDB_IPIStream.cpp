@@ -28,6 +28,40 @@ PDB::IPIStream::IPIStream(void) PDB_NO_EXCEPT
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+PDB::IPIStream::IPIStream(IPIStream&& other) PDB_NO_EXCEPT
+	: m_header(PDB_MOVE(other.m_header))
+	, m_stream(PDB_MOVE(other.m_stream))
+	, m_records(PDB_MOVE(other.m_records))
+	, m_recordCount(PDB_MOVE(other.m_recordCount))
+{
+	other.m_records = nullptr;
+	other.m_recordCount = 0u;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+PDB::IPIStream& PDB::IPIStream::operator=(IPIStream&& other) PDB_NO_EXCEPT
+{
+	if (this != &other)
+	{
+		PDB_DELETE_ARRAY(m_records);
+
+		m_header = PDB_MOVE(other.m_header);
+		m_stream = PDB_MOVE(other.m_stream);
+		m_records = PDB_MOVE(other.m_records);
+		m_recordCount = PDB_MOVE(other.m_recordCount);
+
+		other.m_records = nullptr;
+		other.m_recordCount = 0u;
+	}
+
+	return *this;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 PDB::IPIStream::IPIStream(const RawFile& file, const IPI::StreamHeader& header) PDB_NO_EXCEPT
 	: m_header(header)
 	, m_stream(file.CreateMSFStream<CoalescedMSFStream>(IPIStreamIndex))

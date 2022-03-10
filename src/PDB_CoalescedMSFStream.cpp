@@ -48,6 +48,40 @@ PDB::CoalescedMSFStream::CoalescedMSFStream(void) PDB_NO_EXCEPT
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+PDB::CoalescedMSFStream::CoalescedMSFStream(CoalescedMSFStream&& other) PDB_NO_EXCEPT
+	: m_ownedData(PDB_MOVE(other.m_ownedData))
+	, m_data(PDB_MOVE(other.m_data))
+	, m_size(PDB_MOVE(other.m_size))
+{
+	other.m_ownedData = nullptr;
+	other.m_data = nullptr;
+	other.m_size = 0u;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+PDB::CoalescedMSFStream& PDB::CoalescedMSFStream::operator=(CoalescedMSFStream&& other) PDB_NO_EXCEPT
+{
+	if (this != &other)
+	{
+		PDB_DELETE_ARRAY(m_ownedData);
+
+		m_ownedData = PDB_MOVE(other.m_ownedData);
+		m_data = PDB_MOVE(other.m_data);
+		m_size = PDB_MOVE(other.m_size);
+
+		other.m_ownedData = nullptr;
+		other.m_data = nullptr;
+		other.m_size = 0u;
+	}
+
+	return *this;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 PDB::CoalescedMSFStream::CoalescedMSFStream(const void* data, uint32_t blockSize, const uint32_t* blockIndices, uint32_t streamSize) PDB_NO_EXCEPT
 	: m_ownedData(nullptr)
 	, m_data(nullptr)

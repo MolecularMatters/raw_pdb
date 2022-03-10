@@ -38,6 +38,50 @@ namespace
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+PDB::RawFile::RawFile(RawFile&& other) PDB_NO_EXCEPT
+	: m_data(PDB_MOVE(other.m_data))
+	, m_superBlock(PDB_MOVE(other.m_superBlock))
+	, m_directoryStream(PDB_MOVE(other.m_directoryStream))
+	, m_streamCount(PDB_MOVE(other.m_streamCount))
+	, m_streamSizes(PDB_MOVE(other.m_streamSizes))
+	, m_streamBlocks(PDB_MOVE(other.m_streamBlocks))
+{
+	other.m_data = nullptr;
+	other.m_superBlock = nullptr;
+	other.m_streamCount = 0u;
+	other.m_streamSizes = nullptr;
+	other.m_streamBlocks = nullptr;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+PDB::RawFile& PDB::RawFile::operator=(RawFile&& other) PDB_NO_EXCEPT
+{
+	if (this != &other)
+	{
+		PDB_DELETE_ARRAY(m_streamBlocks);
+
+		m_data = PDB_MOVE(other.m_data);
+		m_superBlock = PDB_MOVE(other.m_superBlock);
+		m_directoryStream = PDB_MOVE(other.m_directoryStream);
+		m_streamCount = PDB_MOVE(other.m_streamCount);
+		m_streamSizes = PDB_MOVE(other.m_streamSizes);
+		m_streamBlocks = PDB_MOVE(other.m_streamBlocks);
+
+		other.m_data = nullptr;
+		other.m_superBlock = nullptr;
+		other.m_streamCount = 0u;
+		other.m_streamSizes = nullptr;
+		other.m_streamBlocks = nullptr;
+	}
+
+	return *this;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 PDB::RawFile::RawFile(const void* data) PDB_NO_EXCEPT
 	: m_data(data)
 	, m_superBlock(Pointer::Offset<const SuperBlock*>(data, 0u))
