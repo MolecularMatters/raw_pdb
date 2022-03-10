@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "PDB_Macros.h"
 #include "PDB_Log.h"
 
 

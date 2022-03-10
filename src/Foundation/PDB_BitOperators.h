@@ -3,7 +3,10 @@
 
 #pragma once
 
-#include "Foundation/PDB_Macros.h"
+#include "PDB_Macros.h"
+#include "PDB_DisableWarningsPush.h"
+#include <type_traits>
+#include "PDB_DisableWarningsPop.h"
 
 
 #define PDB_DEFINE_BIT_OPERATORS(_type)															\

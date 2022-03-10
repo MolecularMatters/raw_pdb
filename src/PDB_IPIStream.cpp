@@ -6,7 +6,7 @@
 #include "PDB_RawFile.h"
 #include "PDB_Util.h"
 #include "PDB_DirectMSFStream.h"
-
+#include "Foundation/PDB_Memory.h"
 
 namespace
 {

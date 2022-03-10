@@ -5,6 +5,11 @@
 #include "PDB_CoalescedMSFStream.h"
 #include "PDB_Util.h"
 #include "PDB_DirectMSFStream.h"
+#include "Foundation/PDB_PointerUtil.h"
+#include "Foundation/PDB_Memory.h"
+#include "Foundation/PDB_DisableWarningsPush.h"
+#include <cstring>
+#include "Foundation/PDB_DisableWarningsPop.h"
 
 
 namespace

@@ -6,6 +6,10 @@
 #include "PDB_Types.h"
 #include "PDB_Util.h"
 #include "PDB_RawFile.h"
+#include "Foundation/PDB_PointerUtil.h"
+#include "Foundation/PDB_DisableWarningsPush.h"
+#include <cstring>
+#include "Foundation/PDB_DisableWarningsPop.h"
 
 
 // ------------------------------------------------------------------------------------------------

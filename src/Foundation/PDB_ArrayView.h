@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "PDB_Macros.h"
+
 
 namespace PDB
 {

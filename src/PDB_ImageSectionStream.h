@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Foundation/PDB_Macros.h"
 #include "Foundation/PDB_ArrayView.h"
 #include "PDB_Types.h"
 #include "PDB_CoalescedMSFStream.h"

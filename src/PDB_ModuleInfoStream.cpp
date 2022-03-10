@@ -3,6 +3,10 @@
 
 #include "PDB_PCH.h"
 #include "PDB_ModuleInfoStream.h"
+#include "Foundation/PDB_Memory.h"
+#include "Foundation/PDB_DisableWarningsPush.h"
+#include <cstring>
+#include "Foundation/PDB_DisableWarningsPop.h"
 
 
 namespace

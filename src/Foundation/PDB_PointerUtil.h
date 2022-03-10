@@ -3,6 +3,11 @@
 
 #pragma once
 
+#include "PDB_Macros.h"
+#include "PDB_DisableWarningsPush.h"
+#include <type_traits>
+#include "PDB_DisableWarningsPop.h"
+
 
 namespace PDB
 {

@@ -3,7 +3,11 @@
 
 #pragma once
 
+#include "Foundation/PDB_Macros.h"
 #include "Foundation/PDB_BitOperators.h"
+#include "Foundation/PDB_DisableWarningsPush.h"
+#include <cstdint>
+#include "Foundation/PDB_DisableWarningsPop.h"
 
 
 namespace PDB

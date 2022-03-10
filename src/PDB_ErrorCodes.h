@@ -3,10 +3,12 @@
 
 #pragma once
 
+#include "Foundation/PDB_Macros.h"
+
 
 namespace PDB
 {
-	enum class PDB_NO_DISCARD ErrorCode : uint32_t
+	enum class PDB_NO_DISCARD ErrorCode : unsigned int
 	{
 		Success = 0u,
 

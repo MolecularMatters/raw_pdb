@@ -3,6 +3,12 @@
 
 #include "PDB_PCH.h"
 #include "PDB_DirectMSFStream.h"
+#include "Foundation/PDB_PointerUtil.h"
+#include "Foundation/PDB_BitUtil.h"
+#include "Foundation/PDB_Assert.h"
+#include "Foundation/PDB_DisableWarningsPush.h"
+#include <cstring>
+#include "Foundation/PDB_DisableWarningsPop.h"
 
 
 // ------------------------------------------------------------------------------------------------

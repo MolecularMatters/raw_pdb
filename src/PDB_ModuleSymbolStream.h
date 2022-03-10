@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Foundation/PDB_Macros.h"
 #include "Foundation/PDB_BitUtil.h"
 #include "PDB_DBITypes.h"
 #include "PDB_Util.h"

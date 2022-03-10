@@ -6,6 +6,9 @@
 #include "PDB_Types.h"
 #include "PDB_Util.h"
 #include "PDB_DirectMSFStream.h"
+#include "Foundation/PDB_PointerUtil.h"
+#include "Foundation/PDB_Memory.h"
+#include "Foundation/PDB_Assert.h"
 
 
 // parse the stream directory

@@ -48,7 +48,6 @@
     <ClInclude Include="..\src\Foundation\PDB_PointerUtil.h" />
     <ClInclude Include="..\src\Foundation\PDB_Warnings.h" />
     <ClInclude Include="..\src\PDB.h" />
-    <ClInclude Include="..\src\PDB_ClientInclude.h" />
     <ClInclude Include="..\src\PDB_CoalescedMSFStream.h" />
     <ClInclude Include="..\src\PDB_DBIStream.h" />
     <ClInclude Include="..\src\PDB_DBITypes.h" />

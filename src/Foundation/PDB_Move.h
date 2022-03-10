@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include "PDB_DisableWarningsPush.h"
+#include <type_traits>
+#include "PDB_DisableWarningsPop.h"
+
 
 // See Jonathan Müller's blog for replacing std::move and std::forward:
 // https://foonathan.net/2021/09/move-forward/
