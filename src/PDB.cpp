@@ -14,23 +14,11 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::ValidateFile(const void* data) PDB_NO_EXCEPT
 {
 	// validate the super block
 	const SuperBlock* superBlock = Pointer::Offset<const SuperBlock*>(data, 0u);
-	const uint32_t directoryBlockCount = ConvertSizeToBlockCount(superBlock->directorySize, superBlock->blockSize);
 	{
 		// validate header magic
 		if (std::memcmp(superBlock->fileMagic, SuperBlock::MAGIC, sizeof(SuperBlock::MAGIC) != 0))
 		{
 			return ErrorCode::InvalidSuperBlock;
-		}
-
-		// validate directory
-		{
-			// the directory is a block which consists of a list of block indices (uint32_t).
-			// we cannot deal with directories being larger than a single block.
-			const uint32_t blockIndicesPerBlock = superBlock->blockSize / sizeof(uint32_t);
-			if (directoryBlockCount > blockIndicesPerBlock)
-			{
-				return ErrorCode::UnhandledDirectorySize;
-			}
 		}
 
 		// validate free block map.

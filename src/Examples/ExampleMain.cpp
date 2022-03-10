@@ -18,27 +18,23 @@ namespace
 				return false;
 
 			case PDB::ErrorCode::InvalidSuperBlock:
-				PDB_LOG_ERROR("Invalid Superblock");
+				PDB_LOG_ERROR("Invalid Superblock\n");
 				return true;
 
 			case PDB::ErrorCode::InvalidFreeBlockMap:
-				PDB_LOG_ERROR("Invalid free block map");
-				return true;
-
-			case PDB::ErrorCode::UnhandledDirectorySize:
-				PDB_LOG_ERROR("Directory is too large");
+				PDB_LOG_ERROR("Invalid free block map\n");
 				return true;
 
 			case PDB::ErrorCode::InvalidSignature:
-				PDB_LOG_ERROR("Invalid stream signature");
+				PDB_LOG_ERROR("Invalid stream signature\n");
 				return true;
 
 			case PDB::ErrorCode::InvalidStreamIndex:
-				PDB_LOG_ERROR("Invalid stream index");
+				PDB_LOG_ERROR("Invalid stream index\n");
 				return true;
 
 			case PDB::ErrorCode::UnknownVersion:
-				PDB_LOG_ERROR("Unknown version");
+				PDB_LOG_ERROR("Unknown version\n");
 				return true;
 		}
 

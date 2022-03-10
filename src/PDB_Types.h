@@ -53,7 +53,7 @@ namespace PDB
 		uint32_t blockCount;					// number of blocks in the file
 		uint32_t directorySize;					// size of the stream directory in bytes
 		uint32_t unknown;
-		uint32_t directoryIndicesBlockIndex;	// index of the block that contains an array of indices of directory blocks
+		uint32_t directoryIndicesBlockIndex;	// index of the first block that contains an array of indices of directory blocks, where the array itself can span several blocks
 	};
 
 	// https://llvm.org/docs/PDB/PdbStream.html#stream-header

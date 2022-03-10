@@ -13,7 +13,6 @@ namespace PDB
 		// main PDB validation
 		InvalidSuperBlock,
 		InvalidFreeBlockMap,
-		UnhandledDirectorySize,
 
 		// stream validation
 		InvalidSignature,
