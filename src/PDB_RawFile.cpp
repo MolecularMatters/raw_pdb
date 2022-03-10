@@ -11,31 +11,6 @@
 #include "Foundation/PDB_Assert.h"
 
 
-// parse the stream directory
-// https://llvm.org/docs/PDB/MsfFile.html#the-stream-directory
-namespace
-{
-	// ------------------------------------------------------------------------------------------------
-	// ------------------------------------------------------------------------------------------------
-	PDB_NO_DISCARD static uint32_t GetDirectoryBlockCount(const PDB::SuperBlock* superBlock) PDB_NO_EXCEPT
-	{
-		const uint32_t directoryBlockCount = PDB::ConvertSizeToBlockCount(superBlock->directorySize, superBlock->blockSize);
-
-		return directoryBlockCount;
-	}
-
-	// ------------------------------------------------------------------------------------------------
-	// ------------------------------------------------------------------------------------------------
-	PDB_NO_DISCARD static const uint32_t* GetDirectoryBlockIndices(const void* data, const PDB::SuperBlock* superBlock) PDB_NO_EXCEPT
-	{
-		const size_t directoryIndicesFileOffset = PDB::ConvertBlockIndexToFileOffset(superBlock->directoryIndicesBlockIndex, superBlock->blockSize);
-		const uint32_t* directoryBlockIndices = PDB::Pointer::Offset<const uint32_t*>(data, directoryIndicesFileOffset);
-
-		return directoryBlockIndices;
-	}
-}
-
-
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 PDB::RawFile::RawFile(RawFile&& other) PDB_NO_EXCEPT
@@ -85,11 +60,23 @@ PDB::RawFile& PDB::RawFile::operator=(RawFile&& other) PDB_NO_EXCEPT
 PDB::RawFile::RawFile(const void* data) PDB_NO_EXCEPT
 	: m_data(data)
 	, m_superBlock(Pointer::Offset<const SuperBlock*>(data, 0u))
-	, m_directoryStream(data, m_superBlock->blockSize, GetDirectoryBlockIndices(data, m_superBlock), GetDirectoryBlockCount(m_superBlock) * m_superBlock->blockSize)
+	, m_directoryStream()
 	, m_streamCount(0u)
 	, m_streamSizes(nullptr)
 	, m_streamBlocks(nullptr)
 {
+	// the SuperBlock stores an array of indices of blocks that make up the indices of directory blocks, which need to be stitched together to form the directory.
+	// the blocks holding the indices of directory blocks are not necessarily contiguous, so they need to be coalesced first.
+	const uint32_t directoryBlockCount = PDB::ConvertSizeToBlockCount(m_superBlock->directorySize, m_superBlock->blockSize);
+
+	// the directory is made up of directoryBlockCount blocks, so we need that many indices to be read from the blocks that make up the indices
+	CoalescedMSFStream directoryIndicesStream(data, m_superBlock->blockSize, m_superBlock->directoryBlockIndices, directoryBlockCount * sizeof(uint32_t));
+
+	// these are the indices of blocks making up the directory stream, now guaranteed to be contiguous
+	const uint32_t* directoryIndices = directoryIndicesStream.GetDataAtOffset<uint32_t>(0u);
+
+	m_directoryStream = CoalescedMSFStream(data, m_superBlock->blockSize, directoryIndices, m_superBlock->directorySize);
+
 	// https://llvm.org/docs/PDB/MsfFile.html#the-stream-directory
 	// parse the directory from its contiguous version. the directory matches the following struct:
 	//	struct StreamDirectory
