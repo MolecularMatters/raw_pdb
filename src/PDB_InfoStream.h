@@ -22,6 +22,12 @@ namespace PDB
 
 		PDB_DEFAULT_MOVE(InfoStream);
 
+		// Returns the header of the stream.
+		PDB_NO_DISCARD inline const Header* GetHeader(void) const PDB_NO_EXCEPT
+		{
+			return m_header;
+		}
+
 	private:
 		CoalescedMSFStream m_stream;
 		const Header* m_header;
