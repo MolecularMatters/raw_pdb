@@ -137,7 +137,7 @@ PDB::ModuleInfoStream::ModuleInfoStream(const DirectMSFStream& directStream, uin
 		streamOffset += objectNameLength + 1u;
 
 		// the stream is aligned to 4 bytes
-		streamOffset = BitUtil::RoundUpToMultiple(streamOffset, 4ull);
+		streamOffset = BitUtil::RoundUpToMultiple<size_t>(streamOffset, 4ul);
 
 		m_modules[m_moduleCount] = Module(moduleInfo, name, nameLength, objectName, objectNameLength);
 		++m_moduleCount;

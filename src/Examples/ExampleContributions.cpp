@@ -85,7 +85,7 @@ void ExampleContributions(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& 
 	{
 		printf("20 largest contributions:\n");
 
-		const size_t countToShow = std::min(20ull, contributions.size());
+		const size_t countToShow = std::min<size_t>(20ul, contributions.size());
 		for (size_t i = 0u; i < countToShow; ++i)
 		{
 			const Contribution& contribution = contributions[i];

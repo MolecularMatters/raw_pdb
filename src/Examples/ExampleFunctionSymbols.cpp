@@ -6,7 +6,6 @@
 #include "PDB_RawFile.h"
 #include "PDB_DBIStream.h"
 
-
 namespace
 {
 	// in this example, we are only interested in function symbols: function name, RVA, and size.

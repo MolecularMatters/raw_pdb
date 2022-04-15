@@ -6,7 +6,6 @@
 #include "PDB_Assert.h"
 #include "PDB_DisableWarningsPush.h"
 #include <type_traits>
-#include <intrin.h>
 #include "PDB_DisableWarningsPop.h"
 
 
@@ -46,8 +45,15 @@ namespace PDB
 		{
 			PDB_ASSERT(value != 0u, "Invalid value.");
 
-			unsigned long result = 0u;
+#ifdef _WIN32
+			unsigned long result = 0ul;
+
 			_BitScanForward(&result, value);
+#else
+			unsigned int result = 0u;
+
+			_BitScanForward(&result, value);
+#endif
 
 			return result;
 		}
