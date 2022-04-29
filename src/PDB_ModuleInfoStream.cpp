@@ -65,7 +65,7 @@ PDB_NO_DISCARD bool PDB::ModuleInfoStream::Module::HasSymbolStream(void) const P
 // ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ModuleSymbolStream PDB::ModuleInfoStream::Module::CreateSymbolStream(const RawFile& file) const PDB_NO_EXCEPT
 {
-	PDB_ASSERT(HasSymbolStream(), "Module symbol stream index is invalid.");
+	PDB_ASSERT(HasSymbolStream());
 
 	return ModuleSymbolStream(file, m_info->moduleSymbolStreamIndex, m_info->symbolSize);
 }
@@ -137,7 +137,7 @@ PDB::ModuleInfoStream::ModuleInfoStream(const DirectMSFStream& directStream, uin
 		streamOffset += objectNameLength + 1u;
 
 		// the stream is aligned to 4 bytes
-		streamOffset = BitUtil::RoundUpToMultiple(streamOffset, 4ull);
+		streamOffset = BitUtil::RoundUpToMultiple<size_t>(streamOffset, 4u);
 
 		m_modules[m_moduleCount] = Module(moduleInfo, name, nameLength, objectName, objectNameLength);
 		++m_moduleCount;

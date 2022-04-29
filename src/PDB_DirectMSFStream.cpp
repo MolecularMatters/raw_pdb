@@ -32,7 +32,7 @@ PDB::DirectMSFStream::DirectMSFStream(const void* data, uint32_t blockSize, cons
 	, m_size(streamSize)
 	, m_blockSizeLog2(BitUtil::FindFirstSetBit(blockSize))
 {
-	PDB_ASSERT(BitUtil::IsPowerOfTwo(blockSize), "MSF block size must be a power of two.");
+	PDB_ASSERT(BitUtil::IsPowerOfTwo(blockSize));
 }
 
 
@@ -40,7 +40,7 @@ PDB::DirectMSFStream::DirectMSFStream(const void* data, uint32_t blockSize, cons
 // ------------------------------------------------------------------------------------------------
 void PDB::DirectMSFStream::ReadAtOffset(void* destination, size_t size, size_t offset) const PDB_NO_EXCEPT
 {
-	PDB_ASSERT(offset + size <= m_size, "Not enough data left to read.");
+	PDB_ASSERT(offset + size <= m_size);
 
 	// work out which block and offset within the block the read offset corresponds to
 	size_t blockIndex = offset >> m_blockSizeLog2;

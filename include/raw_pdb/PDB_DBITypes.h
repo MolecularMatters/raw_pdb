@@ -5,13 +5,17 @@
 
 #include "Foundation/PDB_Macros.h"
 #include "Foundation/PDB_BitOperators.h"
-#include "Foundation/PDB_DisableWarningsPush.h"
 #include <cstdint>
-#include "Foundation/PDB_DisableWarningsPop.h"
-
 
 namespace PDB
 {
+    PDB_PUSH_WARNING_MSVC
+    PDB_PUSH_WARNING_CLANG
+    PDB_DISABLE_WARNING_MSVC(4200)
+    PDB_DISABLE_WARNING_CLANG("-Wc99-extensions")
+    PDB_DISABLE_WARNING_CLANG("-Wmicrosoft-flexible-array")
+	PDB_DISABLE_WARNING_CLANG("-Wflexible-array-extensions")
+
 	namespace DBI
 	{
 		// https://llvm.org/docs/PDB/DbiStream.html#stream-header
@@ -310,7 +314,7 @@ namespace PDB
 						PublicSymbolFlags flags;
 						uint32_t offset;
 						uint16_t section;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} S_PUB32;
 
 					struct
@@ -318,13 +322,13 @@ namespace PDB
 						uint32_t typeIndex;
 						uint32_t offset;
 						uint16_t section;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} S_GDATA32, S_GTHREAD32, S_LDATA32, S_LTHREAD32;
 
 					struct
 					{
 						uint32_t signature;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} S_OBJNAME;
 
 					struct
@@ -344,7 +348,7 @@ namespace PDB
 						uint32_t rva;
 						uint32_t length;
 						uint32_t characteristics;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} S_SECTION;
 
 					struct
@@ -353,7 +357,7 @@ namespace PDB
 						uint32_t characteristics;
 						uint32_t offset;
 						uint16_t section;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} S_COFFGROUP;
 
 					struct
@@ -365,7 +369,7 @@ namespace PDB
 						uint16_t section;
 						uint16_t length;
 						ThunkOrdinal thunk;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} S_THUNK32;
 
 					struct
@@ -380,7 +384,7 @@ namespace PDB
 						uint32_t offset;
 						uint16_t section;
 						ProcedureFlags flags;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} S_LPROC32, S_GPROC32, S_LPROC32_ID, S_GPROC32_ID, S_LPROC32_DPC, S_LPROC32_DPC_ID;
 
 					struct
@@ -390,7 +394,7 @@ namespace PDB
 						uint32_t codeSize;
 						uint32_t offset;
 						uint16_t section;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} S_BLOCK32;
 
 					struct
@@ -398,7 +402,7 @@ namespace PDB
 						uint32_t offset;
 						uint16_t section;
 						ProcedureFlags flags;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} S_LABEL32;
 
 					struct
@@ -418,18 +422,21 @@ namespace PDB
 						uint16_t versionBackendMinor;
 						uint16_t versionBackendBuild;
 						uint16_t versionBackendQFE;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, version);
+						char version[];
 					} S_COMPILE3;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L3372
 					struct
 					{
 						uint8_t flags;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, strings);
+						char strings[];
 					} S_ENVBLOCK;
 #pragma pack(pop)
 				} data;
 			};
 		}
-	}
+    }
+
+    PDB_POP_WARNING_MSVC
+    PDB_POP_WARNING_CLANG
 }

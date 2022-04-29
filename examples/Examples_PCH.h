@@ -9,6 +9,7 @@
 	// we compile without exceptions
 #	define _ALLOW_RTCc_IN_STL
 
+#ifdef _MSC_VER
 	// triggered by Windows.h
 #	pragma warning (disable : 4668)
 
@@ -18,13 +19,11 @@
 #	pragma warning (disable : 5026)		// move constructor was implicitly defined as deleted
 #	pragma warning (disable : 5027)		// move assignment operator was implicitly defined as deleted
 #	pragma warning (disable : 4774)		// format string expected in argument 1 is not a string literal
+#endif
 
-#	include <Windows.h>
 #	include <vector>
 #	include <unordered_set>
 #	include <chrono>
 #	include <string>
 #	include <algorithm>
 #	include <raw_pdb/Foundation/PDB_DisableWarningsPop.h>
-#	undef min
-#	undef max

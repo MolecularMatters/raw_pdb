@@ -24,7 +24,7 @@ namespace PDB
 		PDB_DEFAULT_MOVE_CONSTRUCTOR(ArrayView);
 
 		// Provides read-only access to the underlying array.
-		PDB_NO_DISCARD PDB_NO_ALIAS inline constexpr const T* Decay(void) const PDB_NO_EXCEPT
+		PDB_NO_DISCARD inline constexpr const T* Decay(void) const PDB_NO_EXCEPT
 		{
 			return m_data;
 		}
@@ -38,7 +38,7 @@ namespace PDB
 		// Returns the i-th element.
 		PDB_NO_DISCARD inline const T& operator[](size_t i) const PDB_NO_EXCEPT
 		{
-			PDB_ASSERT(i < GetLength(), "Index %zu out of bounds [0, %zu).", i, GetLength());
+			PDB_ASSERT(i < GetLength());
 			return m_data[i];
 		}
 
@@ -47,12 +47,12 @@ namespace PDB
 		// Range-based for-loop support
 		// ------------------------------------------------------------------------------------------------
 
-		PDB_NO_DISCARD PDB_NO_ALIAS inline const T* begin(void) const PDB_NO_EXCEPT
+		PDB_NO_DISCARD inline const T* begin(void) const PDB_NO_EXCEPT
 		{
 			return m_data;
 		}
 
-		PDB_NO_DISCARD PDB_NO_ALIAS inline const T* end(void) const PDB_NO_EXCEPT
+		PDB_NO_DISCARD inline const T* end(void) const PDB_NO_EXCEPT
 		{
 			return m_data + m_length;
 		}

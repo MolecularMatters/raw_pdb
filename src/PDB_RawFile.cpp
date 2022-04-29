@@ -128,7 +128,7 @@ PDB_NO_DISCARD T PDB::RawFile::CreateMSFStream(uint32_t streamIndex) const PDB_N
 template <typename T>
 PDB_NO_DISCARD T PDB::RawFile::CreateMSFStream(uint32_t streamIndex, uint32_t streamSize) const PDB_NO_EXCEPT
 {
-	PDB_ASSERT(streamSize <= m_streamSizes[streamIndex], "Invalid stream size.");
+	PDB_ASSERT(streamSize <= m_streamSizes[streamIndex]);
 
 	return T(m_data, m_superBlock->blockSize, m_streamBlocks[streamIndex], streamSize);
 }

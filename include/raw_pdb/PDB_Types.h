@@ -8,19 +8,25 @@
 #include <cstdint>
 #include "Foundation/PDB_DisableWarningsPop.h"
 
-
 namespace PDB
 {
+    PDB_PUSH_WARNING_MSVC										
+    PDB_PUSH_WARNING_CLANG										
+    PDB_DISABLE_WARNING_MSVC(4200)								
+    PDB_DISABLE_WARNING_CLANG("-Wc99-extensions")				
+    PDB_DISABLE_WARNING_CLANG("-Wmicrosoft-flexible-array")		
+	PDB_DISABLE_WARNING_CLANG("-Wflexible-array-extensions")
+
 	// emulating std::byte from C++17 to make the intention clear that we're dealing with untyped data in certain cases, without actually requiring C++17
 	enum class Byte : unsigned char {};
 
 	// this matches the definition in guiddef.h, but we don't want to pull that in
 	struct GUID
 	{
-		unsigned long  Data1;
-		unsigned short Data2;
-		unsigned short Data3;
-		unsigned char  Data4[8];
+		uint32_t Data1;
+		uint16_t Data2;
+		uint16_t Data3;
+		uint8_t  Data4[8];
 	};
 
 	static_assert(sizeof(GUID) == 16u, "Size mismatch.");
@@ -31,17 +37,17 @@ namespace PDB
 		unsigned char Name[8];
 		union
 		{
-			unsigned long PhysicalAddress;
-			unsigned long VirtualSize;
+			uint32_t PhysicalAddress;
+			uint32_t VirtualSize;
 		} Misc;
-		unsigned long VirtualAddress;
-		unsigned long SizeOfRawData;
-		unsigned long PointerToRawData;
-		unsigned long PointerToRelocations;
-		unsigned long PointerToLinenumbers;
-		unsigned short NumberOfRelocations;
-		unsigned short NumberOfLinenumbers;
-		unsigned long Characteristics;
+		uint32_t VirtualAddress;
+		uint32_t SizeOfRawData;
+		uint32_t PointerToRawData;
+		uint32_t PointerToRelocations;
+		uint32_t PointerToLinenumbers;
+		uint16_t NumberOfRelocations;
+		uint16_t NumberOfLinenumbers;
+		uint32_t Characteristics;
 	};
 
 	static_assert(sizeof(IMAGE_SECTION_HEADER) == 40u, "Size mismatch.");
@@ -58,7 +64,7 @@ namespace PDB
 		uint32_t blockCount;											// number of blocks in the file
 		uint32_t directorySize;											// size of the stream directory in bytes
 		uint32_t unknown;
-		PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, directoryBlockIndices);		// indices of the blocks that make up the directory indices
+		uint32_t directoryBlockIndices[];								// indices of the blocks that make up the directory indices
 	};
 
 	// https://llvm.org/docs/PDB/PdbStream.html#stream-header
@@ -88,7 +94,7 @@ namespace PDB
 	struct NamedStreamMap
 	{
 		uint32_t length;
-		PDB_FLEXIBLE_ARRAY_MEMBER(char, stringTable);
+		char stringTable[];
 
 		struct HashTableEntry
 		{
@@ -109,7 +115,7 @@ namespace PDB
 		struct BitVector
 		{
 			uint32_t wordCount;
-			PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, words);
+			uint32_t words[];
 		};
 	};
 
@@ -159,4 +165,7 @@ namespace PDB
 		uint32_t offset;		// offset into the symbol record stream
 		uint32_t cref;
 	};
+
+    PDB_POP_WARNING_MSVC
+    PDB_POP_WARNING_CLANG
 }

@@ -11,6 +11,13 @@
 
 namespace PDB
 {
+    PDB_PUSH_WARNING_MSVC
+    PDB_PUSH_WARNING_CLANG
+    PDB_DISABLE_WARNING_MSVC(4200)
+    PDB_DISABLE_WARNING_CLANG("-Wc99-extensions")
+    PDB_DISABLE_WARNING_CLANG("-Wmicrosoft-flexible-array")
+	PDB_DISABLE_WARNING_CLANG("-Wflexible-array-extensions")
+
 	namespace IPI
 	{
 		// https://llvm.org/docs/PDB/TpiStream.html#tpi-header
@@ -90,14 +97,14 @@ namespace PDB
 					struct
 					{
 						uint32_t id;	// ID to list of sub-string IDs
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+						char name[];
 					} LF_STRING_ID;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2043
 					struct
 					{
 						uint32_t count;
-						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, typeIndices);
+						uint32_t typeIndices[];
 					} LF_SUBSTR_LIST;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1726
@@ -105,11 +112,14 @@ namespace PDB
 					struct
 					{
 						uint16_t count;
-						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, typeIndices);
+						uint32_t typeIndices[];
 					} LF_BUILDINFO;
 #pragma pack(pop)
 				} data;
 			};
 		}
 	}
+
+    PDB_POP_WARNING_MSVC
+    PDB_POP_WARNING_CLANG
 }

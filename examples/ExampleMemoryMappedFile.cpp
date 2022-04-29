@@ -4,7 +4,14 @@
 #include "Examples_PCH.h"
 #include "ExampleMemoryMappedFile.h"
 
+#ifdef _MSC_VER
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#endif
 
+#ifdef _WIN32
 MemoryMappedFile::Handle MemoryMappedFile::Open(const wchar_t* path)
 {
 	HANDLE file = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, nullptr);
@@ -44,3 +51,13 @@ void MemoryMappedFile::Close(Handle& handle)
 	handle.fileMapping = nullptr;
 	handle.baseAddress = nullptr;
 }
+#else
+MemoryMappedFile::Handle MemoryMappedFile::Open(const wchar_t* path)
+{
+	return {};
+}
+
+void MemoryMappedFile::Close(Handle& handle)
+{
+}
+#endif
