@@ -104,6 +104,10 @@ endif()
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${raw_pdb_SOURCES})
 
 add_library(raw_pdb::raw_pdb ALIAS raw_pdb)
+target_compile_features(raw_pdb PUBLIC
+	cxx_std_11
+)
+
 target_include_directories(raw_pdb PUBLIC
 	include
 )
@@ -113,13 +117,6 @@ target_include_directories(raw_pdb PRIVATE
 	"include/raw_pdb"
 )
 
-
-set_target_properties(raw_pdb PROPERTIES
-	CXX_STANDARD
-		11
-	CXX_STANDARD_REQUIRED
-		ON
-)
 
 unset(CMKR_TARGET)
 unset(CMKR_SOURCES)
@@ -159,19 +156,16 @@ endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${examples_SOURCES})
 
+target_compile_features(examples PRIVATE
+	cxx_std_11
+)
+
 target_include_directories(examples PRIVATE
 	examples
 )
 
 target_link_libraries(examples PRIVATE
 	raw_pdb::raw_pdb
-)
-
-set_target_properties(examples PROPERTIES
-	CXX_STANDARD
-		11
-	CXX_STANDARD_REQUIRED
-		ON
 )
 
 unset(CMKR_TARGET)

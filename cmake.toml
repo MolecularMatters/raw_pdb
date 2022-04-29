@@ -15,13 +15,11 @@ sources = [
 	"include/raw_pdb/**.cpp",
 	"include/raw_pdb/**.h",
 ]
+compile-features = ["cxx_std_11"]
 include-directories = ["include"]
 private-include-directories = ["src", "include/raw_pdb"]
 link-libraries = [
 ]
-[target.raw_pdb.properties]
-CXX_STANDARD = "11"
-CXX_STANDARD_REQUIRED = true
 
 [target.examples]
 type = "executable"
@@ -29,10 +27,8 @@ sources = [
 	"examples/**.cpp",
 	"examples/**.h",
 ]
+compile-features = ["cxx_std_11"]
 private-include-directories = ["examples"]
 link-libraries = [
 	"raw_pdb::raw_pdb"
 ]
-[target.examples.properties]
-CXX_STANDARD = "11"
-CXX_STANDARD_REQUIRED = true
