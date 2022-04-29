@@ -1,0 +1,38 @@
+# Reference: https://build-cpp.github.io/cmkr/cmake-toml
+[cmake]
+version = "3.15"
+
+[project]
+name = "raw_pdb"
+languages = ["CXX"]
+
+[target.raw_pdb]
+type = "static"
+alias = "raw_pdb::raw_pdb"
+sources = [
+	"src/**.cpp",
+	"src/**.h",
+	"include/raw_pdb/**.cpp",
+	"include/raw_pdb/**.h",
+]
+include-directories = ["include"]
+private-include-directories = ["src", "include/raw_pdb"]
+link-libraries = [
+]
+[target.raw_pdb.properties]
+CXX_STANDARD = "11"
+CXX_STANDARD_REQUIRED = true
+
+[target.examples]
+type = "executable"
+sources = [
+	"examples/**.cpp",
+	"examples/**.h",
+]
+private-include-directories = ["examples"]
+link-libraries = [
+	"raw_pdb::raw_pdb"
+]
+[target.examples.properties]
+CXX_STANDARD = "11"
+CXX_STANDARD_REQUIRED = true
