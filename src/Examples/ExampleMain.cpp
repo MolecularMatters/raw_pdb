@@ -77,21 +77,22 @@ extern void ExampleContributions(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleFunctionSymbols(const PDB::RawFile&, const PDB::DBIStream&);
 
 
-int main(void)
+int main(int argc, char** argv)
 {
-#ifdef _DEBUG
-	const wchar_t* const pdbPath = LR"(..\bin\x64\Debug\Examples.pdb)";
-#else
-	const wchar_t* const pdbPath = LR"(..\bin\x64\Release\Examples.pdb)";
-#endif
+	if (argc != 2)
+	{
+		printf("Incorrect usage\n");
 
-	printf("Opening PDB file %ls\n", pdbPath);
+		return 1;
+	}
+
+	printf("Opening PDB file %s\n", argv[1]);
 
 	// try to open the PDB file and check whether all the data we need is available
-	MemoryMappedFile::Handle pdbFile = MemoryMappedFile::Open(pdbPath);
+	MemoryMappedFile::Handle pdbFile = MemoryMappedFile::Open(argv[1]);
 	if (!pdbFile.baseAddress)
 	{
-		printf("Cannot memory-map file %ls\n", pdbPath);
+		printf("Cannot memory-map file %s\n", argv[1]);
 
 		return 1;
 	}

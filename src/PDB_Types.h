@@ -17,10 +17,10 @@ namespace PDB
 	// this matches the definition in guiddef.h, but we don't want to pull that in
 	struct GUID
 	{
-		unsigned long  Data1;
-		unsigned short Data2;
-		unsigned short Data3;
-		unsigned char  Data4[8];
+		uint32_t Data1;
+		uint16_t Data2;
+		uint16_t Data3;
+		uint8_t  Data4[8];
 	};
 
 	static_assert(sizeof(GUID) == 16u, "Size mismatch.");
@@ -28,20 +28,20 @@ namespace PDB
 	// this matches the definition in winnt.h, but we don't want to pull that in
 	struct IMAGE_SECTION_HEADER
 	{
-		unsigned char Name[8];
+		uint8_t Name[8];
 		union
 		{
-			unsigned long PhysicalAddress;
-			unsigned long VirtualSize;
+			uint32_t PhysicalAddress;
+			uint32_t VirtualSize;
 		} Misc;
-		unsigned long VirtualAddress;
-		unsigned long SizeOfRawData;
-		unsigned long PointerToRawData;
-		unsigned long PointerToRelocations;
-		unsigned long PointerToLinenumbers;
-		unsigned short NumberOfRelocations;
-		unsigned short NumberOfLinenumbers;
-		unsigned long Characteristics;
+		uint32_t VirtualAddress;
+		uint32_t SizeOfRawData;
+		uint32_t PointerToRawData;
+		uint32_t PointerToRelocations;
+		uint32_t PointerToLinenumbers;
+		uint16_t NumberOfRelocations;
+		uint16_t NumberOfLinenumbers;
+		uint32_t Characteristics;
 	};
 
 	static_assert(sizeof(IMAGE_SECTION_HEADER) == 40u, "Size mismatch.");

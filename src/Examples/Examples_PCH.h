@@ -19,7 +19,9 @@
 #	pragma warning (disable : 5027)		// move assignment operator was implicitly defined as deleted
 #	pragma warning (disable : 4774)		// format string expected in argument 1 is not a string literal
 
+#ifdef _WIN32
 #	include <Windows.h>
+#endif
 #	include <vector>
 #	include <unordered_set>
 #	include <chrono>
