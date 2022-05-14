@@ -1,6 +1,4 @@
-project(Examples)
-
-set(SOURCES
+add_executable(Examples
 	ExampleContributions.cpp
 	ExampleFunctionSymbols.cpp
 	ExampleMain.cpp
@@ -13,20 +11,24 @@ set(SOURCES
 	ExampleTimedScope.h
 )
 
-source_group(src FILES
-    ${SOURCES}
-)
-
-add_executable(Examples
-    ${SOURCES}
-)
-
 target_link_libraries(Examples
-  PUBLIC
-    raw_pdb
+PRIVATE
+	raw_pdb
 )
 
 target_precompile_headers(Examples
-  PUBLIC
-    Examples_PCH.h
+PRIVATE
+	Examples_PCH.h
 )
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	target_compile_options(Examples
+	PRIVATE
+		-fdeclspec -fms-extensions
+	)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	target_compile_options(Examples
+	PRIVATE
+		/MP # Build with Multiple Processes.
+	)
+endif()

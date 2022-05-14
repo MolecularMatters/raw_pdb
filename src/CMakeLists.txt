@@ -1,21 +1,4 @@
-project(raw_pdb)
-
-set(SOURCES
-	Foundation/PDB_ArrayView.h
-	Foundation/PDB_Assert.h
-	Foundation/PDB_BitOperators.h
-	Foundation/PDB_BitUtil.h
-	Foundation/PDB_DisableWarningsPop.h
-	Foundation/PDB_DisableWarningsPush.h
-	Foundation/PDB_Forward.h
-	Foundation/PDB_Log.h
-	Foundation/PDB_Macros.h
-	Foundation/PDB_Memory.h
-	Foundation/PDB_Move.h
-	Foundation/PDB_Platform.h
-	Foundation/PDB_PointerUtil.h
-	Foundation/PDB_Warnings.h
-	
+add_library(raw_pdb STATIC
 	PDB.cpp
 	PDB.h
 	PDB_CoalescedMSFStream.cpp
@@ -53,24 +36,43 @@ set(SOURCES
 	PDB_Types.cpp
 	PDB_Types.h
 	PDB_Util.h
-)
 
-source_group(src FILES
-    ${SOURCES}
-)
-
-add_library(raw_pdb
-    ${SOURCES}
+	Foundation/PDB_ArrayView.h
+	Foundation/PDB_Assert.h
+	Foundation/PDB_BitOperators.h
+	Foundation/PDB_BitUtil.h
+	Foundation/PDB_DisableWarningsPop.h
+	Foundation/PDB_DisableWarningsPush.h
+	Foundation/PDB_Forward.h
+	Foundation/PDB_Log.h
+	Foundation/PDB_Macros.h
+	Foundation/PDB_Memory.h
+	Foundation/PDB_Move.h
+	Foundation/PDB_Platform.h
+	Foundation/PDB_PointerUtil.h
+	Foundation/PDB_Warnings.h
 )
 
 target_include_directories(raw_pdb
-  PUBLIC
-    .
+PUBLIC
+	.
 )
 
 target_precompile_headers(raw_pdb
-  PUBLIC
-    PDB_PCH.h
+PRIVATE
+	PDB_PCH.h
 )
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	target_compile_options(raw_pdb
+	PRIVATE
+		-fdeclspec -fms-extensions
+	)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	target_compile_options(raw_pdb
+	PRIVATE
+		/MP # Build with Multiple Processes.
+	)
+endif()
 
 add_subdirectory(Examples)

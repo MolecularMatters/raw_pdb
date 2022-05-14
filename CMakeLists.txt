@@ -1,14 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
-
-project(raw_pdb)
-
-set(CMAKE_CXX_STANDARD 11)
-
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	add_compile_options(-fdeclspec
-						-fms-extensions)
-endif()
+cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+project(raw_pdb LANGUAGES CXX)
 
 add_subdirectory(src)
