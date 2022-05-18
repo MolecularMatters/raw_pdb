@@ -20,7 +20,7 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::ValidateFile(const void* data) PDB_NO_EXCEPT
 	const SuperBlock* superBlock = Pointer::Offset<const SuperBlock*>(data, 0u);
 	{
 		// validate header magic
-		if (std::memcmp(superBlock->fileMagic, SuperBlock::MAGIC, sizeof(SuperBlock::MAGIC) != 0))
+		if (std::memcmp(superBlock->fileMagic, SuperBlock::MAGIC, sizeof(SuperBlock::MAGIC)) != 0)
 		{
 			return ErrorCode::InvalidSuperBlock;
 		}
