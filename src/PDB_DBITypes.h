@@ -147,7 +147,9 @@ namespace PDB
 				S_PROC_ID_END =		0x114Fu,
 				S_LPROC32_DPC =		0x1155u,
 				S_LPROC32_DPC_ID =	0x1156u,
-				S_INLINESITE2 =		0x115Du			// extended inline site information
+				S_INLINESITE2 =		0x115Du,		// extended inline site information
+				S_UDT =			0x1108u,		// user-defined type
+				S_UDT_ST =		0x1003u,		// user-defined structured types
 			};
 
 			// https://docs.microsoft.com/en-us/visualstudio/debugger/debug-interface-access/thunk-ordinal
@@ -427,6 +429,12 @@ namespace PDB
 						uint8_t flags;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, strings);
 					} S_ENVBLOCK;
+
+					struct
+					{
+						unsigned long typind;
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					} S_UDT, S_UDT_ST;
 #pragma pack(pop)
 				} data;
 			};
