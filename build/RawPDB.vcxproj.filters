@@ -54,6 +54,9 @@
     <ClCompile Include="..\src\PDB_SourceFileStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\PDB_TPIStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\PDB_Types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -111,6 +114,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\PDB_SourceFileStream.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PDB_TPIStream.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PDB_TPITypes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\PDB_Types.h">

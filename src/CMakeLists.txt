@@ -50,6 +50,9 @@ set(SOURCES
 	PDB_SectionContributionStream.h
 	PDB_SourceFileStream.cpp
 	PDB_SourceFileStream.h
+	PDB_TPIStream.cpp
+	PDB_TPIStream.h
+	PDB_TPITypes.h
 	PDB_Types.cpp
 	PDB_Types.h
 	PDB_Util.h
