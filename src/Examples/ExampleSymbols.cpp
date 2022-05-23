@@ -114,9 +114,13 @@ void ExampleSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStr
 				name = record->data.S_LTHREAD32.name;
 				rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_LTHREAD32.section, record->data.S_LTHREAD32.offset);
 			}
-			else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_UDT || record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_UDT_ST)
+			else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_UDT)
 			{
 				name = record->data.S_UDT.name;
+			}
+			else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_UDT_ST)
+			{
+				name = record->data.S_UDT_ST.name;
 			}
 
 			if (rva == 0u)
