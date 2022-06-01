@@ -7,7 +7,7 @@
 #include "PDB_RawFile.h"
 #include "PDB_InfoStream.h"
 #include "PDB_DBIStream.h"
-
+#include "PDB_TPIStream.h"
 
 namespace
 {
@@ -75,7 +75,7 @@ namespace
 extern void ExampleSymbols(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleContributions(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleFunctionSymbols(const PDB::RawFile&, const PDB::DBIStream&);
-
+extern void ExampleTypes(const PDB::TPIStream&);
 
 int main(int argc, char** argv)
 {
@@ -130,10 +130,19 @@ int main(int argc, char** argv)
 		return 5;
 	}
 
+	const PDB::TPIStream tpiStream = PDB::CreateTPIStream(rawPdbFile);
+	if (PDB::HasValidTPIStream(rawPdbFile) != PDB::ErrorCode::Success)
+	{
+		MemoryMappedFile::Close(pdbFile);
+
+		return 5;
+	}
+
 	// run all examples
 	ExampleContributions(rawPdbFile, dbiStream);
 	ExampleSymbols(rawPdbFile, dbiStream);
 	ExampleFunctionSymbols(rawPdbFile, dbiStream);
+	ExampleTypes(tpiStream);
 
 	MemoryMappedFile::Close(pdbFile);
 
