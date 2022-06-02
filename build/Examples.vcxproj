@@ -23,6 +23,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Examples_PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\src\Examples\ExampleTimedScope.cpp" />
+    <ClCompile Include="..\src\Examples\ExampleTypes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Examples\ExampleMemoryMappedFile.h" />

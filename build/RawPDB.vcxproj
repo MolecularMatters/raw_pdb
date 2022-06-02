@@ -30,6 +30,8 @@
     <ClCompile Include="..\src\PDB_RawFile.cpp" />
     <ClCompile Include="..\src\PDB_SectionContributionStream.cpp" />
     <ClCompile Include="..\src\PDB_SourceFileStream.cpp" />
+    <ClCompile Include="..\src\PDB_TPIStream.cpp" />
+    <ClCompile Include="..\src\PDB_TPITypes.cpp" />
     <ClCompile Include="..\src\PDB_Types.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +67,8 @@
     <ClInclude Include="..\src\PDB_RawFile.h" />
     <ClInclude Include="..\src\PDB_SectionContributionStream.h" />
     <ClInclude Include="..\src\PDB_SourceFileStream.h" />
+    <ClInclude Include="..\src\PDB_TPIStream.h" />
+    <ClInclude Include="..\src\PDB_TPITypes.h" />
     <ClInclude Include="..\src\PDB_Types.h" />
     <ClInclude Include="..\src\PDB_Util.h" />
   </ItemGroup>
