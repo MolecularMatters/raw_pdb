@@ -7,10 +7,13 @@
 
 namespace
 {
-	// the IPI stream always resides at index 2
+	// the TPI stream always resides at index 2
 	static constexpr const uint32_t TPIStreamIndex = 2u;
 }
 
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 PDB::TPIStream::TPIStream(void) PDB_NO_EXCEPT
 	: m_header()
 	, m_stream()
@@ -52,7 +55,8 @@ PDB::TPIStream& PDB::TPIStream::operator=(TPIStream&& other) PDB_NO_EXCEPT
 
 	return *this;
 }
-#include <utility>
+
+
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 PDB::TPIStream::TPIStream(const RawFile& file, const TPI::StreamHeader& header) PDB_NO_EXCEPT
@@ -61,10 +65,10 @@ PDB::TPIStream::TPIStream(const RawFile& file, const TPI::StreamHeader& header) 
 	, m_records(nullptr)
 	, m_recordCount(GetLastTypeIndex() - GetFirstTypeIndex())
 {
-	// types in the IPI stream are accessed by their index from other streams.
-	// however, the index is not stored with types in the IPI stream directly, but has to be built while walking the stream.
+	// types in the TPI stream are accessed by their index from other streams.
+	// however, the index is not stored with types in the TPI stream directly, but has to be built while walking the stream.
 	// similarly, because types are variable-length records, there are no direct offsets to access individual types.
-	// we therefore walk the IPI stream once, and store pointers to the records for trivial O(N) array lookup by index later.
+	// we therefore walk the TPI stream once, and store pointers to the records for trivial O(N) array lookup by index later.
 	m_records = PDB_NEW_ARRAY(const CodeView::TPI::Record*, m_recordCount);
 
 	// ignore the stream's header
@@ -119,5 +123,5 @@ PDB_NO_DISCARD PDB::TPIStream PDB::CreateTPIStream(const RawFile& file) PDB_NO_E
 	DirectMSFStream stream = file.CreateMSFStream<DirectMSFStream>(TPIStreamIndex);
 
 	const TPI::StreamHeader header = stream.ReadAtOffset<TPI::StreamHeader>(0u);
-	return TPIStream{ file, header };
+	return TPIStream { file, header };
 }

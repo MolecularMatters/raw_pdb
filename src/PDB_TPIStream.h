@@ -1,17 +1,14 @@
+
 #pragma once
 
 #include "Foundation/PDB_Macros.h"
+#include "Foundation/PDB_ArrayView.h"
 #include "PDB_ErrorCodes.h"
 #include "PDB_TPITypes.h"
 #include "PDB_CoalescedMSFStream.h"
-#include "PDB_DirectMSFStream.h"
-#include "PDB_ImageSectionStream.h"
-#include "PDB_PublicSymbolStream.h"
-#include "PDB_GlobalSymbolStream.h"
-#include "PDB_SourceFileStream.h"
-#include "PDB_SectionContributionStream.h"
-#include "PDB_ModuleInfoStream.h"
 
+// PDB TPI stream
+// https://llvm.org/docs/PDB/TpiStream.html
 namespace PDB
 {
 	class RawFile;
@@ -51,14 +48,13 @@ namespace PDB
 		CoalescedMSFStream m_stream;
 		const CodeView::TPI::Record** m_records;
 		size_t m_recordCount;
-		size_t m_hr_recordCount;
 
 		PDB_DISABLE_COPY(TPIStream);
 	};
 
-	// Returns whether the given raw file provides a valid DBI stream.
+	// Returns whether the given raw file provides a valid TPI stream.
 	PDB_NO_DISCARD ErrorCode HasValidTPIStream(const RawFile& file) PDB_NO_EXCEPT;
 
-	// Creates the DBI stream from a raw file.
+	// Creates the TPI stream from a raw file.
 	PDB_NO_DISCARD TPIStream CreateTPIStream(const RawFile& file) PDB_NO_EXCEPT;
 }
