@@ -136,110 +136,104 @@ namespace PDB
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L328
 			enum class TypeIndexKind : uint16_t
 			{
-				NOTYPE = 0x0000u,        // uncharacterized type (no type)
-				ABS = 0x0001u,			// absolute symbol
-				SEGMENT = 0x0002u,		// segment type
-				_VOID = 0x0003u,         // void
-				HRESULT = 0x0008u,       // OLE/COM HRESULT
-				_32PHRESULT = 0x0408u,	// OLE/COM HRESULT __ptr32 *
-				_64PHRESULT = 0x0608u,	// OLE/COM HRESULT __ptr64 *
+				NOTYPE = 0x0000u,			// uncharacterized type (no type)
+				ABS = 0x0001u,				// absolute symbol
+				SEGMENT = 0x0002u,			// segment type
+				_VOID = 0x0003u,			// void
+				HRESULT = 0x0008u,			// OLE/COM HRESULT
+				_32PHRESULT = 0x0408u,		// OLE/COM HRESULT __ptr32 *
+				_64PHRESULT = 0x0608u,		// OLE/COM HRESULT __ptr64 *
 
 				PVOID = 0x0103u,			// near pointer to void
-				PFVOID = 0x0203u,	// far pointer to void
-				PHVOID = 0x0303u,	// huge pointer to void
-				_32PVOID = 0x0403u,	// 32 bit pointer to void
-				_32PFVOID = 0x0503u,	// 16:32 pointer to void
-				_64PVOID = 0x0603u,	// 64 bit pointer to void
-				CURRENCY = 0x0004u,		// BASIC 8 byte currency value
+				PFVOID = 0x0203u,			// far pointer to void
+				PHVOID = 0x0303u,			// huge pointer to void
+				_32PVOID = 0x0403u,			// 32 bit pointer to void
+				_32PFVOID = 0x0503u,		// 16:32 pointer to void
+				_64PVOID = 0x0603u,			// 64 bit pointer to void
+				CURRENCY = 0x0004u,			// BASIC 8 byte currency value
 				NBASICSTR = 0x0005u,		// Near BASIC string
 				FBASICSTR = 0x0006u,		// Far BASIC string
-				NOTTRANS = 0x0007u,		// type not translated by cvpack
-				BIT = 0x0060u,			// bit
-				PASCHAR = 0x0061u,		// Pascal CHAR
-				BOOL32FF = 0x0062u,		// 32-bit BOOL where true is 0xffffffff
+				NOTTRANS = 0x0007u,			// type not translated by cvpack
+				BIT = 0x0060u,				// bit
+				PASCHAR = 0x0061u,			// Pascal CHAR
+				BOOL32FF = 0x0062u,			// 32-bit BOOL where true is 0xffffffff
 
-				CHAR = 0x0010u,			// 8 bit signed
+				CHAR = 0x0010u,				// 8 bit signed
 				PCHAR = 0x0110u,			// 16 bit pointer to 8 bit signed
-				PFCHAR = 0x0210u,		// 16:16 far pointer to 8 bit signed
-				PHCHAR = 0x0310u,		// 16:16 huge pointer to 8 bit signed
-				_32PCHAR = 0x0410u,		// 32 bit pointer to 8 bit signed
+				PFCHAR = 0x0210u,			// 16:16 far pointer to 8 bit signed
+				PHCHAR = 0x0310u,			// 16:16 huge pointer to 8 bit signed
+				_32PCHAR = 0x0410u,			// 32 bit pointer to 8 bit signed
 				_32PFCHAR = 0x0510u,		// 16:32 pointer to 8 bit signed
-				_64PCHAR = 0x0610u,		// 64 bit pointer to 8 bit signed
+				_64PCHAR = 0x0610u,			// 64 bit pointer to 8 bit signed
 
 				UCHAR = 0x0020u,			// 8 bit unsigned
-				PUCHAR = 0x0120u,		// 16 bit pointer to 8 bit unsigned
-				PFUCHAR = 0x0220u,		// 16:16 far pointer to 8 bit unsigned
-				PHUCHAR = 0x0320u,		// 16:16 huge pointer to 8 bit unsigned
+				PUCHAR = 0x0120u,			// 16 bit pointer to 8 bit unsigned
+				PFUCHAR = 0x0220u,			// 16:16 far pointer to 8 bit unsigned
+				PHUCHAR = 0x0320u,			// 16:16 huge pointer to 8 bit unsigned
 				_32PUCHAR = 0x0420u,		// 32 bit pointer to 8 bit unsigned
-				_32PFUCHAR = 0x0520u,	// 16:32 pointer to 8 bit unsigned
+				_32PFUCHAR = 0x0520u,		// 16:32 pointer to 8 bit unsigned
 				_64PUCHAR = 0x0620u,		// 64 bit pointer to 8 bit unsigned
 
-				RCHAR = 0x0070u,   // really a char
-				PRCHAR = 0x0170u,   // 16 bit pointer to a real char
-				PFRCHAR = 0x0270u,   // 16:16 far pointer to a real char
-				PHRCHAR = 0x0370u,   // 16:16 huge pointer to a real char
-				_32PRCHAR = 0x0470u,   // 32 bit pointer to a real char
-				_32PFRCHAR = 0x0570u,   // 16:32 pointer to a real char
-				_64PRCHAR = 0x0670u,   // 64 bit pointer to a real char
+				RCHAR = 0x0070u,			// really a char
+				PRCHAR = 0x0170u,			// 16 bit pointer to a real char
+				PFRCHAR = 0x0270u,			// 16:16 far pointer to a real char
+				PHRCHAR = 0x0370u,			// 16:16 huge pointer to a real char
+				_32PRCHAR = 0x0470u,		// 32 bit pointer to a real char
+				_32PFRCHAR = 0x0570u,		// 16:32 pointer to a real char
+				_64PRCHAR = 0x0670u,		// 64 bit pointer to a real char
 
-				//      really a wide character types
+				// wide character types
+				WCHAR = 0x0071u,			// wide char
+				PWCHAR = 0x0171u,			// 16 bit pointer to a wide char
+				PFWCHAR = 0x0271u,			// 16:16 far pointer to a wide char
+				PHWCHAR = 0x0371u,			// 16:16 huge pointer to a wide char
+				_32PWCHAR = 0x0471u,		// 32 bit pointer to a wide char
+				_32PFWCHAR = 0x0571u,		// 16:32 pointer to a wide char
+				_64PWCHAR = 0x0671u,		// 64 bit pointer to a wide char
 
-				WCHAR = 0x0071u,   // wide char
-				PWCHAR = 0x0171u,   // 16 bit pointer to a wide char
-				PFWCHAR = 0x0271u,   // 16:16 far pointer to a wide char
-				PHWCHAR = 0x0371u,   // 16:16 huge pointer to a wide char
-				_32PWCHAR = 0x0471u,   // 32 bit pointer to a wide char
-				_32PFWCHAR = 0x0571u,   // 16:32 pointer to a wide char
-				_64PWCHAR = 0x0671u,   // 64 bit pointer to a wide char
+				// 16-bit unicode char
+				CHAR16 = 0x007au,			// 16-bit unicode char
+				PCHAR16 = 0x017au,			// 16 bit pointer to a 16-bit unicode char
+				PFCHAR16 = 0x027au,			// 16:16 far pointer to a 16-bit unicode char
+				PHCHAR16 = 0x037au,			// 16:16 huge pointer to a 16-bit unicode char
+				_32PCHAR16 = 0x047au,		// 32 bit pointer to a 16-bit unicode char
+				_32PFCHAR16 = 0x057au,		// 16:32 pointer to a 16-bit unicode char
+				_64PCHAR16 = 0x067au,		// 64 bit pointer to a 16-bit unicode char
 
-				//      really a 16-bit unicode char
+				// 32-bit unicode char
+				CHAR32 = 0x007bu,			// 32-bit unicode char
+				PCHAR32 = 0x017bu,			// 16 bit pointer to a 32-bit unicode char
+				PFCHAR32 = 0x027bu,			// 16:16 far pointer to a 32-bit unicode char
+				PHCHAR32 = 0x037bu,			// 16:16 huge pointer to a 32-bit unicode char
+				_32PCHAR32 = 0x047bu,		// 32 bit pointer to a 32-bit unicode char
+				_32PFCHAR32 = 0x057bu,		// 16:32 pointer to a 32-bit unicode char
+				_64PCHAR32 = 0x067bu,		// 64 bit pointer to a 32-bit unicode char
 
-				CHAR16 = 0x007au,   // 16-bit unicode char
-				PCHAR16 = 0x017au,   // 16 bit pointer to a 16-bit unicode char
-				PFCHAR16 = 0x027au,   // 16:16 far pointer to a 16-bit unicode char
-				PHCHAR16 = 0x037au,   // 16:16 huge pointer to a 16-bit unicode char
-				_32PCHAR16 = 0x047au,   // 32 bit pointer to a 16-bit unicode char
-				_32PFCHAR16 = 0x057au,   // 16:32 pointer to a 16-bit unicode char
-				_64PCHAR16 = 0x067au,   // 64 bit pointer to a 16-bit unicode char
+				// 8 bit int types
+				INT1 = 0x0068u,				// 8 bit signed int
+				PINT1 = 0x0168u,			// 16 bit pointer to 8 bit signed int
+				PFINT1 = 0x0268u,			// 16:16 far pointer to 8 bit signed int
+				PHINT1 = 0x0368u,			// 16:16 huge pointer to 8 bit signed int
+				_32PINT1 = 0x0468u,			// 32 bit pointer to 8 bit signed int
+				_32PFINT1 = 0x0568u,		// 16:32 pointer to 8 bit signed int
+				_64PINT1 = 0x0668u,			// 64 bit pointer to 8 bit signed int
 
-				//      really a 32-bit unicode char
+				_UINT1 = 0x0069u,			// 8 bit unsigned int
+				_PUINT1 = 0x0169u,			// 16 bit pointer to 8 bit unsigned int
+				_PFUINT1 = 0x0269u,			// 16:16 far pointer to 8 bit unsigned int
+				_PHUINT1 = 0x0369u,			// 16:16 huge pointer to 8 bit unsigned int
+				_32PUINT1 = 0x0469u,		// 32 bit pointer to 8 bit unsigned int
+				_32PFUINT1 = 0x0569u,		// 16:32 pointer to 8 bit unsigned int
+				_64PUINT1 = 0x0669u,		// 64 bit pointer to 8 bit unsigned int
 
-				CHAR32 = 0x007bu,   // 32-bit unicode char
-				PCHAR32 = 0x017bu,   // 16 bit pointer to a 32-bit unicode char
-				PFCHAR32 = 0x027bu,   // 16:16 far pointer to a 32-bit unicode char
-				PHCHAR32 = 0x037bu,   // 16:16 huge pointer to a 32-bit unicode char
-				_32PCHAR32 = 0x047bu,   // 32 bit pointer to a 32-bit unicode char
-				_32PFCHAR32 = 0x057bu,   // 16:32 pointer to a 32-bit unicode char
-				_64PCHAR32 = 0x067bu,   // 64 bit pointer to a 32-bit unicode char
-
-				//      8 bit int types
-
-				INT1 = 0x0068u,   // 8 bit signed int
-				PINT1 = 0x0168u,   // 16 bit pointer to 8 bit signed int
-				PFINT1 = 0x0268u,   // 16:16 far pointer to 8 bit signed int
-				PHINT1 = 0x0368u,   // 16:16 huge pointer to 8 bit signed int
-				_32PINT1 = 0x0468u,   // 32 bit pointer to 8 bit signed int
-				_32PFINT1 = 0x0568u,   // 16:32 pointer to 8 bit signed int
-				_64PINT1 = 0x0668u,   // 64 bit pointer to 8 bit signed int
-
-				_UINT1 = 0x0069u,   // 8 bit unsigned int
-				_PUINT1 = 0x0169u,   // 16 bit pointer to 8 bit unsigned int
-				_PFUINT1 = 0x0269u,   // 16:16 far pointer to 8 bit unsigned int
-				_PHUINT1 = 0x0369u,   // 16:16 huge pointer to 8 bit unsigned int
-				_32PUINT1 = 0x0469u,   // 32 bit pointer to 8 bit unsigned int
-				_32PFUINT1 = 0x0569u,   // 16:32 pointer to 8 bit unsigned int
-				_64PUINT1 = 0x0669u,   // 64 bit pointer to 8 bit unsigned int
-
-
-				//      16 bit short types
-
-				SHORT = 0x0011u,   // 16 bit signed
-				PSHORT = 0x0111u,   // 16 bit pointer to 16 bit signed
-				PFSHORT = 0x0211u,   // 16:16 far pointer to 16 bit signed
-				PHSHORT = 0x0311u,   // 16:16 huge pointer to 16 bit signed
-				_32PSHORT = 0x0411u,   // 32 bit pointer to 16 bit signed
-				_32PFSHORT = 0x0511u,   // 16:32 pointer to 16 bit signed
-				_64PSHORT = 0x0611u,   // 64 bit pointer to 16 bit signed
+				// 16 bit short types
+				SHORT = 0x0011u,			// 16 bit signed
+				PSHORT = 0x0111u,			// 16 bit pointer to 16 bit signed
+				PFSHORT = 0x0211u,			// 16:16 far pointer to 16 bit signed
+				PHSHORT = 0x0311u,			// 16:16 huge pointer to 16 bit signed
+				_32PSHORT = 0x0411u,		// 32 bit pointer to 16 bit signed
+				_32PFSHORT = 0x0511u,		// 16:32 pointer to 16 bit signed
+				_64PSHORT = 0x0611u,		// 64 bit pointer to 16 bit signed
 
 				USHORT = 0x0021u,
 				PUSHORT = 0x0121u,
@@ -529,23 +523,23 @@ namespace PDB
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1142
 			struct MemberAttributes
 			{
-				uint16_t  access : 2;			// access protection CV_access_t
-				uint16_t  mprop : 3;			// method properties CV_methodprop_t
-				uint16_t  pseudo : 1;			// compiler generated fcn and does not exist
-				uint16_t  noinherit : 1;		// true if class cannot be inherited
-				uint16_t  noconstruct : 1;		// true if class cannot be constructed
-				uint16_t  compgenx : 1;			// compiler generated fcn and does exist
-				uint16_t  sealed : 1;			// true if method cannot be overridden
-				uint16_t  unused : 6;			// unused
+				uint16_t access : 2;			// access protection CV_access_t
+				uint16_t mprop : 3;				// method properties CV_methodprop_t
+				uint16_t pseudo : 1;			// compiler generated fcn and does not exist
+				uint16_t noinherit : 1;			// true if class cannot be inherited
+				uint16_t noconstruct : 1;		// true if class cannot be constructed
+				uint16_t compgenx : 1;			// compiler generated fcn and does exist
+				uint16_t sealed : 1;			// true if method cannot be overridden
+				uint16_t unused : 6;			// unused
 			};
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1156
 			struct FunctionAttributes
 			{
-				uint8_t  cxxreturnudt : 1;		// true if C++ style ReturnUDT
-				uint8_t  ctor : 1;				// true if func is an instance constructor
-				uint8_t  ctorvbase : 1;			// true if func is an instance constructor of a class with virtual bases
-				uint8_t  unused : 5;			// unused
+				uint8_t cxxreturnudt : 1;		// true if C++ style ReturnUDT
+				uint8_t ctor : 1;				// true if func is an instance constructor
+				uint8_t ctorvbase : 1;			// true if func is an instance constructor of a class with virtual bases
+				uint8_t unused : 5;				// unused
 			};
 
 			struct RecordHeader
@@ -561,7 +555,7 @@ namespace PDB
 
 			struct FieldList
 			{
-				TypeRecordKind	kind;			// record kind
+				TypeRecordKind kind;			// record kind
 				union Data
 				{
 #pragma pack(push, 1)
@@ -570,14 +564,14 @@ namespace PDB
 					{
 						MemberAttributes attributes;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, value);
-					}LF_ENUMERATE;
+					} LF_ENUMERATE;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2693
 					struct
 					{
-						uint16_t		pad0;	// internal padding, must be 0
-						uint32_t		index;	// type index of referenced leaf
-					}LF_NESTTYPE;
+						uint16_t pad0;			// internal padding, must be 0
+						uint32_t index;			// type index of referenced leaf
+					} LF_NESTTYPE;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2580
 					struct
@@ -589,9 +583,9 @@ namespace PDB
 							PDB_FLEXIBLE_ARRAY_MEMBER(char, offset);
 							LeafEasy lfEasy;
 						};
-					}LF_MEMBER;
+					} LF_MEMBER;
 #pragma pack(pop)
-				}data;
+				} data;
 			};
 
 			// all CodeView records are stored as a header, followed by variable-length data.
@@ -605,71 +599,73 @@ namespace PDB
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1460
 					struct
 					{
-						uint32_t type;			// modified type
+						uint32_t type;					// modified type
 
 						// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1090
 						struct
 						{
-							uint16_t  MOD_const : 1;
-							uint16_t  MOD_volatile : 1;
-							uint16_t  MOD_unaligned : 1;
-							uint16_t  MOD_unused : 13;
-						}attr;           // modifier attribute modifier_t
-					}LF_MODIFIER;
+							uint16_t MOD_const : 1;
+							uint16_t MOD_volatile : 1;
+							uint16_t MOD_unaligned : 1;
+							uint16_t MOD_unused : 13;
+						} attr;							// modifier attribute modifier_t
+					} LF_MODIFIER;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1508
 					struct
 					{
-						uint32_t utype;          // type index of the underlying type
+						uint32_t utype;					// type index of the underlying type
 						struct PointerAttributes
 						{
-							uint32_t ptrtype : 5; // ordinal specifying pointer type (CV_ptrtype_e)
-							uint32_t ptrmode : 3; // ordinal specifying pointer mode (CV_ptrmode_e)
-							uint32_t isflat32 : 1; // true if 0:32 pointer
-							uint32_t isvolatile : 1; // TRUE if volatile pointer
-							uint32_t isconst : 1; // TRUE if const pointer
-							uint32_t isunaligned : 1; // TRUE if unaligned pointer
-							uint32_t isrestrict : 1; // TRUE if restricted pointer (allow agressive opts)
-							uint32_t size : 6; // size of pointer (in bytes)
-							uint32_t ismocom : 1; // TRUE if it is a MoCOM pointer (^ or %)
-							uint32_t islref : 1; // TRUE if it is this pointer of member function with & ref-qualifier
-							uint32_t isrref : 1; // TRUE if it is this pointer of member function with && ref-qualifier
-							uint32_t unused : 10;// pad out to 32-bits for following cv_typ_t's
+							uint32_t ptrtype : 5;		// ordinal specifying pointer type (CV_ptrtype_e)
+							uint32_t ptrmode : 3;		// ordinal specifying pointer mode (CV_ptrmode_e)
+							uint32_t isflat32 : 1;		// TRUE if 0:32 pointer
+							uint32_t isvolatile : 1;	// TRUE if volatile pointer
+							uint32_t isconst : 1;		// TRUE if const pointer
+							uint32_t isunaligned : 1;	// TRUE if unaligned pointer
+							uint32_t isrestrict : 1;	// TRUE if restricted pointer (allow agressive opts)
+							uint32_t size : 6;			// size of pointer (in bytes)
+							uint32_t ismocom : 1;		// TRUE if it is a MoCOM pointer (^ or %)
+							uint32_t islref : 1;		// TRUE if it is this pointer of member function with & ref-qualifier
+							uint32_t isrref : 1;		// TRUE if it is this pointer of member function with && ref-qualifier
+							uint32_t unused : 10;		// pad out to 32-bits for following cv_typ_t's
 						} attr;
 
 						union
 						{
 							struct
 							{
-								uint32_t        pmclass;    // index of containing class for pointer to member
-								uint16_t		pmenum;     // enumeration specifying pm format (CV_pmtype_e)
+								uint32_t pmclass;						// index of containing class for pointer to member
+								uint16_t pmenum;						// enumeration specifying pm format (CV_pmtype_e)
 							} pm;
-							uint16_t			bseg;       // base segment if PTR_BASE_SEG
-							PDB_FLEXIBLE_ARRAY_MEMBER(uint8_t, Sym);     // copy of base symbol record (including length)
+
+							uint16_t bseg;								// base segment if PTR_BASE_SEG
+							PDB_FLEXIBLE_ARRAY_MEMBER(uint8_t, Sym);	// copy of base symbol record (including length)
+
 							struct
 							{
-								uint32_t        index;      // type index if CV_PTR_BASE_TYPE
-								PDB_FLEXIBLE_ARRAY_MEMBER(char, name);    // name of base type
+								uint32_t index;							// type index if CV_PTR_BASE_TYPE
+								PDB_FLEXIBLE_ARRAY_MEMBER(char, name);	// name of base type
 							} btype;
 						} pbase;
-					}LF_POINTER;
+					} LF_POINTER;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1775
 					struct
 					{
-						uint32_t rvtype;		// type index of return value
-						CallingConvention calltype;// calling convention (CV_call_t)
-						FunctionAttributes funcattr; // attributes
-						uint16_t parmcount;     // number of parameters
-						uint32_t arglist;       // type index of argument list
-					}LF_PROCEDURE;
+						uint32_t rvtype;				// type index of return value
+						CallingConvention calltype;		// calling convention (CV_call_t)
+						FunctionAttributes funcattr;	// attributes
+						uint16_t parmcount;				// number of parameters
+						uint32_t arglist;				// type index of argument list
+					} LF_PROCEDURE;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2043
 					struct
 					{
-						uint32_t  count;          // number of arguments
-						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, arg);// number of arguments
-					}LF_ARGLIST;
+						uint32_t count;					// number of arguments
+						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, arg);
+					} LF_ARGLIST;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2164
 					struct
@@ -678,15 +674,14 @@ namespace PDB
 						uint8_t length;
 						uint8_t position;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, data);
-					}LF_BITFIELD;
+					} LF_BITFIELD;
 
 					struct
 					{
-						uint32_t elemtype;      // type index of element type
-						uint32_t idxtype;       // type index of indexing type
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, data);// variable length data specifying
-												// size in bytes and name
-					}LF_ARRAY;
+						uint32_t elemtype;							// type index of element type
+						uint32_t idxtype;							// type index of indexing type
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, data);		// variable length data specifying size in bytes and name
+					} LF_ARRAY;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1631
 					struct
@@ -710,23 +705,23 @@ namespace PDB
 						TypePropery property;	// property attribute field
 						uint32_t field;			// type index of LF_FIELD descriptor list
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, data);
-					}LF_UNION;
+					} LF_UNION;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1752
 					struct
 					{
 						uint16_t count;			// count of number of elements in class
 						TypePropery property;	// property attribute field
-						uint32_t utype;         // underlying type of the enum
-						uint32_t field;         // type index of LF_FIELD descriptor list
+						uint32_t utype;			// underlying type of the enum
+						uint32_t field;			// type index of LF_FIELD descriptor list
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
-					}LF_ENUM;
+					} LF_ENUM;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2112
 					struct
 					{
 						FieldList list;
-					}LF_FIELD;
+					} LF_FIELD;
 #pragma pack(pop)
 				} data;
 			};
