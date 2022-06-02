@@ -63,9 +63,6 @@
     <ClCompile Include="..\src\PDB_TPIStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\PDB_TPITypes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\PDB.h">

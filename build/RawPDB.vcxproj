@@ -31,7 +31,6 @@
     <ClCompile Include="..\src\PDB_SectionContributionStream.cpp" />
     <ClCompile Include="..\src\PDB_SourceFileStream.cpp" />
     <ClCompile Include="..\src\PDB_TPIStream.cpp" />
-    <ClCompile Include="..\src\PDB_TPITypes.cpp" />
     <ClCompile Include="..\src\PDB_Types.cpp" />
   </ItemGroup>
   <ItemGroup>
