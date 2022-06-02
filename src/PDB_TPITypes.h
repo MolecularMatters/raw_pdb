@@ -501,6 +501,18 @@ namespace PDB
 				// calling conventions in the source only (e.g. __cdeclu, __stdcall).
 			};
 
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1049
+			enum class MethodProperty : uint8_t
+			{
+				Vanilla = 0x00u,
+				Virtual = 0x01u,
+				Static = 0x02u,
+				Friend = 0x03u,
+				Intro = 0x04u,
+				PureVirt = 0x05u,
+				PureIntro = 0x06u
+			};
+
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1120
 			struct TypePropery
 			{
@@ -559,19 +571,59 @@ namespace PDB
 				union Data
 				{
 #pragma pack(push, 1)
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2499
+					struct
+					{
+						MemberAttributes attributes;					// method attribute
+						uint32_t		index;							// type index of base class
+						union
+						{
+							PDB_FLEXIBLE_ARRAY_MEMBER(char, offset);	// variable length offset of base within class
+							LeafEasy lfEasy;
+						};
+					}LF_BCLASS;
+
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2615
+					struct
+					{
+						uint16_t		pad0;   // internal padding, must be 0.
+						uint32_t        type;   // type index of pointer
+					}LF_VFUNCTAB;
+
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2683
 					struct
 					{
 						MemberAttributes attributes;
-						PDB_FLEXIBLE_ARRAY_MEMBER(char, value);
+						union
+						{
+							PDB_FLEXIBLE_ARRAY_MEMBER(char, value);
+							LeafEasy lfEasy;
+						};
 					} LF_ENUMERATE;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2693
 					struct
 					{
-						uint16_t pad0;			// internal padding, must be 0
-						uint32_t index;			// type index of referenced leaf
-					} LF_NESTTYPE;
+						uint16_t		pad0;	// internal padding, must be 0
+						uint32_t		index;	// index of nested type definition
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					}LF_NESTTYPE;
+
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2650
+					struct
+					{
+						uint16_t		count;	// number of occurrences of function
+						uint32_t        mList;  // index to LF_METHODLIST record
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					}LF_METHOD;
+
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2671
+					struct
+					{
+						MemberAttributes attributes;					// method attribute
+						uint32_t index;									// index to type record for procedure
+						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, vbaseoff);	// offset in vfunctable if
+					}LF_ONEMETHOD;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2580
 					struct
@@ -584,6 +636,14 @@ namespace PDB
 							LeafEasy lfEasy;
 						};
 					} LF_MEMBER;
+
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2592
+					struct
+					{
+						MemberAttributes attributes;
+						uint32_t index;			// index of type record for field
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					}LF_STMEMBER;
 #pragma pack(pop)
 				} data;
 			};
@@ -596,6 +656,34 @@ namespace PDB
 				union Data
 				{
 #pragma pack(push, 1)
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2144
+					struct
+					{
+						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, mList);
+					}LF_METHODLIST;
+
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2131
+					struct
+					{
+						MemberAttributes attributes;					// method attribute
+						uint16_t		pad0;							// internal padding, must be 0
+						uint32_t		index;							// index to type record for procedure
+						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, vbaseoff);	// offset in vfunctable if
+					}METHOD;
+
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1801
+					struct
+					{
+						uint32_t        rvtype;         // type index of return value
+						uint32_t        classtype;      // type index of containing class
+						uint32_t        thistype;       // type index of this pointer (model specific)
+						uint8_t			calltype;       // calling convention (call_t)
+						FunctionAttributes funcattr;	// attributes
+						uint16_t		parmcount;      // number of parameters
+						uint32_t        arglist;        // type index of argument list
+						int32_t         thisadjust;     // this adjuster (long because pad required anyway)
+					}LF_MFUNCTION;
+
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1460
 					struct
 					{
