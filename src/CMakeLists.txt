@@ -1,5 +1,3 @@
-project(raw_pdb)
-
 set(SOURCES
 	Foundation/PDB_ArrayView.h
 	Foundation/PDB_Assert.h
@@ -72,7 +70,7 @@ target_include_directories(raw_pdb
 )
 
 target_precompile_headers(raw_pdb
-  PUBLIC
+  PRIVATE
     PDB_PCH.h
 )
 

@@ -11,7 +11,11 @@
 // ------------------------------------------------------------------------------------------------
 
 // Indicates to the compiler that the function returns an object that is not aliased by any other pointers.
+#if PDB_COMPILER_MSVC or PDB_COMPILER_CLANG
 #define PDB_NO_ALIAS								__declspec(restrict)
+#else
+#define PDB_NO_ALIAS								__restrict
+#endif
 
 // Indicates to the compiler that the return value of a function or class should not be ignored.
 #if PDB_CPP_17
@@ -85,6 +89,23 @@
 #	define PDB_PUSH_WARNING_CLANG							PDB_PRAGMA(clang diagnostic push)
 #	define PDB_DISABLE_WARNING_CLANG(_diagnostic)			PDB_PRAGMA(clang diagnostic ignored _diagnostic)
 #	define PDB_POP_WARNING_CLANG							PDB_PRAGMA(clang diagnostic pop)
+
+#	define PDB_PUSH_WARNING_CLANG							PDB_PRAGMA(clang diagnostic push)
+#	define PDB_DISABLE_WARNING_CLANG(_diagnostic)			PDB_PRAGMA(clang diagnostic ignored _diagnostic)
+#	define PDB_POP_WARNING_CLANG							PDB_PRAGMA(clang diagnostic pop)
+#elif PDB_COMPILER_GCC
+#	define PDB_PRAGMA(_x)									_Pragma(#_x)
+
+#	define PDB_PUSH_WARNING_MSVC
+#	define PDB_SUPPRESS_WARNING_MSVC(_number)
+#	define PDB_DISABLE_WARNING_MSVC(_number)
+#	define PDB_POP_WARNING_MSVC
+
+#	define PDB_PUSH_WARNING_CLANG							
+#	define PDB_DISABLE_WARNING_CLANG(_diagnostic)			
+#	define PDB_POP_WARNING_CLANG							
+
+#	define __noop(...)
 #endif
 
 
@@ -99,7 +120,7 @@
 	PDB_DISABLE_WARNING_MSVC(4200)								\
 	PDB_DISABLE_WARNING_CLANG("-Wc99-extensions")				\
 	PDB_DISABLE_WARNING_CLANG("-Wmicrosoft-flexible-array")		\
-	_type _name[];												\
+	_type _name[0];												\
 	PDB_POP_WARNING_MSVC										\
 	PDB_POP_WARNING_CLANG
 
