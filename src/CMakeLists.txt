@@ -52,7 +52,6 @@ set(SOURCES
 	PDB_SourceFileStream.h
 	PDB_TPIStream.cpp
 	PDB_TPIStream.h
-	PDB_TPITypes.cpp
 	PDB_TPITypes.h
 	PDB_Types.cpp
 	PDB_Types.h
