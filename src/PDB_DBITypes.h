@@ -120,6 +120,7 @@ namespace PDB
 			enum class PDB_NO_DISCARD SymbolRecordKind : uint16_t
 			{
 				S_END =				0x0006u,		// block, procedure, "with" or thunk end
+				S_FRAMEPROC =		0x1012u,		// extra frame and proc information
 				S_OBJNAME =			0x1101u,		// full path to the original compiled .obj. can point to remote locations and temporary files, not necessarily the file that was linked into the executable
 				S_THUNK32 =			0x1102u,		// thunk start
 				S_BLOCK32 =			0x1103u,		// block start
@@ -306,6 +307,43 @@ namespace PDB
 				union Data
 				{
 #pragma pack(push, 1)
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4069
+					struct
+					{
+						uint32_t cbFrame;		// count of bytes of total frame of procedure
+						uint32_t cbPad;			// count of bytes of padding in the frame
+						uint32_t offPad;		// offset (relative to frame poniter) to where
+												//  padding starts
+						uint32_t cbSaveRegs;	// count of bytes of callee save registers
+						uint32_t offExHdlr;		// offset of exception handler
+						uint16_t sectExHdlr;	// section id of exception handler
+
+						struct {
+							uint32_t fHasAlloca : 1;				// function uses _alloca()
+							uint32_t fHasSetJmp : 1;				// function uses setjmp()
+							uint32_t fHasLongJmp : 1;				// function uses longjmp()
+							uint32_t fHasInlAsm : 1;				// function uses inline asm
+							uint32_t fHasEH : 1;					// function has EH states
+							uint32_t fInlSpec : 1;					// function was speced as inline
+							uint32_t fHasSEH : 1;					// function has SEH
+							uint32_t fNaked : 1;					// function is __declspec(naked)
+							uint32_t fSecurityChecks : 1;			// function has buffer security check introduced by /GS.
+							uint32_t fAsyncEH : 1;					// function compiled with /EHa
+							uint32_t fGSNoStackOrdering : 1;		// function has /GS buffer checks, but stack ordering couldn't be done
+							uint32_t fWasInlined : 1;				// function was inlined within another function
+							uint32_t fGSCheck : 1;					// function is __declspec(strict_gs_check)
+							uint32_t fSafeBuffers : 1;				// function is __declspec(safebuffers)
+							uint32_t encodedLocalBasePointer : 2;	// record function's local pointer explicitly.
+							uint32_t encodedParamBasePointer : 2;	// record function's parameter pointer explicitly.
+							uint32_t fPogoOn : 1;					// function was compiled with PGO/PGU
+							uint32_t fValidCounts : 1;				// Do we have valid Pogo counts?
+							uint32_t fOptSpeed : 1;					// Did we optimize for speed?
+							uint32_t fGuardCF : 1;					// function contains CFG checks (and no write checks)
+							uint32_t fGuardCFW : 1;					// function contains CFW checks and/or instrumentation
+							uint32_t pad : 9;						// must be zero
+						} flags;
+					}S_FRAMEPROC;
+
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L3696
 					struct
 					{
