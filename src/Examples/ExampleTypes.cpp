@@ -471,7 +471,8 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 	const char* leafName = nullptr;
 	const char* typeName = nullptr;
 	std::string functionPrototype;
-	
+	uint16_t offset = 0;
+
 	auto maximumSize = record->header.size - sizeof(uint16_t);
 
 	for (size_t i = 0; i < maximumSize;)
@@ -494,6 +495,11 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 
 		if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_MEMBER)
 		{
+			if (fieldRecord->data.LF_MEMBER.lfEasy.kind < PDB::CodeView::TPI::TypeRecordKind::LF_NUMERIC)
+				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[0]);
+			else
+				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[sizeof(PDB::CodeView::TPI::TypeRecordKind)]);
+
 			leafName = GetLeafName(fieldRecord->data.LF_MEMBER.offset, fieldRecord->data.LF_MEMBER.lfEasy.kind);
 
 			typeName = GetTypeName(tpiStream, fieldRecord->data.LF_MEMBER.index, pointerLevel, &referencedType, &modifierRecord);
@@ -511,9 +517,9 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 						if (underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
 						{
 							if (modifierRecord)
-								printf("[0x%X]%s %s", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), GetModifierName(modifierRecord), typeName);
+								printf("[0x%X]%s %s", offset, GetModifierName(modifierRecord), typeName);
 							else
-								printf("[0x%X]%s", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), typeName);
+								printf("[0x%X]%s", offset, typeName);
 
 							for (size_t j = 0; j < pointerLevel; j++)
 								printf("*");
@@ -525,14 +531,14 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 							if (!GetFunctionPrototype(tpiStream, underlyingType, functionPrototype))
 								break;
 
-							printf("[0x%X]", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset));
+							printf("[0x%X]", offset);
 							printf(functionPrototype.c_str(), leafName);
 							printf("\n");
 						}
 					}
 					else
 					{
-						printf("[0x%X]%s", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), typeName);
+						printf("[0x%X]%s", offset, typeName);
 
 						for (size_t j = 0; j < pointerLevel; j++)
 							printf("*");
@@ -549,7 +555,7 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 					if (typeName)
 					{
 						printf("[0x%X]%s %s : %d\n",
-							*reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset),
+							offset,
 							typeName,
 							leafName,
 							referencedType->data.LF_BITFIELD.length);
@@ -561,7 +567,7 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 							break;
 
 						printf("[0x%X]%s %s %s : %d\n",
-							*reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset),
+							offset,
 							GetModifierName(modifierRecord),
 							GetTypeName(tpiStream, modifierRecord->data.LF_MODIFIER.type, pointerLevel, nullptr, nullptr),
 							leafName,
@@ -572,7 +578,7 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 					if (!modifierRecord)
 					{
 						printf("[0x%X]%s %s[] /*0x%X*/\n",
-							*reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset),
+							offset,
 							typeName,
 							leafName,
 							*reinterpret_cast<const uint16_t*>(referencedType->data.LF_ARRAY.data));
@@ -580,7 +586,7 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 					else
 					{
 						printf("[0x%X]%s %s %s[] /*0x%X*/\n",
-							*reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset),
+							offset,
 							GetModifierName(modifierRecord),
 							GetTypeName(tpiStream, modifierRecord->data.LF_MODIFIER.type, pointerLevel, nullptr, nullptr),
 							leafName,
@@ -594,9 +600,9 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 			else
 			{
 				if (modifierRecord)
-					printf("[0x%X]%s %s %s\n", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), GetModifierName(modifierRecord), typeName, leafName);
+					printf("[0x%X]%s %s %s\n", offset, GetModifierName(modifierRecord), typeName, leafName);
 				else
-					printf("[0x%X]%s %s\n", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), typeName, leafName);
+					printf("[0x%X]%s %s\n", offset, typeName, leafName);
 			}
 		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_NESTTYPE)
