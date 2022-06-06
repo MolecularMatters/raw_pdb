@@ -36,6 +36,14 @@ namespace PDB
 			return m_header.typeIndexEnd;
 		}
 
+		PDB_NO_DISCARD inline const CodeView::TPI::Record* GetTypeRecord(uint32_t typeIndex) const PDB_NO_EXCEPT
+		{
+			if (typeIndex < m_header.typeIndexBegin || typeIndex > m_header.typeIndexEnd)
+				return nullptr;
+
+			return m_records[typeIndex - m_header.typeIndexBegin];
+		}
+
 		// Returns a view of all type records.
 		// Records identified by a type index can be accessed via "allRecords[typeIndex - firstTypeIndex]".
 		PDB_NO_DISCARD inline ArrayView<const CodeView::TPI::Record*> GetTypeRecords(void) const PDB_NO_EXCEPT

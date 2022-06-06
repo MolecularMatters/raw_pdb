@@ -52,7 +52,9 @@ namespace PDB
 #else
 			unsigned int result = 0u;
 
-			_BitScanForward(&result, value);
+			result = __builtin_ffs(value);
+			if (result)
+				--result;
 #endif
 
 			return result;

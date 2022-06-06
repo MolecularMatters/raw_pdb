@@ -1,5 +1,3 @@
-project(raw_pdb)
-
 set(SOURCES
 	Foundation/PDB_ArrayView.h
 	Foundation/PDB_Assert.h
@@ -52,7 +50,6 @@ set(SOURCES
 	PDB_SourceFileStream.h
 	PDB_TPIStream.cpp
 	PDB_TPIStream.h
-	PDB_TPITypes.cpp
 	PDB_TPITypes.h
 	PDB_Types.cpp
 	PDB_Types.h
@@ -73,7 +70,7 @@ target_include_directories(raw_pdb
 )
 
 target_precompile_headers(raw_pdb
-  PUBLIC
+  PRIVATE
     PDB_PCH.h
 )
 

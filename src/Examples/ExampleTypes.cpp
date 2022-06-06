@@ -57,7 +57,8 @@ const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex, uin
 	if (modifierRecord)
 		*modifierRecord = nullptr;
 
-	if (typeIndex < tpiStream.GetFirstTypeIndex())
+	auto typeIndexBegin = tpiStream.GetFirstTypeIndex();
+	if (typeIndex < typeIndexBegin)
 	{
 		auto type = static_cast<PDB::CodeView::TPI::TypeIndexKind>(typeIndex);
 		switch (type)
@@ -166,7 +167,10 @@ const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex, uin
 	}
 	else
 	{
-		auto typeRecord = tpiStream.GetTypeRecords()[typeIndex - tpiStream.GetFirstTypeIndex()];
+		auto typeRecord = tpiStream.GetTypeRecord(typeIndex);
+		if (!typeRecord)
+			return nullptr;
+
 		switch (typeRecord->header.kind)
 		{
 		case PDB::CodeView::TPI::TypeRecordKind::LF_MODIFIER:
@@ -175,9 +179,12 @@ const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex, uin
 		case PDB::CodeView::TPI::TypeRecordKind::LF_POINTER:
 			++pointerLevel;
 			*referencedType = typeRecord;
-			if (typeRecord->data.LF_POINTER.utype >= tpiStream.GetFirstTypeIndex())
+			if (typeRecord->data.LF_POINTER.utype >= typeIndexBegin)
 			{
-				underlyingType = tpiStream.GetTypeRecords()[typeRecord->data.LF_POINTER.utype - tpiStream.GetFirstTypeIndex()];
+				underlyingType = tpiStream.GetTypeRecord(typeRecord->data.LF_POINTER.utype);
+				if (!underlyingType)
+					return nullptr;
+
 				if(underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_POINTER)
 					return GetTypeName(tpiStream, typeRecord->data.LF_POINTER.utype, pointerLevel, referencedType, modifierRecord);
 			}
@@ -187,7 +194,7 @@ const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex, uin
 			*referencedType = typeRecord;
 			return nullptr;
 		case PDB::CodeView::TPI::TypeRecordKind::LF_BITFIELD:
-			if (typeRecord->data.LF_BITFIELD.type < tpiStream.GetFirstTypeIndex())
+			if (typeRecord->data.LF_BITFIELD.type < typeIndexBegin)
 			{
 				typeName = GetTypeName(tpiStream, typeRecord->data.LF_BITFIELD.type, pointerLevel, nullptr, modifierRecord);
 				*referencedType = typeRecord;
@@ -229,9 +236,8 @@ const char* GetModifierName(const PDB::CodeView::TPI::Record* modifierRecord)
 	return "";
 }
 
-std::string GetFunctionPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Record* functionRecord)
+bool GetFunctionPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Record* functionRecord, std::string& functionPrototype)
 {
-	std::string functionPrototype;
 	std::string underlyingTypePrototype;
 
 	size_t markerPos = 0;
@@ -239,6 +245,8 @@ std::string GetFunctionPrototype(const PDB::TPIStream& tpiStream, const PDB::Cod
 	const PDB::CodeView::TPI::Record* referencedType = nullptr;
 	const PDB::CodeView::TPI::Record* underlyingType = nullptr;
 	const PDB::CodeView::TPI::Record* modifierRecord = nullptr;
+
+	functionPrototype.clear();
 
 	auto typeName = GetTypeName(tpiStream, functionRecord->data.LF_PROCEDURE.rvtype, pointerLevel, &referencedType, &modifierRecord);
 	if (typeName)
@@ -256,8 +264,13 @@ std::string GetFunctionPrototype(const PDB::TPIStream& tpiStream, const PDB::Cod
 	}
 	else
 	{
-		underlyingType = tpiStream.GetTypeRecords()[referencedType->data.LF_POINTER.utype - tpiStream.GetFirstTypeIndex()];
-		underlyingTypePrototype = GetFunctionPrototype(tpiStream, underlyingType);
+		underlyingType = tpiStream.GetTypeRecord(referencedType->data.LF_POINTER.utype);
+		if (!underlyingType)
+			return false;
+
+		if (!GetFunctionPrototype(tpiStream, underlyingType, underlyingTypePrototype))
+			return false;
+
 		markerPos = underlyingTypePrototype.find("%s");
 		underlyingTypePrototype.erase(markerPos, 2);
 		functionPrototype = underlyingTypePrototype;
@@ -267,7 +280,10 @@ std::string GetFunctionPrototype(const PDB::TPIStream& tpiStream, const PDB::Cod
 
 	if (functionRecord->data.LF_PROCEDURE.parmcount)
 	{
-		auto argList = tpiStream.GetTypeRecords()[functionRecord->data.LF_PROCEDURE.arglist - tpiStream.GetFirstTypeIndex()];
+		auto argList = tpiStream.GetTypeRecord(functionRecord->data.LF_PROCEDURE.arglist);
+		if (!argList)
+			return false;
+
 		for (size_t i = 0; i < argList->data.LF_ARGLIST.count; i++)
 		{
 			pointerLevel = 0;
@@ -275,7 +291,11 @@ std::string GetFunctionPrototype(const PDB::TPIStream& tpiStream, const PDB::Cod
 			if (referencedType)
 			{
 				if (referencedType->data.LF_POINTER.utype >= tpiStream.GetFirstTypeIndex())
-					underlyingType = tpiStream.GetTypeRecords()[referencedType->data.LF_POINTER.utype - tpiStream.GetFirstTypeIndex()];
+				{
+					underlyingType = tpiStream.GetTypeRecord(referencedType->data.LF_POINTER.utype);
+					if (!underlyingType)
+						return false;
+				}
 
 				if (!underlyingType || underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
 				{
@@ -295,7 +315,9 @@ std::string GetFunctionPrototype(const PDB::TPIStream& tpiStream, const PDB::Cod
 				}
 				else
 				{
-					underlyingTypePrototype = GetFunctionPrototype(tpiStream, underlyingType);
+					if (!GetFunctionPrototype(tpiStream, underlyingType, underlyingTypePrototype))
+						return false;
+
 					markerPos = underlyingTypePrototype.find("%s");
 					underlyingTypePrototype.erase(markerPos, 2);
 
@@ -317,12 +339,11 @@ std::string GetFunctionPrototype(const PDB::TPIStream& tpiStream, const PDB::Cod
 
 	functionPrototype += ')';
 
-	return functionPrototype;
+	return true;
 }
 
-std::string GetMethodPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Record* methodRecord)
+bool GetMethodPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Record* methodRecord, std::string& methodPrototype)
 {
-	std::string methodPrototype;
 	std::string underlyingTypePrototype;
 
 	size_t markerPos = 0;
@@ -330,6 +351,8 @@ std::string GetMethodPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeV
 	const PDB::CodeView::TPI::Record* referencedType = nullptr;
 	const PDB::CodeView::TPI::Record* underlyingType = nullptr;
 	const PDB::CodeView::TPI::Record* modifierRecord = nullptr;
+
+	methodPrototype.clear();
 
 	auto typeName = GetTypeName(tpiStream, methodRecord->data.LF_MFUNCTION.rvtype, pointerLevel, &referencedType, &modifierRecord);
 	if (typeName)
@@ -347,8 +370,13 @@ std::string GetMethodPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeV
 	}
 	else
 	{
-		underlyingType = tpiStream.GetTypeRecords()[referencedType->data.LF_POINTER.utype - tpiStream.GetFirstTypeIndex()];
-		underlyingTypePrototype = GetFunctionPrototype(tpiStream, underlyingType);
+		underlyingType = tpiStream.GetTypeRecord(referencedType->data.LF_POINTER.utype);
+		if (!underlyingType)
+			return false;
+
+		if (!GetFunctionPrototype(tpiStream, underlyingType, underlyingTypePrototype))
+			return false;
+
 		markerPos = underlyingTypePrototype.find("%s");
 		underlyingTypePrototype.erase(markerPos, 2);
 		methodPrototype = underlyingTypePrototype;
@@ -358,7 +386,10 @@ std::string GetMethodPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeV
 
 	if (methodRecord->data.LF_MFUNCTION.parmcount)
 	{
-		auto argList = tpiStream.GetTypeRecords()[methodRecord->data.LF_MFUNCTION.arglist - tpiStream.GetFirstTypeIndex()];
+		auto argList = tpiStream.GetTypeRecord(methodRecord->data.LF_MFUNCTION.arglist);
+		if (!argList)
+			return false;
+
 		for (size_t i = 0; i < argList->data.LF_ARGLIST.count; i++)
 		{
 			pointerLevel = 0;
@@ -366,7 +397,11 @@ std::string GetMethodPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeV
 			if (referencedType)
 			{
 				if (referencedType->data.LF_POINTER.utype >= tpiStream.GetFirstTypeIndex())
-					underlyingType = tpiStream.GetTypeRecords()[referencedType->data.LF_POINTER.utype - tpiStream.GetFirstTypeIndex()];
+				{
+					underlyingType = tpiStream.GetTypeRecord(referencedType->data.LF_POINTER.utype);
+					if (!underlyingType)
+						return false;
+				}
 
 				if (!underlyingType || underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
 				{
@@ -386,7 +421,9 @@ std::string GetMethodPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeV
 				}
 				else
 				{
-					underlyingTypePrototype = GetFunctionPrototype(tpiStream, underlyingType);
+					if (!GetFunctionPrototype(tpiStream, underlyingType, underlyingTypePrototype))
+						return false;
+
 					markerPos = underlyingTypePrototype.find("%s");
 					underlyingTypePrototype.erase(markerPos, 2);
 
@@ -408,7 +445,7 @@ std::string GetMethodPrototype(const PDB::TPIStream& tpiStream, const PDB::CodeV
 
 	methodPrototype += ')';
 
-	return methodPrototype;
+	return true;
 }
 
 const char* GetMethodName(const PDB::CodeView::TPI::FieldList* fieldRecord)
@@ -434,7 +471,8 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 	const char* leafName = nullptr;
 	const char* typeName = nullptr;
 	std::string functionPrototype;
-	
+	uint16_t offset = 0;
+
 	auto maximumSize = record->header.size - sizeof(uint16_t);
 
 	for (size_t i = 0; i < maximumSize;)
@@ -457,6 +495,11 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 
 		if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_MEMBER)
 		{
+			if (fieldRecord->data.LF_MEMBER.lfEasy.kind < PDB::CodeView::TPI::TypeRecordKind::LF_NUMERIC)
+				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[0]);
+			else
+				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[sizeof(PDB::CodeView::TPI::TypeRecordKind)]);
+
 			leafName = GetLeafName(fieldRecord->data.LF_MEMBER.offset, fieldRecord->data.LF_MEMBER.lfEasy.kind);
 
 			typeName = GetTypeName(tpiStream, fieldRecord->data.LF_MEMBER.index, pointerLevel, &referencedType, &modifierRecord);
@@ -467,13 +510,16 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 				case PDB::CodeView::TPI::TypeRecordKind::LF_POINTER:
 					if (referencedType->data.LF_POINTER.utype >= tpiStream.GetFirstTypeIndex())
 					{
-						underlyingType = tpiStream.GetTypeRecords()[referencedType->data.LF_POINTER.utype - tpiStream.GetFirstTypeIndex()];
+						underlyingType = tpiStream.GetTypeRecord(referencedType->data.LF_POINTER.utype);
+						if (!underlyingType)
+							break;
+
 						if (underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
 						{
 							if (modifierRecord)
-								printf("[0x%X]%s %s", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), GetModifierName(modifierRecord), typeName);
+								printf("[0x%X]%s %s", offset, GetModifierName(modifierRecord), typeName);
 							else
-								printf("[0x%X]%s", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), typeName);
+								printf("[0x%X]%s", offset, typeName);
 
 							for (size_t j = 0; j < pointerLevel; j++)
 								printf("*");
@@ -482,15 +528,17 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 						}
 						else
 						{
-							functionPrototype = GetFunctionPrototype(tpiStream, underlyingType);
-							printf("[0x%X]", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset));
+							if (!GetFunctionPrototype(tpiStream, underlyingType, functionPrototype))
+								break;
+
+							printf("[0x%X]", offset);
 							printf(functionPrototype.c_str(), leafName);
 							printf("\n");
 						}
 					}
 					else
 					{
-						printf("[0x%X]%s", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), typeName);
+						printf("[0x%X]%s", offset, typeName);
 
 						for (size_t j = 0; j < pointerLevel; j++)
 							printf("*");
@@ -507,16 +555,19 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 					if (typeName)
 					{
 						printf("[0x%X]%s %s : %d\n",
-							*reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset),
+							offset,
 							typeName,
 							leafName,
 							referencedType->data.LF_BITFIELD.length);
 					}
 					else
 					{
-						modifierRecord = tpiStream.GetTypeRecords()[referencedType->data.LF_BITFIELD.type - tpiStream.GetFirstTypeIndex()];
+						modifierRecord = tpiStream.GetTypeRecord(referencedType->data.LF_BITFIELD.type);
+						if (!modifierRecord)
+							break;
+
 						printf("[0x%X]%s %s %s : %d\n",
-							*reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset),
+							offset,
 							GetModifierName(modifierRecord),
 							GetTypeName(tpiStream, modifierRecord->data.LF_MODIFIER.type, pointerLevel, nullptr, nullptr),
 							leafName,
@@ -527,7 +578,7 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 					if (!modifierRecord)
 					{
 						printf("[0x%X]%s %s[] /*0x%X*/\n",
-							*reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset),
+							offset,
 							typeName,
 							leafName,
 							*reinterpret_cast<const uint16_t*>(referencedType->data.LF_ARRAY.data));
@@ -535,7 +586,7 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 					else
 					{
 						printf("[0x%X]%s %s %s[] /*0x%X*/\n",
-							*reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset),
+							offset,
 							GetModifierName(modifierRecord),
 							GetTypeName(tpiStream, modifierRecord->data.LF_MODIFIER.type, pointerLevel, nullptr, nullptr),
 							leafName,
@@ -549,9 +600,9 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 			else
 			{
 				if (modifierRecord)
-					printf("[0x%X]%s %s %s\n", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), GetModifierName(modifierRecord), typeName, leafName);
+					printf("[0x%X]%s %s %s\n", offset, GetModifierName(modifierRecord), typeName, leafName);
 				else
-					printf("[0x%X]%s %s\n", *reinterpret_cast<const uint16_t*>(fieldRecord->data.LF_MEMBER.offset), typeName, leafName);
+					printf("[0x%X]%s %s\n", offset, typeName, leafName);
 			}
 		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_NESTTYPE)
@@ -574,13 +625,18 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_METHOD)
 		{
 			leafName = GetMethodName(fieldRecord);
-			auto methodList = tpiStream.GetTypeRecords()[fieldRecord->data.LF_METHOD.mList - tpiStream.GetFirstTypeIndex()];
+
+			auto methodList = tpiStream.GetTypeRecord(fieldRecord->data.LF_METHOD.mList);
+			if (!methodList)
+				break;
+
 			for (size_t j = 0; j < fieldRecord->data.LF_METHOD.count; j++)
 			{
 				if (methodList->data.LF_METHODLIST.mList[j] < tpiStream.GetFirstTypeIndex())
 					continue;
 
-				functionPrototype = GetMethodPrototype(tpiStream, tpiStream.GetTypeRecords()[methodList->data.LF_METHODLIST.mList[j] - tpiStream.GetFirstTypeIndex()]);
+				if (!GetMethodPrototype(tpiStream, tpiStream.GetTypeRecord(methodList->data.LF_METHODLIST.mList[j]), functionPrototype))
+					break;
 
 				printf(functionPrototype.c_str(), leafName);
 				printf("\n");
@@ -590,7 +646,12 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 		{
 			leafName = GetMethodName(fieldRecord);
 
-			functionPrototype = GetMethodPrototype(tpiStream, tpiStream.GetTypeRecords()[fieldRecord->data.LF_ONEMETHOD.index - tpiStream.GetFirstTypeIndex()]);
+			referencedType = tpiStream.GetTypeRecord(fieldRecord->data.LF_ONEMETHOD.index);
+			if (!referencedType)
+				break;
+
+			if (!GetMethodPrototype(tpiStream, referencedType, functionPrototype))
+				break;
 
 			printf(functionPrototype.c_str(), leafName);
 			printf("\n");
@@ -614,7 +675,8 @@ void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::TPI::Re
 			break;
 		}
 
-		i += (leafName - reinterpret_cast<const char*>(fieldRecord)) + strnlen(leafName, 2047) + 1;
+		i += (leafName - reinterpret_cast<const char*>(fieldRecord));
+		i += strnlen(leafName, maximumSize - i - 1) + 1;
 		i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
 	}
 }
@@ -657,7 +719,8 @@ void DisplayEnumerates(const PDB::CodeView::TPI::Record* record, uint8_t underly
 
 		printf("%s = %llu\n", leafName, value);
 
-		i += (leafName - reinterpret_cast<const char*>(fieldRecord)) + strnlen(leafName, 2047) + 1;
+		i += (leafName - reinterpret_cast<const char*>(fieldRecord));
+		i += strnlen(leafName, maximumSize - i - 1) + 1;
 		i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
 	}
 }
@@ -671,11 +734,14 @@ void ExampleTypes(const PDB::TPIStream& tpiStream)
 			if (record->data.LF_CLASS.property.fwdref)
 				continue;
 
+			auto typeRecord = tpiStream.GetTypeRecord(record->data.LF_CLASS.field);
+			if (!typeRecord)
+				continue;
+
 			auto leafName = GetLeafName(record->data.LF_CLASS.data, record->data.LF_CLASS.lfEasy.kind);
 
 			printf("struct %s\n{\n", leafName);
-
-			auto typeRecord = tpiStream.GetTypeRecords()[record->data.LF_CLASS.field - tpiStream.GetFirstTypeIndex()];
+			
 			DisplayFields(tpiStream, typeRecord);
 
 			printf("}\n");
@@ -685,11 +751,14 @@ void ExampleTypes(const PDB::TPIStream& tpiStream)
 			if (record->data.LF_UNION.property.fwdref)
 				continue;
 
+			auto typeRecord = tpiStream.GetTypeRecord(record->data.LF_UNION.field);
+			if (!typeRecord)
+				continue;
+
 			auto leafName = GetLeafName(record->data.LF_UNION.data, static_cast<PDB::CodeView::TPI::TypeRecordKind>(0));
 
 			printf("union %s\n{\n", leafName);
 
-			auto typeRecord = tpiStream.GetTypeRecords()[record->data.LF_UNION.field - tpiStream.GetFirstTypeIndex()];
 			DisplayFields(tpiStream, typeRecord);
 
 			printf("}\n");
@@ -699,9 +768,12 @@ void ExampleTypes(const PDB::TPIStream& tpiStream)
 			if (record->data.LF_ENUM.property.fwdref)
 				continue;
 
+			auto typeRecord = tpiStream.GetTypeRecord(record->data.LF_ENUM.field);
+			if (!typeRecord)
+				continue;
+
 			printf("enum %s\n{\n", record->data.LF_ENUM.name);
 
-			auto typeRecord = tpiStream.GetTypeRecords()[record->data.LF_ENUM.field - tpiStream.GetFirstTypeIndex()];
 			DisplayEnumerates(typeRecord, GetLeafSize(static_cast<PDB::CodeView::TPI::TypeRecordKind>(record->data.LF_ENUM.utype)));
 
 			printf("}\n");

@@ -15,6 +15,7 @@ namespace
 		std::string name;
 		uint32_t rva;
 		uint32_t size;
+		const PDB::CodeView::DBI::Record* frameProc;
 	};
 }
 
@@ -70,7 +71,12 @@ void ExampleFunctionSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream
 				const char* name = nullptr;
 				uint32_t rva = 0u;
 				uint32_t size = 0u;
-				if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_THUNK32)
+				if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_FRAMEPROC)
+				{
+					functionSymbols[functionSymbols.size() - 1].frameProc = record;
+					return;
+				}
+				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_THUNK32)
 				{
 					if (record->data.S_THUNK32.thunk == PDB::CodeView::DBI::ThunkOrdinal::TrampolineIncremental)
 					{
@@ -117,7 +123,7 @@ void ExampleFunctionSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream
 					return;
 				}
 
-				functionSymbols.push_back(FunctionSymbol { name, rva, size });
+				functionSymbols.push_back(FunctionSymbol { name, rva, size, nullptr });
 				seenFunctionRVAs.emplace(rva);
 			});
 		}
