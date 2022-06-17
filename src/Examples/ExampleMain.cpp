@@ -122,6 +122,12 @@ int main(int argc, char** argv)
 		return 4;
 	}
 
+	const auto h = infoStream.GetHeader();
+	printf("Version %u, signature %u, age %u, GUID %08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x\n",
+		static_cast<uint32_t>(h->version), h->signature, h->age,
+		h->guid.Data1, h->guid.Data2, h->guid.Data3,
+		h->guid.Data4[0], h->guid.Data4[1], h->guid.Data4[2], h->guid.Data4[3], h->guid.Data4[4], h->guid.Data4[5], h->guid.Data4[6], h->guid.Data4[7]);
+
 	const PDB::DBIStream dbiStream = PDB::CreateDBIStream(rawPdbFile);
 	if (!HasValidDBIStreams(rawPdbFile, dbiStream))
 	{
