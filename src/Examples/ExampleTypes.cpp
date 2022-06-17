@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cinttypes>
 
 #include "Examples_PCH.h"
 #include "ExampleTimedScope.h"
@@ -38,7 +39,7 @@ uint8_t GetLeafSize(PDB::CodeView::TPI::TypeRecordKind kind)
 		return sizeof(PDB::CodeView::TPI::TypeRecordKind) + sizeof(uint64_t);
 
 	default:
-		printf("Error! 0x%04x bogus type encountered, aborting...\n", kind);
+		printf("Error! 0x%04x bogus type encountered, aborting...\n", (unsigned) kind);
 	}
 	return 0;
 }
@@ -719,7 +720,7 @@ void DisplayEnumerates(const PDB::CodeView::TPI::Record* record, uint8_t underly
 			break;
 		}
 
-		printf("%s = %llu\n", leafName, value);
+		printf("%s = %" PRIu64 "\n", leafName, value);
 
 		i += (leafName - reinterpret_cast<const char*>(fieldRecord));
 		i += strnlen(leafName, maximumSize - i - 1) + 1;
