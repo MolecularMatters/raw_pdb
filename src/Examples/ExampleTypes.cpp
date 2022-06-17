@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "Examples_PCH.h"
 #include "ExampleTimedScope.h"
 #include "PDB_RawFile.h"
