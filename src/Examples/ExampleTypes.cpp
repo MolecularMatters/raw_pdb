@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cinttypes>
 
 #include "Examples_PCH.h"
 #include "ExampleTimedScope.h"
@@ -719,7 +720,7 @@ void DisplayEnumerates(const PDB::CodeView::TPI::Record* record, uint8_t underly
 			break;
 		}
 
-		printf("%s = %llu\n", leafName, value);
+		printf("%s = %" PRIu64 "\n", leafName, value);
 
 		i += (leafName - reinterpret_cast<const char*>(fieldRecord));
 		i += strnlen(leafName, maximumSize - i - 1) + 1;
