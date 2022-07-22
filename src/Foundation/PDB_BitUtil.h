@@ -8,6 +8,11 @@
 #include <type_traits>
 #include "PDB_DisableWarningsPop.h"
 
+#ifdef _WIN32
+#include <intrin.h>
+#	pragma intrinsic(_BitScanForward)
+#endif
+
 
 namespace PDB
 {
