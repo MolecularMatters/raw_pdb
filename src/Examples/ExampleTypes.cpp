@@ -1,12 +1,12 @@
-#include <cstring>
-#include <cinttypes>
-
 #include "Examples_PCH.h"
 #include "ExampleTimedScope.h"
 #include "PDB_RawFile.h"
 #include "Foundation/PDB_Assert.h"
 #include "PDB_DBIStream.h"
 #include "PDB_TPIStream.h"
+
+#include <cstring>
+#include <cinttypes>
 
 #pragma warning(push)
 #pragma warning(disable : 4061)
