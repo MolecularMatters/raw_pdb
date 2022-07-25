@@ -32,26 +32,33 @@ namespace PDB
 			while (offset < m_stream.GetSize())
 			{
 				const CodeView::DBI::DebugSubsectionHeader* header = m_stream.GetDataAtOffset<const CodeView::DBI::DebugSubsectionHeader>(offset);
+				const uint32_t headerSize = header->size + sizeof(CodeView::DBI::DebugSubsectionHeader);
 
 				// Subsection is not lines, skip to next
 				if (header->kind != CodeView::DBI::DebugSubsectionKind::S_LINES)
 				{
-					offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + header->size, 4u);
+					offset += headerSize;
 					continue;
 				}
 
-				offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader), 4u);
+				uint32_t headerOffset = sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::LinesHeader);
+				
+				// read all blocks of lines
+				while (headerOffset < headerSize)
+				{
+					const CodeView::DBI::LinesFileBlockHeader* linesBlockHeader = m_stream.GetDataAtOffset<const CodeView::DBI::LinesFileBlockHeader>(offset + headerOffset);
+					const CodeView::DBI::Line* lines = m_stream.GetDataAtOffset<const CodeView::DBI::Line>(offset + headerOffset + sizeof(CodeView::DBI::LinesFileBlockHeader));
 
-				const CodeView::DBI::LinesHeader* linesHeader = m_stream.GetDataAtOffset<const CodeView::DBI::LinesHeader>(offset);
-				const CodeView::DBI::LinesFileBlockHeader* linesBlockHeader = m_stream.GetDataAtOffset<const CodeView::DBI::LinesFileBlockHeader>(offset + sizeof(CodeView::DBI::LinesHeader));
-				const CodeView::DBI::Line* lines = m_stream.GetDataAtOffset<const CodeView::DBI::Line>(offset + sizeof(CodeView::DBI::LinesHeader) + sizeof(CodeView::DBI::LinesFileBlockHeader));
+					(void)linesBlockHeader;
+					(void)lines;
 
-				(void)functor;
-				(void)linesHeader;
-				(void)linesBlockHeader;
-				(void)lines;
+					(void)functor;
 
-				offset = BitUtil::RoundUpToMultiple<size_t>(offset + header->size, 4u);
+					headerOffset += linesBlockHeader->size;
+				}
+
+				PDB_ASSERT(headerOffset == headerSize, "Mismatch between header offset %u and header size %u when reading S_LINES", headerOffset, headerSize);
+				offset += headerSize;
 			}
 		}
 
