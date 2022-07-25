@@ -503,7 +503,7 @@ namespace PDB
 			struct DebugSubsectionHeader
 			{
 				DebugSubsectionKind kind;
-				uint16_t size;
+				uint32_t size;
 			};
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4601
