@@ -1,12 +1,12 @@
-#include <cstring>
-#include <cinttypes>
-
 #include "Examples_PCH.h"
 #include "ExampleTimedScope.h"
 #include "PDB_RawFile.h"
 #include "Foundation/PDB_Assert.h"
 #include "PDB_DBIStream.h"
 #include "PDB_TPIStream.h"
+
+#include <cstring>
+#include <cinttypes>
 
 #pragma warning(push)
 #pragma warning(disable : 4061)
@@ -177,11 +177,13 @@ const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex, uin
 		switch (typeRecord->header.kind)
 		{
 		case PDB::CodeView::TPI::TypeRecordKind::LF_MODIFIER:
-			*modifierRecord = typeRecord;
+			if(modifierRecord)
+				*modifierRecord = typeRecord;
 			return GetTypeName(tpiStream, typeRecord->data.LF_MODIFIER.type, pointerLevel, nullptr, nullptr);
 		case PDB::CodeView::TPI::TypeRecordKind::LF_POINTER:
 			++pointerLevel;
-			*referencedType = typeRecord;
+			if(referencedType)
+				*referencedType = typeRecord;
 			if (typeRecord->data.LF_POINTER.utype >= typeIndexBegin)
 			{
 				underlyingType = tpiStream.GetTypeRecord(typeRecord->data.LF_POINTER.utype);

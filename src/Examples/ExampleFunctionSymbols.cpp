@@ -210,6 +210,7 @@ void ExampleFunctionSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream
 
 			const FunctionSymbol& nextSymbol = functionSymbols[i + 1u];
 			const size_t size = nextSymbol.rva - currentSymbol.rva;
+			(void)size; // unused
 			++foundCount;
 		}
 
