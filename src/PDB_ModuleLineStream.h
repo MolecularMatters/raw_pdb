@@ -41,6 +41,10 @@ namespace PDB
 					continue;
 				}
 
+				const CodeView::DBI::LinesHeader* linesHeader = m_stream.GetDataAtOffset<const CodeView::DBI::LinesHeader>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader));
+
+				(void)linesHeader;
+
 				uint32_t headerOffset = sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::LinesHeader);
 				
 				// read all blocks of lines
