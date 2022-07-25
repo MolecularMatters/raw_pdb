@@ -20,6 +20,7 @@ namespace
 }
 
 
+void ExampleFunctionSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream);
 void ExampleFunctionSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream)
 {
 	TimedScope total("\nRunning example \"Function symbols\"");
@@ -171,7 +172,7 @@ void ExampleFunctionSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream
 
 			// this is a new function symbol, so store it.
 			// note that we don't know its size yet.
-			functionSymbols.push_back(FunctionSymbol { record->data.S_PUB32.name, rva, 0u });
+			functionSymbols.push_back(FunctionSymbol { record->data.S_PUB32.name, rva, 0u, nullptr });
 		}
 
 		scope.Done(count);

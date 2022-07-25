@@ -12,9 +12,9 @@
 
 // Indicates to the compiler that the function returns an object that is not aliased by any other pointers.
 #if PDB_COMPILER_MSVC or PDB_COMPILER_CLANG
-#define PDB_NO_ALIAS								__declspec(restrict)
+#	define PDB_NO_ALIAS								__declspec(restrict)
 #else
-#define PDB_NO_ALIAS								__restrict
+#	define PDB_NO_ALIAS								__restrict
 #endif
 
 // Indicates to the compiler that the return value of a function or class should not be ignored.
@@ -113,16 +113,19 @@
 // MISCELLANEOUS
 // ------------------------------------------------------------------------------------------------
 
+// Trick to make other macros require a semicolon at the end.
+#define PDB_REQUIRE_SEMICOLON								static_assert(true, "")
+
 // Defines a C-like flexible array member.
-#define PDB_FLEXIBLE_ARRAY_MEMBER(_type, _name)					\
-	PDB_PUSH_WARNING_MSVC										\
-	PDB_PUSH_WARNING_CLANG										\
-	PDB_DISABLE_WARNING_MSVC(4200)								\
-	PDB_DISABLE_WARNING_CLANG("-Wc99-extensions")				\
-	PDB_DISABLE_WARNING_CLANG("-Wmicrosoft-flexible-array")		\
-	_type _name[0];												\
-	PDB_POP_WARNING_MSVC										\
-	PDB_POP_WARNING_CLANG
+#define PDB_FLEXIBLE_ARRAY_MEMBER(_type, _name)				\
+	PDB_PUSH_WARNING_MSVC									\
+	PDB_PUSH_WARNING_CLANG									\
+	PDB_DISABLE_WARNING_MSVC(4200)							\
+	PDB_DISABLE_WARNING_CLANG("-Wzero-length-array")		\
+	_type _name[0];											\
+	PDB_POP_WARNING_MSVC									\
+	PDB_POP_WARNING_CLANG									\
+	PDB_REQUIRE_SEMICOLON
 
 // Casts any value to the value of the underlying type.
-#define PDB_AS_UNDERLYING(_value)								static_cast<typename std::underlying_type<decltype(_value)>::type>(_value)
+#define PDB_AS_UNDERLYING(_value)							static_cast<typename std::underlying_type<decltype(_value)>::type>(_value)
