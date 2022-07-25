@@ -21,6 +21,7 @@
     <ClCompile Include="..\src\PDB_InfoStream.cpp" />
     <ClCompile Include="..\src\PDB_IPIStream.cpp" />
     <ClCompile Include="..\src\PDB_ModuleInfoStream.cpp" />
+    <ClCompile Include="..\src\PDB_ModuleLineStream.cpp" />
     <ClCompile Include="..\src\PDB_ModuleSymbolStream.cpp" />
     <ClCompile Include="..\src\PDB_PCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -60,6 +61,7 @@
     <ClInclude Include="..\src\PDB_IPIStream.h" />
     <ClInclude Include="..\src\PDB_IPITypes.h" />
     <ClInclude Include="..\src\PDB_ModuleInfoStream.h" />
+    <ClInclude Include="..\src\PDB_ModuleLineStream.h" />
     <ClInclude Include="..\src\PDB_ModuleSymbolStream.h" />
     <ClInclude Include="..\src\PDB_PCH.h" />
     <ClInclude Include="..\src\PDB_PublicSymbolStream.h" />
