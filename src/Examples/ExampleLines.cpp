@@ -151,12 +151,12 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 		sortScope.Done(lines.size());
 
-#if 0
+#if 1
 		// DIA2Dump style lines output
 		static const char hexChars[17] = "0123456789ABCDEF";
 		char checksumString[128];
 
-		printf("*** LINES RAW PDB\n")
+		printf("*** LINES RAW PDB\n");
 
 		for (const Line& line : lines)
 		{
