@@ -38,6 +38,7 @@ namespace PDB
 	private:
 		CoalescedMSFStream m_stream;
 		const Header* m_header;
+		uint32_t m_namesStreamIndex;
 		bool m_usesDebugFastlink;
 
 		PDB_DISABLE_COPY(InfoStream);
