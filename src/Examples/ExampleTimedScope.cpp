@@ -48,7 +48,7 @@ void TimedScope::Done(size_t count) const
 double TimedScope::ReadMilliseconds(void) const
 {
 	const std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
-	const std::chrono::duration<float> seconds = now - m_begin;
+	const std::chrono::duration<double> seconds = now - m_begin;
 	
 	return seconds.count() * 1000.0;
 }

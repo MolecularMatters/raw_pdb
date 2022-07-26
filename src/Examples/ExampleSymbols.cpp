@@ -21,6 +21,7 @@ namespace
 }
 
 
+void ExampleSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream);
 void ExampleSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream)
 {
 	TimedScope total("\nRunning example \"Symbols\"");

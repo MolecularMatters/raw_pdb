@@ -136,335 +136,335 @@ namespace PDB
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L328
 			enum class TypeIndexKind : uint16_t
 			{
-				NOTYPE = 0x0000u,			// uncharacterized type (no type)
-				ABS = 0x0001u,				// absolute symbol
-				SEGMENT = 0x0002u,			// segment type
-				_VOID = 0x0003u,			// void
-				HRESULT = 0x0008u,			// OLE/COM HRESULT
-				_32PHRESULT = 0x0408u,		// OLE/COM HRESULT __ptr32 *
-				_64PHRESULT = 0x0608u,		// OLE/COM HRESULT __ptr64 *
+				T_NOTYPE = 0x0000u,			// uncharacterized type (no type)
+				T_ABS = 0x0001u,				// absolute symbol
+				T_SEGMENT = 0x0002u,			// segment type
+				T_VOID = 0x0003u,			// void
+				T_HRESULT = 0x0008u,			// OLE/COM HRESULT
+				T_32PHRESULT = 0x0408u,		// OLE/COM HRESULT __ptr32 *
+				T_64PHRESULT = 0x0608u,		// OLE/COM HRESULT __ptr64 *
 
-				PVOID = 0x0103u,			// near pointer to void
-				PFVOID = 0x0203u,			// far pointer to void
-				PHVOID = 0x0303u,			// huge pointer to void
-				_32PVOID = 0x0403u,			// 32 bit pointer to void
-				_32PFVOID = 0x0503u,		// 16:32 pointer to void
-				_64PVOID = 0x0603u,			// 64 bit pointer to void
-				CURRENCY = 0x0004u,			// BASIC 8 byte currency value
-				NBASICSTR = 0x0005u,		// Near BASIC string
-				FBASICSTR = 0x0006u,		// Far BASIC string
-				NOTTRANS = 0x0007u,			// type not translated by cvpack
-				BIT = 0x0060u,				// bit
-				PASCHAR = 0x0061u,			// Pascal CHAR
-				BOOL32FF = 0x0062u,			// 32-bit BOOL where true is 0xffffffff
+				T_PVOID = 0x0103u,			// near pointer to void
+				T_PFVOID = 0x0203u,			// far pointer to void
+				T_PHVOID = 0x0303u,			// huge pointer to void
+				T_32PVOID = 0x0403u,			// 32 bit pointer to void
+				T_32PFVOID = 0x0503u,		// 16:32 pointer to void
+				T_64PVOID = 0x0603u,			// 64 bit pointer to void
+				T_CURRENCY = 0x0004u,			// BASIC 8 byte currency value
+				T_NBASICSTR = 0x0005u,		// Near BASIC string
+				T_FBASICSTR = 0x0006u,		// Far BASIC string
+				T_NOTTRANS = 0x0007u,			// type not translated by cvpack
+				T_BIT = 0x0060u,				// bit
+				T_PASCHAR = 0x0061u,			// Pascal CHAR
+				T_BOOL32FF = 0x0062u,			// 32-bit BOOL where true is 0xffffffff
 
-				CHAR = 0x0010u,				// 8 bit signed
-				PCHAR = 0x0110u,			// 16 bit pointer to 8 bit signed
-				PFCHAR = 0x0210u,			// 16:16 far pointer to 8 bit signed
-				PHCHAR = 0x0310u,			// 16:16 huge pointer to 8 bit signed
-				_32PCHAR = 0x0410u,			// 32 bit pointer to 8 bit signed
-				_32PFCHAR = 0x0510u,		// 16:32 pointer to 8 bit signed
-				_64PCHAR = 0x0610u,			// 64 bit pointer to 8 bit signed
+				T_CHAR = 0x0010u,				// 8 bit signed
+				T_PCHAR = 0x0110u,			// 16 bit pointer to 8 bit signed
+				T_PFCHAR = 0x0210u,			// 16:16 far pointer to 8 bit signed
+				T_PHCHAR = 0x0310u,			// 16:16 huge pointer to 8 bit signed
+				T_32PCHAR = 0x0410u,			// 32 bit pointer to 8 bit signed
+				T_32PFCHAR = 0x0510u,		// 16:32 pointer to 8 bit signed
+				T_64PCHAR = 0x0610u,			// 64 bit pointer to 8 bit signed
 
-				UCHAR = 0x0020u,			// 8 bit unsigned
-				PUCHAR = 0x0120u,			// 16 bit pointer to 8 bit unsigned
-				PFUCHAR = 0x0220u,			// 16:16 far pointer to 8 bit unsigned
-				PHUCHAR = 0x0320u,			// 16:16 huge pointer to 8 bit unsigned
-				_32PUCHAR = 0x0420u,		// 32 bit pointer to 8 bit unsigned
-				_32PFUCHAR = 0x0520u,		// 16:32 pointer to 8 bit unsigned
-				_64PUCHAR = 0x0620u,		// 64 bit pointer to 8 bit unsigned
+				T_UCHAR = 0x0020u,			// 8 bit unsigned
+				T_PUCHAR = 0x0120u,			// 16 bit pointer to 8 bit unsigned
+				T_PFUCHAR = 0x0220u,			// 16:16 far pointer to 8 bit unsigned
+				T_PHUCHAR = 0x0320u,			// 16:16 huge pointer to 8 bit unsigned
+				T_32PUCHAR = 0x0420u,		// 32 bit pointer to 8 bit unsigned
+				T_32PFUCHAR = 0x0520u,		// 16:32 pointer to 8 bit unsigned
+				T_64PUCHAR = 0x0620u,		// 64 bit pointer to 8 bit unsigned
 
-				RCHAR = 0x0070u,			// really a char
-				PRCHAR = 0x0170u,			// 16 bit pointer to a real char
-				PFRCHAR = 0x0270u,			// 16:16 far pointer to a real char
-				PHRCHAR = 0x0370u,			// 16:16 huge pointer to a real char
-				_32PRCHAR = 0x0470u,		// 32 bit pointer to a real char
-				_32PFRCHAR = 0x0570u,		// 16:32 pointer to a real char
-				_64PRCHAR = 0x0670u,		// 64 bit pointer to a real char
+				T_RCHAR = 0x0070u,			// really a char
+				T_PRCHAR = 0x0170u,			// 16 bit pointer to a real char
+				T_PFRCHAR = 0x0270u,			// 16:16 far pointer to a real char
+				T_PHRCHAR = 0x0370u,			// 16:16 huge pointer to a real char
+				T_32PRCHAR = 0x0470u,		// 32 bit pointer to a real char
+				T_32PFRCHAR = 0x0570u,		// 16:32 pointer to a real char
+				T_64PRCHAR = 0x0670u,		// 64 bit pointer to a real char
 
 				// wide character types
-				WCHAR = 0x0071u,			// wide char
-				PWCHAR = 0x0171u,			// 16 bit pointer to a wide char
-				PFWCHAR = 0x0271u,			// 16:16 far pointer to a wide char
-				PHWCHAR = 0x0371u,			// 16:16 huge pointer to a wide char
-				_32PWCHAR = 0x0471u,		// 32 bit pointer to a wide char
-				_32PFWCHAR = 0x0571u,		// 16:32 pointer to a wide char
-				_64PWCHAR = 0x0671u,		// 64 bit pointer to a wide char
+				T_WCHAR = 0x0071u,			// wide char
+				T_PWCHAR = 0x0171u,			// 16 bit pointer to a wide char
+				T_PFWCHAR = 0x0271u,			// 16:16 far pointer to a wide char
+				T_PHWCHAR = 0x0371u,			// 16:16 huge pointer to a wide char
+				T_32PWCHAR = 0x0471u,		// 32 bit pointer to a wide char
+				T_32PFWCHAR = 0x0571u,		// 16:32 pointer to a wide char
+				T_64PWCHAR = 0x0671u,		// 64 bit pointer to a wide char
 
 				// 16-bit unicode char
-				CHAR16 = 0x007au,			// 16-bit unicode char
-				PCHAR16 = 0x017au,			// 16 bit pointer to a 16-bit unicode char
-				PFCHAR16 = 0x027au,			// 16:16 far pointer to a 16-bit unicode char
-				PHCHAR16 = 0x037au,			// 16:16 huge pointer to a 16-bit unicode char
-				_32PCHAR16 = 0x047au,		// 32 bit pointer to a 16-bit unicode char
-				_32PFCHAR16 = 0x057au,		// 16:32 pointer to a 16-bit unicode char
-				_64PCHAR16 = 0x067au,		// 64 bit pointer to a 16-bit unicode char
+				T_CHAR16 = 0x007au,			// 16-bit unicode char
+				T_PCHAR16 = 0x017au,			// 16 bit pointer to a 16-bit unicode char
+				T_PFCHAR16 = 0x027au,			// 16:16 far pointer to a 16-bit unicode char
+				T_PHCHAR16 = 0x037au,			// 16:16 huge pointer to a 16-bit unicode char
+				T_32PCHAR16 = 0x047au,		// 32 bit pointer to a 16-bit unicode char
+				T_32PFCHAR16 = 0x057au,		// 16:32 pointer to a 16-bit unicode char
+				T_64PCHAR16 = 0x067au,		// 64 bit pointer to a 16-bit unicode char
 
 				// 32-bit unicode char
-				CHAR32 = 0x007bu,			// 32-bit unicode char
-				PCHAR32 = 0x017bu,			// 16 bit pointer to a 32-bit unicode char
-				PFCHAR32 = 0x027bu,			// 16:16 far pointer to a 32-bit unicode char
-				PHCHAR32 = 0x037bu,			// 16:16 huge pointer to a 32-bit unicode char
-				_32PCHAR32 = 0x047bu,		// 32 bit pointer to a 32-bit unicode char
-				_32PFCHAR32 = 0x057bu,		// 16:32 pointer to a 32-bit unicode char
-				_64PCHAR32 = 0x067bu,		// 64 bit pointer to a 32-bit unicode char
+				T_CHAR32 = 0x007bu,			// 32-bit unicode char
+				T_PCHAR32 = 0x017bu,			// 16 bit pointer to a 32-bit unicode char
+				T_PFCHAR32 = 0x027bu,			// 16:16 far pointer to a 32-bit unicode char
+				T_PHCHAR32 = 0x037bu,			// 16:16 huge pointer to a 32-bit unicode char
+				T_32PCHAR32 = 0x047bu,		// 32 bit pointer to a 32-bit unicode char
+				T_32PFCHAR32 = 0x057bu,		// 16:32 pointer to a 32-bit unicode char
+				T_64PCHAR32 = 0x067bu,		// 64 bit pointer to a 32-bit unicode char
 
 				// 8 bit int types
-				INT1 = 0x0068u,				// 8 bit signed int
-				PINT1 = 0x0168u,			// 16 bit pointer to 8 bit signed int
-				PFINT1 = 0x0268u,			// 16:16 far pointer to 8 bit signed int
-				PHINT1 = 0x0368u,			// 16:16 huge pointer to 8 bit signed int
-				_32PINT1 = 0x0468u,			// 32 bit pointer to 8 bit signed int
-				_32PFINT1 = 0x0568u,		// 16:32 pointer to 8 bit signed int
-				_64PINT1 = 0x0668u,			// 64 bit pointer to 8 bit signed int
+				T_INT1 = 0x0068u,				// 8 bit signed int
+				T_PINT1 = 0x0168u,			// 16 bit pointer to 8 bit signed int
+				T_PFINT1 = 0x0268u,			// 16:16 far pointer to 8 bit signed int
+				T_PHINT1 = 0x0368u,			// 16:16 huge pointer to 8 bit signed int
+				T_32PINT1 = 0x0468u,			// 32 bit pointer to 8 bit signed int
+				T_32PFINT1 = 0x0568u,		// 16:32 pointer to 8 bit signed int
+				T_64PINT1 = 0x0668u,			// 64 bit pointer to 8 bit signed int
 
-				_UINT1 = 0x0069u,			// 8 bit unsigned int
-				_PUINT1 = 0x0169u,			// 16 bit pointer to 8 bit unsigned int
-				_PFUINT1 = 0x0269u,			// 16:16 far pointer to 8 bit unsigned int
-				_PHUINT1 = 0x0369u,			// 16:16 huge pointer to 8 bit unsigned int
-				_32PUINT1 = 0x0469u,		// 32 bit pointer to 8 bit unsigned int
-				_32PFUINT1 = 0x0569u,		// 16:32 pointer to 8 bit unsigned int
-				_64PUINT1 = 0x0669u,		// 64 bit pointer to 8 bit unsigned int
+				T_UINT1 = 0x0069u,			// 8 bit unsigned int
+				T_PUINT1 = 0x0169u,			// 16 bit pointer to 8 bit unsigned int
+				T_PFUINT1 = 0x0269u,			// 16:16 far pointer to 8 bit unsigned int
+				T_PHUINT1 = 0x0369u,			// 16:16 huge pointer to 8 bit unsigned int
+				T_32PUINT1 = 0x0469u,		// 32 bit pointer to 8 bit unsigned int
+				T_32PFUINT1 = 0x0569u,		// 16:32 pointer to 8 bit unsigned int
+				T_64PUINT1 = 0x0669u,		// 64 bit pointer to 8 bit unsigned int
 
 				// 16 bit short types
-				SHORT = 0x0011u,			// 16 bit signed
-				PSHORT = 0x0111u,			// 16 bit pointer to 16 bit signed
-				PFSHORT = 0x0211u,			// 16:16 far pointer to 16 bit signed
-				PHSHORT = 0x0311u,			// 16:16 huge pointer to 16 bit signed
-				_32PSHORT = 0x0411u,		// 32 bit pointer to 16 bit signed
-				_32PFSHORT = 0x0511u,		// 16:32 pointer to 16 bit signed
-				_64PSHORT = 0x0611u,		// 64 bit pointer to 16 bit signed
+				T_SHORT = 0x0011u,			// 16 bit signed
+				T_PSHORT = 0x0111u,			// 16 bit pointer to 16 bit signed
+				T_PFSHORT = 0x0211u,			// 16:16 far pointer to 16 bit signed
+				T_PHSHORT = 0x0311u,			// 16:16 huge pointer to 16 bit signed
+				T_32PSHORT = 0x0411u,		// 32 bit pointer to 16 bit signed
+				T_32PFSHORT = 0x0511u,		// 16:32 pointer to 16 bit signed
+				T_64PSHORT = 0x0611u,		// 64 bit pointer to 16 bit signed
 
-				USHORT = 0x0021u,
-				PUSHORT = 0x0121u,
-				PFUSHORT = 0x0221u,
-				PHUSHORT = 0x0321u,
-				_32PUSHORT = 0x0421u,
-				_32PFUSHORT = 0x0521u,
-				_64PUSHORT = 0x0621u,
+				T_USHORT = 0x0021u,
+				T_PUSHORT = 0x0121u,
+				T_PFUSHORT = 0x0221u,
+				T_PHUSHORT = 0x0321u,
+				T_32PUSHORT = 0x0421u,
+				T_32PFUSHORT = 0x0521u,
+				T_64PUSHORT = 0x0621u,
 
-				INT2 = 0x0072u,
-				PINT2 = 0x0172u,
-				PFINT2 = 0x0272u,
-				PHINT2 = 0x0372u,
-				_32PINT2 = 0x0472u,
-				_32PFINT2 = 0x0572u,
-				_64PINT2 = 0x0672u,
+				T_INT2 = 0x0072u,
+				T_PINT2 = 0x0172u,
+				T_PFINT2 = 0x0272u,
+				T_PHINT2 = 0x0372u,
+				T_32PINT2 = 0x0472u,
+				T_32PFINT2 = 0x0572u,
+				T_64PINT2 = 0x0672u,
 
-				UINT2 = 0x0073u,
-				PUINT2 = 0x0173u,
-				PFUINT2 = 0x0273u,
-				PHUINT2 = 0x0373u,
-				_32PUINT2 = 0x0473u,
-				_32PFUINT2 = 0x0573u,
-				_64PUINT2 = 0x0673u,
+				T_UINT2 = 0x0073u,
+				T_PUINT2 = 0x0173u,
+				T_PFUINT2 = 0x0273u,
+				T_PHUINT2 = 0x0373u,
+				T_32PUINT2 = 0x0473u,
+				T_32PFUINT2 = 0x0573u,
+				T_64PUINT2 = 0x0673u,
 
-				LONG = 0x0012u,
-				PLONG = 0x0112u,
-				PFLONG = 0x0212u,
-				PHLONG = 0x0312u,
-				_32PLONG = 0x0412u,
-				_32PFLONG = 0x0512u,
-				_64PLONG = 0x0612u,
+				T_LONG = 0x0012u,
+				T_PLONG = 0x0112u,
+				T_PFLONG = 0x0212u,
+				T_PHLONG = 0x0312u,
+				T_32PLONG = 0x0412u,
+				T_32PFLONG = 0x0512u,
+				T_64PLONG = 0x0612u,
 
-				ULONG = 0x0022u,
-				PULONG = 0x0122u,
-				PFULONG = 0x0222u,
-				PHULONG = 0x0322u,
-				_32PULONG = 0x0422u,
-				_32PFULONG = 0x0522u,
-				_64PULONG = 0x0622u,
+				T_ULONG = 0x0022u,
+				T_PULONG = 0x0122u,
+				T_PFULONG = 0x0222u,
+				T_PHULONG = 0x0322u,
+				T_32PULONG = 0x0422u,
+				T_32PFULONG = 0x0522u,
+				T_64PULONG = 0x0622u,
 
-				INT4 = 0x0074u,
-				PINT4 = 0x0174u,
-				PFINT4 = 0x0274u,
-				PHINT4 = 0x0374u,
-				_32PINT4 = 0x0474u,
-				_32PFINT4 = 0x0574u,
-				_64PINT4 = 0x0674u,
+				T_INT4 = 0x0074u,
+				T_PINT4 = 0x0174u,
+				T_PFINT4 = 0x0274u,
+				T_PHINT4 = 0x0374u,
+				T_32PINT4 = 0x0474u,
+				T_32PFINT4 = 0x0574u,
+				T_64PINT4 = 0x0674u,
 
-				UINT4 = 0x0075u,
-				PUINT4 = 0x0175u,
-				PFUINT4 = 0x0275u,
-				PHUINT4 = 0x0375u,
-				_32PUINT4 = 0x0475u,
-				_32PFUINT4 = 0x0575u,
-				_64PUINT4 = 0x0675u,
+				T_UINT4 = 0x0075u,
+				T_PUINT4 = 0x0175u,
+				T_PFUINT4 = 0x0275u,
+				T_PHUINT4 = 0x0375u,
+				T_32PUINT4 = 0x0475u,
+				T_32PFUINT4 = 0x0575u,
+				T_64PUINT4 = 0x0675u,
 
-				QUAD = 0x0013u,
-				PQUAD = 0x0113u,
-				PFQUAD = 0x0213u,
-				PHQUAD = 0x0313u,
-				_32PQUAD = 0x0413u,
-				_32PFQUAD = 0x0513u,
-				_64PQUAD = 0x0613u,
+				T_QUAD = 0x0013u,
+				T_PQUAD = 0x0113u,
+				T_PFQUAD = 0x0213u,
+				T_PHQUAD = 0x0313u,
+				T_32PQUAD = 0x0413u,
+				T_32PFQUAD = 0x0513u,
+				T_64PQUAD = 0x0613u,
 
-				UQUAD = 0x0023u,
-				PUQUAD = 0x0123u,
-				PFUQUAD = 0x0223u,
-				PHUQUAD = 0x0323u,
-				_32PUQUAD = 0x0423u,
-				_32PFUQUAD = 0x0523u,
-				_64PUQUAD = 0x0623u,
+				T_UQUAD = 0x0023u,
+				T_PUQUAD = 0x0123u,
+				T_PFUQUAD = 0x0223u,
+				T_PHUQUAD = 0x0323u,
+				T_32PUQUAD = 0x0423u,
+				T_32PFUQUAD = 0x0523u,
+				T_64PUQUAD = 0x0623u,
 
-				INT8 = 0x0076u,
-				PINT8 = 0x0176u,
-				PFINT8 = 0x0276u,
-				PHINT8 = 0x0376u,
-				_32PINT8 = 0x0476u,
-				_32PFINT8 = 0x0576u,
-				_64PINT8 = 0x0676u,
+				T_INT8 = 0x0076u,
+				T_PINT8 = 0x0176u,
+				T_PFINT8 = 0x0276u,
+				T_PHINT8 = 0x0376u,
+				T_32PINT8 = 0x0476u,
+				T_32PFINT8 = 0x0576u,
+				T_64PINT8 = 0x0676u,
 
-				UINT8 = 0x0077u,
-				PUINT8 = 0x0177u,
-				PFUINT8 = 0x0277u,
-				PHUINT8 = 0x0377u,
-				_32PUINT8 = 0x0477u,
-				_32PFUINT8 = 0x0577u,
-				_64PUINT8 = 0x0677u,
+				T_UINT8 = 0x0077u,
+				T_PUINT8 = 0x0177u,
+				T_PFUINT8 = 0x0277u,
+				T_PHUINT8 = 0x0377u,
+				T_32PUINT8 = 0x0477u,
+				T_32PFUINT8 = 0x0577u,
+				T_64PUINT8 = 0x0677u,
 
-				OCT = 0x0014u,
-				POCT = 0x0114u,
-				PFOCT = 0x0214u,
-				PHOCT = 0x0314u,
-				_32POCT = 0x0414u,
-				_32PFOCT = 0x0514u,
-				_64POCT = 0x0614u,
+				T_OCT = 0x0014u,
+				T_POCT = 0x0114u,
+				T_PFOCT = 0x0214u,
+				T_PHOCT = 0x0314u,
+				T_32POCT = 0x0414u,
+				T_32PFOCT = 0x0514u,
+				T_64POCT = 0x0614u,
 
-				UOCT = 0x0024u,
-				PUOCT = 0x0124u,
-				PFUOCT = 0x0224u,
-				PHUOCT = 0x0324u,
-				_32PUOCT = 0x0424u,
-				_32PFUOCT = 0x0524u,
-				_64PUOCT = 0x0624u,
+				T_UOCT = 0x0024u,
+				T_PUOCT = 0x0124u,
+				T_PFUOCT = 0x0224u,
+				T_PHUOCT = 0x0324u,
+				T_32PUOCT = 0x0424u,
+				T_32PFUOCT = 0x0524u,
+				T_64PUOCT = 0x0624u,
 
-				INT16 = 0x0078u,
-				PINT16 = 0x0178u,
-				PFINT16 = 0x0278u,
-				PHINT16 = 0x0378u,
-				_32PINT16 = 0x0478u,
-				_32PFINT16 = 0x0578u,
-				_64PINT16 = 0x0678u,
+				T_INT16 = 0x0078u,
+				T_PINT16 = 0x0178u,
+				T_PFINT16 = 0x0278u,
+				T_PHINT16 = 0x0378u,
+				T_32PINT16 = 0x0478u,
+				T_32PFINT16 = 0x0578u,
+				T_64PINT16 = 0x0678u,
 
-				UINT16 = 0x0079u,
-				PUINT16 = 0x0179u,
-				PFUINT16 = 0x0279u,
-				PHUINT16 = 0x0379u,
-				_32PUINT16 = 0x0479u,
-				_32PFUINT16 = 0x0579u,
-				_64PUINT16 = 0x0679u,
+				T_UINT16 = 0x0079u,
+				T_PUINT16 = 0x0179u,
+				T_PFUINT16 = 0x0279u,
+				T_PHUINT16 = 0x0379u,
+				T_32PUINT16 = 0x0479u,
+				T_32PFUINT16 = 0x0579u,
+				T_64PUINT16 = 0x0679u,
 
-				REAL32 = 0x0040u,
-				PREAL32 = 0x0140u,
-				PFREAL32 = 0x0240u,
-				PHREAL32 = 0x0340u,
-				_32PREAL32 = 0x0440u,
-				_32PFREAL32 = 0x0540u,
-				_64PREAL32 = 0x0640u,
+				T_REAL32 = 0x0040u,
+				T_PREAL32 = 0x0140u,
+				T_PFREAL32 = 0x0240u,
+				T_PHREAL32 = 0x0340u,
+				T_32PREAL32 = 0x0440u,
+				T_32PFREAL32 = 0x0540u,
+				T_64PREAL32 = 0x0640u,
 
-				REAL48 = 0x0044u,
-				PREAL48 = 0x0144u,
-				PFREAL48 = 0x0244u,
-				PHREAL48 = 0x0344u,
-				_32PREAL48 = 0x0444u,
-				_32PFREAL48 = 0x0544u,
-				_64PREAL48 = 0x0644u,
+				T_REAL48 = 0x0044u,
+				T_PREAL48 = 0x0144u,
+				T_PFREAL48 = 0x0244u,
+				T_PHREAL48 = 0x0344u,
+				T_32PREAL48 = 0x0444u,
+				T_32PFREAL48 = 0x0544u,
+				T_64PREAL48 = 0x0644u,
 
-				REAL64 = 0x0041u,
-				PREAL64 = 0x0141u,
-				PFREAL64 = 0x0241u,
-				PHREAL64 = 0x0341u,
-				_32PREAL64 = 0x0441u,
-				_32PFREAL64 = 0x0541u,
-				_64PREAL64 = 0x0641u,
+				T_REAL64 = 0x0041u,
+				T_PREAL64 = 0x0141u,
+				T_PFREAL64 = 0x0241u,
+				T_PHREAL64 = 0x0341u,
+				T_32PREAL64 = 0x0441u,
+				T_32PFREAL64 = 0x0541u,
+				T_64PREAL64 = 0x0641u,
 
-				REAL80 = 0x0042u,
-				PREAL80 = 0x0142u,
-				PFREAL80 = 0x0242u,
-				PHREAL80 = 0x0342u,
-				_32PREAL80 = 0x0442u,
-				_32PFREAL80 = 0x0542u,
-				_64PREAL80 = 0x0642u,
+				T_REAL80 = 0x0042u,
+				T_PREAL80 = 0x0142u,
+				T_PFREAL80 = 0x0242u,
+				T_PHREAL80 = 0x0342u,
+				T_32PREAL80 = 0x0442u,
+				T_32PFREAL80 = 0x0542u,
+				T_64PREAL80 = 0x0642u,
 
-				REAL128 = 0x0043u,
-				PREAL128 = 0x0143u,
-				PFREAL128 = 0x0243u,
-				PHREAL128 = 0x0343u,
-				_32PREAL128 = 0x0443u,
-				_32PFREAL128 = 0x0543u,
-				_64PREAL128 = 0x0643u,
+				T_REAL128 = 0x0043u,
+				T_PREAL128 = 0x0143u,
+				T_PFREAL128 = 0x0243u,
+				T_PHREAL128 = 0x0343u,
+				T_32PREAL128 = 0x0443u,
+				T_32PFREAL128 = 0x0543u,
+				T_64PREAL128 = 0x0643u,
 
-				CPLX32 = 0x0050u,
-				PCPLX32 = 0x0150u,
-				PFCPLX32 = 0x0250u,
-				PHCPLX32 = 0x0350u,
-				_32PCPLX32 = 0x0450u,
-				_32PFCPLX32 = 0x0550u,
-				_64PCPLX32 = 0x0650u,
+				T_CPLX32 = 0x0050u,
+				T_PCPLX32 = 0x0150u,
+				T_PFCPLX32 = 0x0250u,
+				T_PHCPLX32 = 0x0350u,
+				T_32PCPLX32 = 0x0450u,
+				T_32PFCPLX32 = 0x0550u,
+				T_64PCPLX32 = 0x0650u,
 
-				CPLX64 = 0x0051u,
-				PCPLX64 = 0x0151u,
-				PFCPLX64 = 0x0251u,
-				PHCPLX64 = 0x0351u,
-				_32PCPLX64 = 0x0451u,
-				_32PFCPLX64 = 0x0551u,
-				_64PCPLX64 = 0x0651u,
+				T_CPLX64 = 0x0051u,
+				T_PCPLX64 = 0x0151u,
+				T_PFCPLX64 = 0x0251u,
+				T_PHCPLX64 = 0x0351u,
+				T_32PCPLX64 = 0x0451u,
+				T_32PFCPLX64 = 0x0551u,
+				T_64PCPLX64 = 0x0651u,
 
-				CPLX80 = 0x0052u,
-				PCPLX80 = 0x0152u,
-				PFCPLX80 = 0x0252u,
-				PHCPLX80 = 0x0352u,
-				_32PCPLX80 = 0x0452u,
-				_32PFCPLX80 = 0x0552u,
-				_64PCPLX80 = 0x0652u,
+				T_CPLX80 = 0x0052u,
+				T_PCPLX80 = 0x0152u,
+				T_PFCPLX80 = 0x0252u,
+				T_PHCPLX80 = 0x0352u,
+				T_32PCPLX80 = 0x0452u,
+				T_32PFCPLX80 = 0x0552u,
+				T_64PCPLX80 = 0x0652u,
 
-				CPLX128 = 0x0053u,
-				PCPLX128 = 0x0153u,
-				PFCPLX128 = 0x0253u,
-				PHCPLX128 = 0x0353u,
-				_32PCPLX128 = 0x0453u,
-				_32PFCPLX128 = 0x0553u,
-				_64PCPLX128 = 0x0653u,
+				T_CPLX128 = 0x0053u,
+				T_PCPLX128 = 0x0153u,
+				T_PFCPLX128 = 0x0253u,
+				T_PHCPLX128 = 0x0353u,
+				T_32PCPLX128 = 0x0453u,
+				T_32PFCPLX128 = 0x0553u,
+				T_64PCPLX128 = 0x0653u,
 
-				BOOL08 = 0x0030u,
-				PBOOL08 = 0x0130u,
-				PFBOOL08 = 0x0230u,
-				PHBOOL08 = 0x0330u,
-				_32PBOOL08 = 0x0430u,
-				_32PFBOOL08 = 0x0530u,
-				_64PBOOL08 = 0x0630u,
+				T_BOOL08 = 0x0030u,
+				T_PBOOL08 = 0x0130u,
+				T_PFBOOL08 = 0x0230u,
+				T_PHBOOL08 = 0x0330u,
+				T_32PBOOL08 = 0x0430u,
+				T_32PFBOOL08 = 0x0530u,
+				T_64PBOOL08 = 0x0630u,
 
-				BOOL16 = 0x0031u,
-				PBOOL16 = 0x0131u,
-				PFBOOL16 = 0x0231u,
-				PHBOOL16 = 0x0331u,
-				_32PBOOL16 = 0x0431u,
-				_32PFBOOL16 = 0x0531u,
-				_64PBOOL16 = 0x0631u,
+				T_BOOL16 = 0x0031u,
+				T_PBOOL16 = 0x0131u,
+				T_PFBOOL16 = 0x0231u,
+				T_PHBOOL16 = 0x0331u,
+				T_32PBOOL16 = 0x0431u,
+				T_32PFBOOL16 = 0x0531u,
+				T_64PBOOL16 = 0x0631u,
 
-				BOOL32 = 0x0032u,
-				PBOOL32 = 0x0132u,
-				PFBOOL32 = 0x0232u,
-				PHBOOL32 = 0x0332u,
-				_32PBOOL32 = 0x0432u,
-				_32PFBOOL32 = 0x0532u,
-				_64PBOOL32 = 0x0632u,
+				T_BOOL32 = 0x0032u,
+				T_PBOOL32 = 0x0132u,
+				T_PFBOOL32 = 0x0232u,
+				T_PHBOOL32 = 0x0332u,
+				T_32PBOOL32 = 0x0432u,
+				T_32PFBOOL32 = 0x0532u,
+				T_64PBOOL32 = 0x0632u,
 
-				BOOL64 = 0x0033u,
-				PBOOL64 = 0x0133u,
-				PFBOOL64 = 0x0233u,
-				PHBOOL64 = 0x0333u,
-				_32PBOOL64 = 0x0433u,
-				_32PFBOOL64 = 0x0533u,
-				_64PBOOL64 = 0x0633u,
+				T_BOOL64 = 0x0033u,
+				T_PBOOL64 = 0x0133u,
+				T_PFBOOL64 = 0x0233u,
+				T_PHBOOL64 = 0x0333u,
+				T_32PBOOL64 = 0x0433u,
+				T_32PFBOOL64 = 0x0533u,
+				T_64PBOOL64 = 0x0633u,
 
-				NCVPTR = 0x01F0u,
-				FCVPTR = 0x02F0u,
-				HCVPTR = 0x03F0u,
-				_32NCVPTR = 0x04F0u,
-				_32FCVPTR = 0x05F0u,
-				_64NCVPTR = 0x06F0u,
+				T_NCVPTR = 0x01F0u,
+				T_FCVPTR = 0x02F0u,
+				T_HCVPTR = 0x03F0u,
+				T_32NCVPTR = 0x04F0u,
+				T_32FCVPTR = 0x05F0u,
+				T_64NCVPTR = 0x06F0u
 			};
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvconst.h#L31
@@ -660,7 +660,7 @@ namespace PDB
 					struct
 					{
 						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, mList);
-					}LF_METHODLIST;
+					} LF_METHODLIST;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2131
 					struct
@@ -669,7 +669,7 @@ namespace PDB
 						uint16_t		pad0;							// internal padding, must be 0
 						uint32_t		index;							// index to type record for procedure
 						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, vbaseoff);	// offset in vfunctable if
-					}METHOD;
+					} METHOD;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1801
 					struct
@@ -682,7 +682,7 @@ namespace PDB
 						uint16_t		parmcount;      // number of parameters
 						uint32_t        arglist;        // type index of argument list
 						int32_t         thisadjust;     // this adjuster (long because pad required anyway)
-					}LF_MFUNCTION;
+					} LF_MFUNCTION;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1460
 					struct

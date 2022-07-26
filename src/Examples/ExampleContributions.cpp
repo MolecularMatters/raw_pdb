@@ -22,6 +22,7 @@ namespace
 }
 
 
+void ExampleContributions(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream);
 void ExampleContributions(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream)
 {
 	TimedScope total("\nRunning example \"Contributions\"");
