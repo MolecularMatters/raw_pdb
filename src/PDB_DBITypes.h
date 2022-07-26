@@ -539,17 +539,16 @@ namespace PDB
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4608
 			struct LinesFileBlockHeader
 			{
-				int32_t fileChecksumOffset;
-				int32_t numLines;
-				int32_t size;
+				uint32_t fileChecksumOffset;
+				uint32_t numLines;
+				uint32_t size;
 				// Line lines[numLines];
 				// Column columns[numLines]; Might not be present
 				PDB_FLEXIBLE_ARRAY_MEMBER(Line, lines);
 				
-				Column* GetColumns()
+				bool HasColumns() const
 				{
-					Column* columns = reinterpret_cast<Column*>(&lines[numLines]);
-					return columns;
+					return size_t(size) > (sizeof(LinesFileBlockHeader) + (numLines * sizeof(Line)));
 				}
 
 				const Column* GetColumns() const

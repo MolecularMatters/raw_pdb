@@ -44,10 +44,23 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 				{
 					moduleLineStream.ForEachLinesBlock(section, [](const PDB::CodeView::DBI::LinesFileBlockHeader* linesBlockHeader)
 					{
-						for(int32_t i = 0, size = linesBlockHeader->numLines; i < size; ++i)
+						for(uint32_t i = 0, size = linesBlockHeader->numLines; i < size; ++i)
 						{
 							const PDB::CodeView::DBI::Line& line = linesBlockHeader->lines[i];
 							(void)line;
+						}
+
+						if (!linesBlockHeader->HasColumns())
+						{
+							return;
+						}
+
+						const PDB::CodeView::DBI::Column* columns = linesBlockHeader->GetColumns();
+
+						for (uint32_t i = 0, size = linesBlockHeader->numLines; i < size; ++i)
+						{
+							const PDB::CodeView::DBI::Column& column = columns[i];
+							(void)column;
 						}
 					});
 				}
