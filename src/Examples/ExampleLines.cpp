@@ -116,5 +116,19 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 		}
 
 		scope.Done(modules.GetLength());
+
+		TimedScope sortScope("std::sort lines");
+
+		std::sort(lines.begin(), lines.end(), [](const Line& lhs, const Line& rhs)
+		{
+			if (lhs.sectionIndex == rhs.sectionIndex)
+			{
+				return lhs.sectionOffset < rhs.sectionOffset;
+			}
+
+			return lhs.sectionIndex < rhs.sectionIndex;
+		});
+
+		sortScope.Done(lines.size());
 	}
 }
