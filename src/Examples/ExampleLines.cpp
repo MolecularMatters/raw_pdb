@@ -13,12 +13,6 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 	// in order to keep the example easy to understand, we load the PDB data serially.
 	// note that this can be improved a lot by reading streams concurrently.
 
-	// prepare the image section stream first. it is needed for converting section + offset into an RVA
-	TimedScope sectionScope("Reading image section stream");
-	const PDB::ImageSectionStream imageSectionStream = dbiStream.CreateImageSectionStream(rawPdbFile);
-	sectionScope.Done();
-
-
 	// prepare the module info stream for grabbing function symbols from modules
 	TimedScope moduleScope("Reading module info stream");
 	const PDB::ModuleInfoStream moduleInfoStream = dbiStream.CreateModuleInfoStream(rawPdbFile);
@@ -69,9 +63,12 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 					moduleLineStream.ForEachFileChecksum(section, [](const PDB::CodeView::DBI::FileChecksumHeader* fileChecksumHeader)
 					{
 						(void)fileChecksumHeader;
-
 					});
 
+				}
+				else
+				{
+					PDB_ASSERT(false, "Header Kind %u not handled", (uint32_t)section->header.kind);
 				}
 			});
 
