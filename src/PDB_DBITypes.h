@@ -506,27 +506,8 @@ namespace PDB
 				uint32_t size;
 			};
 
-			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4601
-			struct LinesHeader 
-			{
-				int32_t  sectionOffset;
-				uint16_t sectionIndex;
-				uint16_t flags;
-				int32_t  codeSize;
-			};
-
-			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4608
-			struct LinesFileBlockHeader
-			{
-				int32_t fileChecksumIndex;
-				int32_t numLines;
-				int32_t size;
-				// Line lines[numLines];
-				// Column columns[numColums];
-			};
-
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4617
-			struct Line 
+			struct Line
 			{
 				uint32_t offset;             // Offset to start of code bytes for line number
 				uint32_t linenumStart : 24;  // line where statement/expression starts
@@ -535,10 +516,76 @@ namespace PDB
 			};
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4630
-			struct Column 
+			struct Column
 			{
 				uint16_t start;
 				uint16_t end;
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4601
+			struct LinesHeader 
+			{
+				int32_t  sectionOffset;
+				uint16_t sectionIndex;
+				struct
+				{
+					uint16_t fHasColumns : 1;
+					uint16_t pad : 15;
+				} flags;
+
+				int32_t  codeSize;
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4608
+			struct LinesFileBlockHeader
+			{
+				int32_t fileChecksumOffset;
+				int32_t numLines;
+				int32_t size;
+				// Line lines[numLines];
+				// Column columns[numLines]; Might not be present
+				PDB_FLEXIBLE_ARRAY_MEMBER(Line, lines);
+				
+				Column* GetColumns()
+				{
+					Column* columns = reinterpret_cast<Column*>(&lines[numLines]);
+					return columns;
+				}
+
+				const Column* GetColumns() const
+				{
+					const Column* columns = reinterpret_cast<const Column*>(&lines[numLines]);
+					return columns;
+				}
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvconst.h#L88
+			enum class PDB_NO_DISCARD ChecksumKind : uint8_t
+			{
+				None = 0,
+				MD5 = 1,
+				SHA1 = 2,
+				SHA256 = 3,
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/cvdump/dumpsym7.cpp#L1097
+			struct FileChecksumHeader
+			{
+				uint32_t filenameOffset;
+				uint8_t  checksumSize;
+				ChecksumKind checkKind;
+				PDB_FLEXIBLE_ARRAY_MEMBER(uint8_t, checksum);
+			};
+
+			// Combine DebugSubsectionHeader and first subsection header into one struct.
+			struct LineSection
+			{
+				DebugSubsectionHeader header;
+				union
+				{
+					LinesHeader linesHeader;
+					FileChecksumHeader checksumHeader;
+				};
 			};
 		}
 	}

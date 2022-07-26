@@ -9,15 +9,15 @@
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 PDB::ModuleLineStream::ModuleLineStream(void) PDB_NO_EXCEPT
-	: m_stream(), m_lineInfoOffset(0)
+	: m_stream(), m_c13LineInfoOffset(0)
 {
 }
 
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB::ModuleLineStream::ModuleLineStream(const RawFile& file, uint16_t streamIndex, uint32_t streamSize, size_t lineInfoOffset) PDB_NO_EXCEPT
-	: m_stream(file.CreateMSFStream<CoalescedMSFStream>(streamIndex, streamSize)), m_lineInfoOffset(lineInfoOffset)
+PDB::ModuleLineStream::ModuleLineStream(const RawFile& file, uint16_t streamIndex, uint32_t streamSize, size_t c13LineInfoOffset) PDB_NO_EXCEPT
+	: m_stream(file.CreateMSFStream<CoalescedMSFStream>(streamIndex, streamSize)), m_c13LineInfoOffset(c13LineInfoOffset)
 {
 	// https://llvm.org/docs/PDB/ModiStream.html
 	// struct ModiStream {

@@ -38,10 +38,28 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 			const PDB::ModuleLineStream moduleLineStream = module.CreateLineStream(rawPdbFile);
 
-			moduleLineStream.ForEachLineBlock([](const PDB::CodeView::DBI::Line* lines, int32_t numLines)
+			moduleLineStream.ForEachSection([&moduleLineStream](const PDB::CodeView::DBI::LineSection* section)
 			{
-					(void)lines;
-					(void)numLines;
+				if (section->header.kind == PDB::CodeView::DBI::DebugSubsectionKind::S_LINES)
+				{
+					moduleLineStream.ForEachLinesBlock(section, [](const PDB::CodeView::DBI::LinesFileBlockHeader* linesBlockHeader)
+					{
+						for(int32_t i = 0, size = linesBlockHeader->numLines; i < size; ++i)
+						{
+							const PDB::CodeView::DBI::Line& line = linesBlockHeader->lines[i];
+							(void)line;
+						}
+					});
+				}
+				else if (section->header.kind == PDB::CodeView::DBI::DebugSubsectionKind::S_FILECHECKSUMS)
+				{
+					moduleLineStream.ForEachFileChecksum(section, [](const PDB::CodeView::DBI::FileChecksumHeader* fileChecksumHeader)
+					{
+						(void)fileChecksumHeader;
+
+					});
+
+				}
 			});
 
 		}
