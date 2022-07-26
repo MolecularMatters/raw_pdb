@@ -525,7 +525,7 @@ namespace PDB
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4601
 			struct LinesHeader 
 			{
-				uint32_t  sectionOffset;
+				uint32_t sectionOffset;
 				uint16_t sectionIndex;
 				struct
 				{

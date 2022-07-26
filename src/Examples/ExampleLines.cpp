@@ -11,10 +11,10 @@ namespace
 {
 	struct Line
 	{
-		uint32_t byteOffset;
 		uint32_t lineNumber;
 		uint16_t sectionIndex;
 		uint32_t sectionOffset;
+		uint32_t codeSize;
 		uint32_t fileChecksumsOffset;
 		uint32_t namesFilenameOffset;
 		PDB::CodeView::DBI::ChecksumKind checksumKind;
@@ -61,14 +61,28 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 				{
 					moduleLineStream.ForEachLinesBlock(section, [&lines, &section](const PDB::CodeView::DBI::LinesFileBlockHeader* linesBlockHeader)
 					{
-						for(uint32_t i = 0, size = linesBlockHeader->numLines; i < size; ++i)
+						const PDB::CodeView::DBI::Line& firstLine = linesBlockHeader->lines[0];
+
+						lines.push_back({ firstLine.linenumStart,
+								section->linesHeader.sectionIndex, section->linesHeader.sectionOffset + firstLine.offset, 0,
+								linesBlockHeader->fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None });
+
+						uint32_t offset = 0;
+
+						for(uint32_t i = 1, size = linesBlockHeader->numLines; i < size; ++i)
 						{
 							const PDB::CodeView::DBI::Line& line = linesBlockHeader->lines[i];
 
-							lines.push_back({ line.offset, line.linenumStart, 
-												section->linesHeader.sectionIndex, section->linesHeader.sectionOffset,
+							lines.back().codeSize = line.offset - offset;
+
+							lines.push_back({ line.linenumStart,
+												section->linesHeader.sectionIndex, section->linesHeader.sectionOffset + line.offset, 0,
 												linesBlockHeader->fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None});
+
+							offset = line.offset;
 						}
+
+						lines.back().codeSize = section->linesHeader.codeSize - offset;
 
 						if (!linesBlockHeader->HasColumns())
 						{
