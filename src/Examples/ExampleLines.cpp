@@ -5,8 +5,9 @@
 #include "ExampleTimedScope.h"
 #include "PDB_RawFile.h"
 #include "PDB_DBIStream.h"
+#include "PDB_NamesStream.h"
 
-void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream)
+void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::NamesStream& namesStream)
 {
 	TimedScope total("\nRunning example \"Lines\"");
 
@@ -32,7 +33,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 			const PDB::ModuleLineStream moduleLineStream = module.CreateLineStream(rawPdbFile);
 
-			moduleLineStream.ForEachSection([&moduleLineStream](const PDB::CodeView::DBI::LineSection* section)
+			moduleLineStream.ForEachSection([&moduleLineStream, &namesStream](const PDB::CodeView::DBI::LineSection* section)
 			{
 				if (section->header.kind == PDB::CodeView::DBI::DebugSubsectionKind::S_LINES)
 				{
@@ -60,9 +61,10 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 				}
 				else if (section->header.kind == PDB::CodeView::DBI::DebugSubsectionKind::S_FILECHECKSUMS)
 				{
-					moduleLineStream.ForEachFileChecksum(section, [](const PDB::CodeView::DBI::FileChecksumHeader* fileChecksumHeader)
+					moduleLineStream.ForEachFileChecksum(section, [&namesStream](const PDB::CodeView::DBI::FileChecksumHeader* fileChecksumHeader)
 					{
-						(void)fileChecksumHeader;
+						const char* filename = namesStream.GetFilename(fileChecksumHeader->filenameOffset);
+						(void)filename;
 					});
 
 				}

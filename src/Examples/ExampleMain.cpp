@@ -8,6 +8,7 @@
 #include "PDB_InfoStream.h"
 #include "PDB_DBIStream.h"
 #include "PDB_TPIStream.h"
+#include "PDB_NamesStream.h"
 
 namespace
 {
@@ -75,7 +76,7 @@ namespace
 extern void ExampleSymbols(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleContributions(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleFunctionSymbols(const PDB::RawFile&, const PDB::DBIStream&);
-extern void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream);
+extern void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::NamesStream& namesStream);
 extern void ExampleTypes(const PDB::TPIStream&);
 
 int main(int argc, char** argv)
@@ -123,6 +124,8 @@ int main(int argc, char** argv)
 		return 4;
 	}
 
+	const PDB::NamesStream namesStream = infoStream.CreateNamesStream(rawPdbFile);
+
 	const auto h = infoStream.GetHeader();
 	printf("Version %u, signature %u, age %u, GUID %08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x\n",
 		static_cast<uint32_t>(h->version), h->signature, h->age,
@@ -149,7 +152,7 @@ int main(int argc, char** argv)
 	ExampleContributions(rawPdbFile, dbiStream);
 	ExampleSymbols(rawPdbFile, dbiStream);
 	ExampleFunctionSymbols(rawPdbFile, dbiStream);
-	ExampleLines(rawPdbFile, dbiStream);
+	ExampleLines(rawPdbFile, dbiStream, namesStream);
 	ExampleTypes(tpiStream);
 
 	MemoryMappedFile::Close(pdbFile);

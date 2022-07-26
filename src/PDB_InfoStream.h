@@ -6,7 +6,7 @@
 #include "Foundation/PDB_Macros.h"
 #include "PDB_Types.h"
 #include "PDB_CoalescedMSFStream.h"
-
+#include "PDB_NamesStream.h"
 
 namespace PDB
 {
@@ -34,6 +34,8 @@ namespace PDB
 		{
 			return m_usesDebugFastlink;
 		}
+
+		PDB_NO_DISCARD NamesStream CreateNamesStream(const RawFile& file) const PDB_NO_EXCEPT;
 
 	private:
 		CoalescedMSFStream m_stream;

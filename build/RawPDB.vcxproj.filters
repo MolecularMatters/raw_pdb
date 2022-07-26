@@ -66,6 +66,9 @@
     <ClCompile Include="..\src\PDB_ModuleLineStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\PDB_NamesStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\PDB.h">
@@ -177,6 +180,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\PDB_ModuleLineStream.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PDB_NamesStream.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
