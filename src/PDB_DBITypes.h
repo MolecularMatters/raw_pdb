@@ -525,7 +525,7 @@ namespace PDB
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4601
 			struct LinesHeader 
 			{
-				int32_t  sectionOffset;
+				uint32_t  sectionOffset;
 				uint16_t sectionIndex;
 				struct
 				{
@@ -572,7 +572,7 @@ namespace PDB
 			{
 				uint32_t filenameOffset;
 				uint8_t  checksumSize;
-				ChecksumKind checkKind;
+				ChecksumKind checksumKind;
 				PDB_FLEXIBLE_ARRAY_MEMBER(uint8_t, checksum);
 			};
 

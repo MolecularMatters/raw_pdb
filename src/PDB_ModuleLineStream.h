@@ -86,6 +86,12 @@ namespace PDB
 			PDB_ASSERT(offset == headerEnd, "Mismatch between offset %zu and header end %zu when reading file checksums", offset, headerEnd);
 		}
 
+		static const CodeView::DBI::FileChecksumHeader* GetFileChecksumHeaderAtOffset(const CodeView::DBI::FileChecksumHeader* firstFileChecksumHeader, uint32_t byteOffset) PDB_NO_EXCEPT
+		{
+			const uint8_t* bytePointer = reinterpret_cast<const uint8_t*>(firstFileChecksumHeader) + byteOffset;
+			return reinterpret_cast<const PDB::CodeView::DBI::FileChecksumHeader*>(bytePointer);
+		}
+
 	private:
 		CoalescedMSFStream m_stream;
 		size_t m_c13LineInfoOffset;
