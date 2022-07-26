@@ -17,6 +17,9 @@ namespace
 		uint32_t sectionOffset;
 		uint32_t fileChecksumsOffset;
 		uint32_t namesFilenameOffset;
+		PDB::CodeView::DBI::ChecksumKind checksumKind;
+		uint8_t  checksumSize;
+		uint8_t  checksum[32];
 	};
 }
 
@@ -64,7 +67,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 							lines.push_back({ line.offset, line.linenumStart, 
 												section->linesHeader.sectionIndex, section->linesHeader.sectionOffset,
-												linesBlockHeader->fileChecksumOffset, 0});
+												linesBlockHeader->fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None});
 						}
 
 						if (!linesBlockHeader->HasColumns())
@@ -98,20 +101,23 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 				}
 			});
 	
-			// look up and store NamesStream filename offset for all lines added in this module
+			// look up FileChecksumHeader each line added in this module
 			for (size_t i = moduleLinesStartIndex, size = lines.size(); i < size; ++i)
 			{
 				Line& line = lines[i];
 
-				// look up FileChecksumHeader which contains the NamesStream filename offset.
+				// look up FileChecksumHeader
 				const PDB::CodeView::DBI::FileChecksumHeader* checksumHeader = PDB::ModuleLineStream::GetFileChecksumHeaderAtOffset(moduleFileChecksumHeader, line.fileChecksumsOffset);
 
 				PDB_ASSERT(checksumHeader->checksumKind >= PDB::CodeView::DBI::ChecksumKind::None && 
 							checksumHeader->checksumKind <= PDB::CodeView::DBI::ChecksumKind::SHA256,
 							"Invalid checksum kind %u", checksumHeader->checksumKind);
 
-				// store NamesStream filename offset.
+				// store FileChecksumHeader values
 				line.namesFilenameOffset = checksumHeader->filenameOffset;
+				line.checksumKind = checksumHeader->checksumKind;
+				line.checksumSize = checksumHeader->checksumSize;
+				std::memcpy(line.checksum, checksumHeader->checksum, checksumHeader->checksumSize);
 			}
 		}
 
