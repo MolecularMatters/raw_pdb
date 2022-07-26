@@ -151,28 +151,42 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 		sortScope.Done(lines.size());
 
-#if 1
+#if 0
 		// DIA2Dump style lines output
 		static const char hexChars[17] = "0123456789ABCDEF";
 		char checksumString[128];
 
 		printf("*** LINES RAW PDB\n");
 
+		const char* prevFilename = nullptr;
+
 		for (const Line& line : lines)
 		{
 			const char* filename = namesStream.GetFilename(line.namesFilenameOffset);
 			
-			for (size_t i = 0, j = 0; i < line.checksumSize; ++i, j+=2)
+			const uint32_t rva = line.sectionOffset; // TODO: Figure out how to calc correctly.
+
+			if (filename != prevFilename)
 			{
-				checksumString[j]   = hexChars[line.checksum[i] >> 4];
-				checksumString[j+1] = hexChars[line.checksum[i] & 0xF];
+				for (size_t i = 0, j = 0; i < line.checksumSize; ++i, j += 2)
+				{
+					checksumString[j] = hexChars[line.checksum[i] >> 4];
+					checksumString[j + 1] = hexChars[line.checksum[i] & 0xF];
+				}
+
+				checksumString[line.checksumSize * 2] = '\0';
+
+				printf("	line %u at [0x%08X][0x%04X:0x%08X], len = 0x%X %s (0x%02X: %s)\n",
+					line.lineNumber, rva, line.sectionIndex, line.sectionOffset, line.codeSize,
+					filename, line.checksumKind, checksumString);
+	
+				prevFilename = filename;
 			}
-
-			checksumString[line.checksumSize * 2] = '\0';
-
-			printf("	line %u at [0x%04X:0x%08X], len = 0x%X %s (0x%02X: %s)\n",
-				line.lineNumber, line.sectionIndex, line.sectionOffset, line.codeSize,
-				filename, line.checksumKind, checksumString);
+			else
+			{
+				printf("	line %u at [0x%08X][0x%04X:0x%08X], len = 0x%X\n",
+					line.lineNumber, rva, line.sectionIndex, line.sectionOffset, line.codeSize);
+			}
 		}
 #endif
 	}
