@@ -5,7 +5,7 @@
 #include "ExampleTimedScope.h"
 #include "PDB_RawFile.h"
 #include "PDB_DBIStream.h"
-#include "PDB_NamesStream.h"
+#include "PDB_InfoStream.h"
 
 namespace
 {
@@ -23,12 +23,20 @@ namespace
 	};
 }
 
-void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::NamesStream& namesStream)
+void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::InfoStream& infoStream)
 {
+	if (!infoStream.HasNamesStream())
+	{
+		printf("PDB has no '/names' stream for looking up filenames for lines, skipping \"Lines\" example.");
+		return;
+	}
+
 	TimedScope total("\nRunning example \"Lines\"");
 
-	// in order to keep the example easy to understand, we load the PDB data serially.
-	// note that this can be improved a lot by reading streams concurrently.
+	// prepare names stream for grabbing file paths from lines
+	TimedScope namesScope("Reading names stream");
+	const PDB::NamesStream namesStream = infoStream.CreateNamesStream(rawPdbFile);
+	namesScope.Done();
 
 	// prepare the module info stream for grabbing function symbols from modules
 	TimedScope moduleScope("Reading module info stream");
@@ -36,7 +44,6 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 	moduleScope.Done();
 
 	std::vector<Line> lines;
-	lines.reserve(1024);
 
 	{
 		TimedScope scope("Storing lines from modules");
@@ -115,7 +122,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 				}
 			});
 	
-			// look up FileChecksumHeader each line added in this module
+			// look up FileChecksumHeader data for each line added for this module module
 			for (size_t i = moduleLinesStartIndex, size = lines.size(); i < size; ++i)
 			{
 				Line& line = lines[i];

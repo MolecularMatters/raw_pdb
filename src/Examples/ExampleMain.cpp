@@ -76,7 +76,7 @@ namespace
 extern void ExampleSymbols(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleContributions(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleFunctionSymbols(const PDB::RawFile&, const PDB::DBIStream&);
-extern void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::NamesStream& namesStream);
+extern void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::InfoStream& infoStream);
 extern void ExampleTypes(const PDB::TPIStream&);
 
 int main(int argc, char** argv)
@@ -123,8 +123,6 @@ int main(int argc, char** argv)
 
 		return 4;
 	}
-
-	const PDB::NamesStream namesStream = infoStream.CreateNamesStream(rawPdbFile);
 
 	const auto h = infoStream.GetHeader();
 	printf("Version %u, signature %u, age %u, GUID %08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x\n",
