@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 	ExampleContributions(rawPdbFile, dbiStream);
 	ExampleSymbols(rawPdbFile, dbiStream);
 	ExampleFunctionSymbols(rawPdbFile, dbiStream);
-	ExampleLines(rawPdbFile, dbiStream, namesStream);
+	ExampleLines(rawPdbFile, dbiStream, infoStream);
 	ExampleTypes(tpiStream);
 
 	MemoryMappedFile::Close(pdbFile);
