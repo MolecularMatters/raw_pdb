@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------------------------
 
 // Indicates to the compiler that the function returns an object that is not aliased by any other pointers.
-#if PDB_COMPILER_MSVC or PDB_COMPILER_CLANG
+#if PDB_COMPILER_MSVC || PDB_COMPILER_CLANG
 #	define PDB_NO_ALIAS								__declspec(restrict)
 #else
 #	define PDB_NO_ALIAS								__restrict

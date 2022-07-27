@@ -95,9 +95,10 @@ void PDB::DirectMSFStream::ReadAtOffset(void* destination, size_t size, size_t o
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD const uint32_t* PDB::DirectMSFStream::GetBlockIndicesForOffset(uint32_t offset) const PDB_NO_EXCEPT
+PDB_NO_DISCARD const uint32_t* PDB::DirectMSFStream::GetBlockIndicesForOffset(uint32_t offset, size_t& offsetWithinBlock) const PDB_NO_EXCEPT
 {
 	const size_t firstBlockIndex = offset >> m_blockSizeLog2;
+	offsetWithinBlock = offset & (m_blockSize - 1u);
 
 	return m_blockIndices + firstBlockIndex;
 }
