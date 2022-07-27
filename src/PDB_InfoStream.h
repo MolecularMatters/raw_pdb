@@ -35,6 +35,10 @@ namespace PDB
 			return m_usesDebugFastlink;
 		}
 
+		// Returns whether the module has a names stream.
+		PDB_NO_DISCARD bool HasNamesStream(void) const PDB_NO_EXCEPT;
+
+		// Create names stream
 		PDB_NO_DISCARD NamesStream CreateNamesStream(const RawFile& file) const PDB_NO_EXCEPT;
 
 	private:

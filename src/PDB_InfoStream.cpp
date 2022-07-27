@@ -85,6 +85,11 @@ PDB::InfoStream::InfoStream(const RawFile& file) PDB_NO_EXCEPT
 	}
 }
 
+bool PDB::InfoStream::HasNamesStream(void) const PDB_NO_EXCEPT
+{
+	return m_namesStreamIndex != 0;
+}
+
 PDB::NamesStream PDB::InfoStream::CreateNamesStream(const RawFile& file) const PDB_NO_EXCEPT
 {
 	return NamesStream(file, m_namesStreamIndex);
