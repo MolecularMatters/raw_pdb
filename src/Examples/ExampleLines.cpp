@@ -126,9 +126,28 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 					moduleFileChecksumHeader = &lineSection->checksumHeader;
 				}
+				else if (lineSection->header.kind == PDB::CodeView::DBI::DebugSubsectionKind::S_INLINEELINES)
+				{
+					if (lineSection->inlineeHeader.kind == PDB::CodeView::DBI::InlineeSourceLineKind::Signature)
+					{
+						moduleLineStream.ForEachInlineeSourceLine(lineSection, [](const PDB::CodeView::DBI::InlineeSourceLine* inlineeSourceLine)
+						{
+							(void)inlineeSourceLine;
+
+						});
+					}
+					else
+					{
+						moduleLineStream.ForEachInlineeSourceLineEx(lineSection, [](const PDB::CodeView::DBI::InlineeSourceLineEx* inlineeSourceLineEx)
+						{
+							(void)inlineeSourceLineEx;
+
+						});
+					}
+				}
 				else
 				{
-					PDB_ASSERT(false, "Header Kind 0x%X not handled", (uint32_t)lineSection->header.kind);
+					PDB_ASSERT(false, "Line Section kind 0x%X not handled", (uint32_t)lineSection->header.kind);
 				}
 			});
 	

@@ -47,7 +47,7 @@ namespace PDB
 			size_t offset = m_stream.GetPointerOffset(section);
 			const size_t headerEnd = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + section->header.size, 4u);
 
-			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::LinesHeader), 4u);  ;
+			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::LinesHeader), 4u); ;
 
 			// read all blocks of lines
 			while (offset < headerEnd)
@@ -84,6 +84,56 @@ namespace PDB
 			}
 
 			PDB_ASSERT(offset == headerEnd, "Mismatch between offset %zu and header end %zu when reading file checksums", offset, headerEnd);
+		}
+
+		template <typename F>
+		void ForEachInlineeSourceLine(const CodeView::DBI::LineSection* section, F&& functor) const PDB_NO_EXCEPT
+		{
+			PDB_ASSERT(section->header.kind == CodeView::DBI::DebugSubsectionKind::S_INLINEELINES,
+				"DebugSubsectionHeader::Kind %X != S_INLINEELINES (%X)", (uint32_t)section->header.kind, (uint32_t)CodeView::DBI::DebugSubsectionKind::S_INLINEELINES);
+
+			PDB_ASSERT(section->inlineeHeader.kind == CodeView::DBI::InlineeSourceLineKind::Signature,
+				"InlineeSourceLineKind %X != :InlineeSourceLineKind::Signature (%X)", (uint32_t)section->header.kind, (uint32_t)CodeView::DBI::InlineeSourceLineKind::Signature);
+
+			size_t offset = m_stream.GetPointerOffset(section);
+			const size_t headerEnd = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader) + section->header.size, 4u);
+
+			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader), 4u); ;
+
+			// read all file checksums
+			while (offset < headerEnd)
+			{
+				const CodeView::DBI::InlineeSourceLine* inlineeSourceLine = m_stream.GetDataAtOffset<const CodeView::DBI::InlineeSourceLine>(offset);
+
+				functor(inlineeSourceLine);
+
+				offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::InlineeSourceLine), 4u);
+			}
+		}
+
+		template <typename F>
+		void ForEachInlineeSourceLineEx(const CodeView::DBI::LineSection* section, F&& functor) const PDB_NO_EXCEPT
+		{
+			PDB_ASSERT(section->header.kind == CodeView::DBI::DebugSubsectionKind::S_INLINEELINES,
+				"DebugSubsectionHeader::Kind %X != S_INLINEELINES (%X)", (uint32_t)section->header.kind, (uint32_t)CodeView::DBI::DebugSubsectionKind::S_INLINEELINES);
+
+			PDB_ASSERT(section->inlineeHeader.kind == CodeView::DBI::InlineeSourceLineKind::SignatureEx,
+				"InlineeSourceLineKind %X != :InlineeSourceLineKind::SignatureEx (%X)", (uint32_t)section->header.kind, (uint32_t)CodeView::DBI::InlineeSourceLineKind::SignatureEx);
+
+			size_t offset = m_stream.GetPointerOffset(section);
+			const size_t headerEnd = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader) + section->header.size, 4u);
+
+			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader), 4u); ;
+
+			// read all file checksums
+			while (offset < headerEnd)
+			{
+				const CodeView::DBI::InlineeSourceLineEx* inlineeSourceLineEx = m_stream.GetDataAtOffset<const CodeView::DBI::InlineeSourceLineEx>(offset);
+
+				functor(inlineeSourceLineEx);
+
+				offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::InlineeSourceLineEx) + ((inlineeSourceLineEx-1)->extraLines*sizeof(uint32_t)), 4u);
+			}
 		}
 
 		static const CodeView::DBI::FileChecksumHeader* GetFileChecksumHeaderAtOffset(const CodeView::DBI::FileChecksumHeader* firstFileChecksumHeader, uint32_t byteOffset) PDB_NO_EXCEPT
