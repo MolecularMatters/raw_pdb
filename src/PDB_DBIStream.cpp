@@ -62,6 +62,14 @@ namespace
 
 	// ------------------------------------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
+	PDB_NO_DISCARD static inline uint32_t HasDebugHeaderSubstream(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
+	{
+		return dbiHeader.optionalDebugHeaderSize != 0;
+	}
+
+
+	// ------------------------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetDebugHeaderSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
 		return GetECSubstreamOffset(dbiHeader) + dbiHeader.ecSize;
@@ -122,6 +130,12 @@ PDB_NO_DISCARD PDB::DBIStream PDB::CreateDBIStream(const RawFile& file) PDB_NO_E
 // ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidImageSectionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
 {
+	// The debug header stream is optional. If it's not there, we can't get the image section stream either.
+	if (!HasDebugHeaderSubstream(m_header))
+	{
+		return ErrorCode::InvalidStreamIndex;
+	}
+
 	// find the debug header sub-stream
 	const uint32_t debugHeaderOffset = GetDebugHeaderSubstreamOffset(m_header);
 	const DBI::DebugHeader& debugHeader = m_stream.ReadAtOffset<DBI::DebugHeader>(debugHeaderOffset);

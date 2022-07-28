@@ -53,7 +53,7 @@ namespace PDB
 		friend class CoalescedMSFStream;
 
 		// Returns the block indices that correspond to the given offset.
-		PDB_NO_DISCARD const uint32_t* GetBlockIndicesForOffset(uint32_t offset) const PDB_NO_EXCEPT;
+		PDB_NO_DISCARD const uint32_t* GetBlockIndicesForOffset(uint32_t offset, size_t& offsetWithinBlock) const PDB_NO_EXCEPT;
 
 		// Returns the offset into the data that corresponds to the given offset.
 		PDB_NO_DISCARD size_t GetDataOffsetForOffset(uint32_t offset) const PDB_NO_EXCEPT;
