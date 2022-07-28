@@ -62,9 +62,9 @@ namespace
 
 	// ------------------------------------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
-	PDB_NO_DISCARD static inline uint32_t HasDebugHeaderSubstream(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
+	PDB_NO_DISCARD static inline bool HasDebugHeaderSubstream(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
-		return dbiHeader.optionalDebugHeaderSize != 0;
+		return dbiHeader.optionalDebugHeaderSize != 0u;
 	}
 
 
