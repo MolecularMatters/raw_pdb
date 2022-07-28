@@ -139,18 +139,17 @@ PDB::CoalescedMSFStream::CoalescedMSFStream(const DirectMSFStream& directStream,
 	, m_data(nullptr)
 	, m_size(size)
 {
-	size_t offsetWithinBlock;
-	const uint32_t* const blockIndicesForOffset = directStream.GetBlockIndicesForOffset(offset, offsetWithinBlock);
+	const DirectMSFStream::IndexAndOffset indexAndOffset = directStream.GetBlockIndexForOffset(offset);
 
 	// Note: we need to add the offset within the block to the size of the stream to determine if the block
 	// indices are contiguous. This is needed to deal with the case where reading the requested number of bytes
 	// from the specified offset would cross a block boundary. For example, if the offset within the block is
 	// 64 and we want to read 4096 bytes with a block size of 4096, we need to consider *two* block indices,
 	// not *one*, even though 4096 / 4096 = 1.
-	if (AreBlockIndicesContiguous(blockIndicesForOffset, directStream.GetBlockSize(), offsetWithinBlock + size))
+	if (AreBlockIndicesContiguous(directStream.GetBlockIndices() + indexAndOffset.index, directStream.GetBlockSize(), indexAndOffset.offsetWithinBlock + size))
 	{
 		// fast path, all block indices inside the direct stream from (data + offset) to (data + offset + size) are contiguous
-		const size_t offsetWithinData = directStream.GetDataOffsetForOffset(offset);
+		const size_t offsetWithinData = directStream.GetDataOffsetForIndexAndOffset(indexAndOffset);
 		m_data = Pointer::Offset<const Byte*>(directStream.GetData(), offsetWithinData);
 	}
 	else

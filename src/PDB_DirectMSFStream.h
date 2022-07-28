@@ -52,16 +52,28 @@ namespace PDB
 	private:
 		friend class CoalescedMSFStream;
 
-		// Returns the block indices that correspond to the given offset.
-		PDB_NO_DISCARD const uint32_t* GetBlockIndicesForOffset(uint32_t offset, size_t& offsetWithinBlock) const PDB_NO_EXCEPT;
+		struct IndexAndOffset
+		{
+			uint32_t index;
+			uint32_t offsetWithinBlock;
+		};
 
-		// Returns the offset into the data that corresponds to the given offset.
-		PDB_NO_DISCARD size_t GetDataOffsetForOffset(uint32_t offset) const PDB_NO_EXCEPT;
+		// Returns the block index and offset within the block that correspond to the given offset.
+		PDB_NO_DISCARD IndexAndOffset GetBlockIndexForOffset(uint32_t offset) const PDB_NO_EXCEPT;
+
+		// Returns the offset into the data that corresponds to the given indices and offset within a block.
+		PDB_NO_DISCARD size_t GetDataOffsetForIndexAndOffset(const IndexAndOffset& indexAndOffset) const PDB_NO_EXCEPT;
 
 		// Provides read-only access to the memory-mapped data.
 		PDB_NO_DISCARD inline const void* GetData(void) const PDB_NO_EXCEPT
 		{
 			return m_data;
+		}
+
+		// Provides read-only access to the block indices.
+		PDB_NO_DISCARD inline const uint32_t* GetBlockIndices(void) const PDB_NO_EXCEPT
+		{
+			return m_blockIndices;
 		}
 
 		const void* m_data;

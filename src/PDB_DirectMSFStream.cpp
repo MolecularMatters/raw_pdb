@@ -95,25 +95,22 @@ void PDB::DirectMSFStream::ReadAtOffset(void* destination, size_t size, size_t o
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD const uint32_t* PDB::DirectMSFStream::GetBlockIndicesForOffset(uint32_t offset, size_t& offsetWithinBlock) const PDB_NO_EXCEPT
+PDB_NO_DISCARD PDB::DirectMSFStream::IndexAndOffset PDB::DirectMSFStream::GetBlockIndexForOffset(uint32_t offset) const PDB_NO_EXCEPT
 {
-	const size_t firstBlockIndex = offset >> m_blockSizeLog2;
-	offsetWithinBlock = offset & (m_blockSize - 1u);
+	// work out which block and offset within the block the offset corresponds to
+	const uint32_t blockIndex = offset >> m_blockSizeLog2;
+	const uint32_t offsetWithinBlock = offset & (m_blockSize - 1u);
 
-	return m_blockIndices + firstBlockIndex;
+	return IndexAndOffset { blockIndex, offsetWithinBlock };
 }
 
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD size_t PDB::DirectMSFStream::GetDataOffsetForOffset(uint32_t offset) const PDB_NO_EXCEPT
+PDB_NO_DISCARD size_t PDB::DirectMSFStream::GetDataOffsetForIndexAndOffset(const IndexAndOffset& indexAndOffset) const PDB_NO_EXCEPT
 {
-	// work out which block and offset within the block the offset corresponds to
-	const size_t blockIndex = offset >> m_blockSizeLog2;
-	const size_t offsetWithinBlock = offset & (m_blockSize - 1u);
-
 	// work out the offset within the data based on the block indices
-	const size_t offsetWithinData = (m_blockIndices[blockIndex] << m_blockSizeLog2) + offsetWithinBlock;
+	const size_t offsetWithinData = (m_blockIndices[indexAndOffset.index] << m_blockSizeLog2) + indexAndOffset.offsetWithinBlock;
 
 	return offsetWithinData;
 }

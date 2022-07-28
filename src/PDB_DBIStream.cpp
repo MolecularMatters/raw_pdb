@@ -130,7 +130,7 @@ PDB_NO_DISCARD PDB::DBIStream PDB::CreateDBIStream(const RawFile& file) PDB_NO_E
 // ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidImageSectionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
 {
-	// The debug header stream is optional. If it's not there, we can't get the image section stream either.
+	// the debug header stream is optional. if it's not there, we can't get the image section stream either.
 	if (!HasDebugHeaderSubstream(m_header))
 	{
 		return ErrorCode::InvalidStreamIndex;
