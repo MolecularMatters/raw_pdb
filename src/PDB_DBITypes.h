@@ -564,12 +564,6 @@ namespace PDB
 				PDB_FLEXIBLE_ARRAY_MEMBER(uint8_t, checksum);
 			};
 
-			struct ItemId
-			{
-				uint32_t id : 31;
-				uint32_t fCrossImport : 1;
-			};
-
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4822
 			enum class InlineeSourceLineKind : uint32_t
 			{
@@ -582,17 +576,17 @@ namespace PDB
 				InlineeSourceLineKind kind;
 			};
 
-			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4831
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4825
 			struct InlineeSourceLine
 			{
-				ItemId inlinee;
+				uint32_t inlinee;
 				uint32_t fileChecksumOffset;
 				uint32_t lineNumber;
 			};
 
 			struct InlineeSourceLineEx
 			{
-				ItemId inlinee;
+				uint32_t inlinee;
 				uint32_t fileChecksumOffset;
 				uint32_t lineNumber;
 				uint32_t extraLines;

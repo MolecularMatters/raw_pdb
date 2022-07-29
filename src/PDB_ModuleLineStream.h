@@ -102,7 +102,7 @@ namespace PDB
 			size_t offset = m_stream.GetPointerOffset(section);
 			const size_t headerEnd = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader) + section->header.size, 4u);
 
-			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader), 4u); ;
+			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader), 4u); ;
 
 			// read all file checksums
 			while (offset < headerEnd)
@@ -127,7 +127,7 @@ namespace PDB
 			size_t offset = m_stream.GetPointerOffset(section);
 			const size_t headerEnd = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader) + section->header.size, 4u);
 
-			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader), 4u); ;
+			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader), 4u); ;
 
 			// read all file checksums
 			while (offset < headerEnd)
@@ -136,7 +136,7 @@ namespace PDB
 
 				functor(inlineeSourceLineEx);
 
-				offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::InlineeSourceLineEx) + ((inlineeSourceLineEx-1)->extraLines*sizeof(uint32_t)), 4u);
+				offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::InlineeSourceLineEx) + (inlineeSourceLineEx->extraLines * sizeof(uint32_t)), 4u);
 			}
 		}
 	private:

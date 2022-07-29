@@ -154,8 +154,11 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 					{
 						moduleLineStream.ForEachInlineeSourceLineEx(lineSection, [](const PDB::CodeView::DBI::InlineeSourceLineEx* inlineeSourceLineEx)
 						{
-							(void)inlineeSourceLineEx;
-
+							for (uint32_t i = 0; i < inlineeSourceLineEx->extraLines; ++i)
+							{
+								const uint32_t checksumOffset = inlineeSourceLineEx->extrafileChecksumOffsets[i];
+								(void)checksumOffset;
+							}
 						});
 					}
 				}
