@@ -86,24 +86,30 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 						const uint32_t fileChecksumOffset = linesBlockHeader->fileChecksumOffset;
 
 						sections.push_back({ sectionIndex, sectionOffset, lines.size() });
+
+						// initially set code size of first line to 0, will be updated in loop below.
 						lines.push_back({ firstLine.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None });
 
-						uint32_t offset = 0;
+						// track code offset in order to calculate code size of each line
+						uint32_t codeOffset = 0;
 
 						for(uint32_t i = 1, size = linesBlockHeader->numLines; i < size; ++i)
 						{
 							const PDB::CodeView::DBI::Line& line = blocklines[i];
 
-							sections.push_back({ sectionIndex, sectionOffset + line.offset, lines.size() });
+							// calculate code size of previous line by looking at the current line offset.
+							lines.back().codeSize = line.offset - codeOffset;
 
-							lines.back().codeSize = line.offset - offset;
+							sections.push_back({ sectionIndex, sectionOffset + line.offset, lines.size() });
 							lines.push_back({ line.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None});
 
-							offset = line.offset;
+							codeOffset = line.offset;
 						}
 
-						lines.back().codeSize = lineSection->linesHeader.codeSize - offset;
+						// calc code size of last line
+						lines.back().codeSize = lineSection->linesHeader.codeSize - codeOffset;
 
+						// columns are optional
 						if (blockColumns == nullptr)
 						{
 							return;
@@ -118,13 +124,15 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 				}
 				else if (lineSection->header.kind == PDB::CodeView::DBI::DebugSubsectionKind::S_FILECHECKSUMS)
 				{
-					// how to read checksums
+					// how to read checksums and their filenames from the Names Stream
 					moduleLineStream.ForEachFileChecksum(lineSection, [&namesStream](const PDB::CodeView::DBI::FileChecksumHeader* fileChecksumHeader)
 					{
 						const char* filename = namesStream.GetFilename(fileChecksumHeader->filenameOffset);
 						(void)filename;
 					});
 
+					// store the first checksum header for the module, as there might be more lines after the checksums.
+					// so lines will get their checksum header values assigned after processing all line sections in the module.
 					moduleFileChecksumHeader = &lineSection->checksumHeader;
 				}
 				else if (lineSection->header.kind == PDB::CodeView::DBI::DebugSubsectionKind::S_INLINEELINES)
@@ -152,19 +160,19 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 				}
 			});
 	
-			// look up FileChecksumHeader data for each line added for in this module
+			// assign checksum values for each line added in this module
 			for (size_t i = moduleLinesStartIndex, size = lines.size(); i < size; ++i)
 			{
 				Line& line = lines[i];
 
-				// look up FileChecksumHeader
+				// look up the line's checksum header in the module's checksums section
 				const PDB::CodeView::DBI::FileChecksumHeader* checksumHeader = PDB::Pointer::Offset<const PDB::CodeView::DBI::FileChecksumHeader*>(moduleFileChecksumHeader, line.fileChecksumsOffset);
 
 				PDB_ASSERT(checksumHeader->checksumKind >= PDB::CodeView::DBI::ChecksumKind::None && 
 							checksumHeader->checksumKind <= PDB::CodeView::DBI::ChecksumKind::SHA256,
 							"Invalid checksum kind %u", checksumHeader->checksumKind);
 
-				// store FileChecksumHeader values
+				// store checksum values in line struct
 				line.namesFilenameOffset = checksumHeader->filenameOffset;
 				line.checksumKind = checksumHeader->checksumKind;
 				line.checksumSize = checksumHeader->checksumSize;
@@ -176,6 +184,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 		TimedScope sortScope("std::sort sections");
 
+		// sort sections, so we can iterate over lines by address order.
 		std::sort(sections.begin(), sections.end(), [](const Section& lhs, const Section& rhs)
 			{
 				if (lhs.index == rhs.index)
@@ -189,7 +198,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 		sortScope.Done(sections.size());
 
 
-#if 0
+#if 1
 		// DIA2Dump style lines output
 		static const char hexChars[17] = "0123456789ABCDEF";
 		char checksumString[128];
@@ -205,6 +214,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 			
 			const uint32_t rva = section.offset; // TODO: Figure out how to calc correctly.
 
+			// only print filename for a line if it is different from the previous one.
 			if (filename != prevFilename)
 			{
 				for (size_t i = 0, j = 0; i < line.checksumSize; ++i, j += 2)
