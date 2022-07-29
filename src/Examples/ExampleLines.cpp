@@ -13,7 +13,7 @@ namespace
 {
 	struct Section
 	{
-		uint32_t index;
+		uint16_t index;
 		uint32_t offset;
 		size_t   lineIndex;
 	};
@@ -40,17 +40,22 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 	TimedScope total("\nRunning example \"Lines\"");
 
-	// prepare names stream for grabbing file paths from lines
-	TimedScope namesScope("Reading names stream");
-	const PDB::NamesStream namesStream = infoStream.CreateNamesStream(rawPdbFile);
-	namesScope.Done();
+	// prepare the image section stream first. it is needed for converting section + offset into an RVA
+	TimedScope sectionScope("Reading image section stream");
+	const PDB::ImageSectionStream imageSectionStream = dbiStream.CreateImageSectionStream(rawPdbFile);
+	sectionScope.Done();
 
 	// prepare the module info stream for grabbing function symbols from modules
 	TimedScope moduleScope("Reading module info stream");
 	const PDB::ModuleInfoStream moduleInfoStream = dbiStream.CreateModuleInfoStream(rawPdbFile);
 	moduleScope.Done();
 
-	// Keeping sections and lines separate, as sorting the smaller Section struct is 2x faster in release builds
+	// prepare names stream for grabbing file paths from lines
+	TimedScope namesScope("Reading names stream");
+	const PDB::NamesStream namesStream = infoStream.CreateNamesStream(rawPdbFile);
+	namesScope.Done();
+
+	// keeping sections and lines separate, as sorting the smaller Section struct is 2x faster in release builds
 	// than having all the fields in one big Line struct and sorting those.
 	std::vector<Section> sections;
 	std::vector<Line> lines;
@@ -212,7 +217,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 			const Line& line = lines[section.lineIndex];
 			const char* filename = namesStream.GetFilename(line.namesFilenameOffset);
 			
-			const uint32_t rva = section.offset; // TODO: Figure out how to calc correctly.
+			const uint32_t rva = imageSectionStream.ConvertSectionOffsetToRVA(section.index, section.offset);
 
 			// only print filename for a line if it is different from the previous one.
 			if (filename != prevFilename)
