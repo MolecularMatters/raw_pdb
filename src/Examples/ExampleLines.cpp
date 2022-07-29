@@ -93,26 +93,21 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 						sections.push_back({ sectionIndex, sectionOffset, lines.size() });
 
 						// initially set code size of first line to 0, will be updated in loop below.
-						lines.push_back({ firstLine.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None });
-
-						// track code offset in order to calculate code size of each line
-						uint32_t codeOffset = 0;
+						lines.push_back({ firstLine.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None, 0 });
 
 						for(uint32_t i = 1, size = linesBlockHeader->numLines; i < size; ++i)
 						{
 							const PDB::CodeView::DBI::Line& line = blocklines[i];
 
-							// calculate code size of previous line by looking at the current line offset.
-							lines.back().codeSize = line.offset - codeOffset;
+							// calculate code size of previous line by using the current line offset.
+							lines.back().codeSize = line.offset - blocklines[i-1].offset;
 
 							sections.push_back({ sectionIndex, sectionOffset + line.offset, lines.size() });
-							lines.push_back({ line.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None});
-
-							codeOffset = line.offset;
+							lines.push_back({ line.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None, 0});
 						}
 
 						// calc code size of last line
-						lines.back().codeSize = lineSection->linesHeader.codeSize - codeOffset;
+						lines.back().codeSize = lineSection->linesHeader.codeSize - blocklines[linesBlockHeader->numLines-1].offset;
 
 						// columns are optional
 						if (blockColumns == nullptr)
