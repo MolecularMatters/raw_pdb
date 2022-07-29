@@ -544,18 +544,6 @@ namespace PDB
 				uint32_t size;
 				// Line lines[numLines];
 				// Column columns[numLines]; Might not be present
-				PDB_FLEXIBLE_ARRAY_MEMBER(Line, lines);
-				
-				bool HasColumns() const
-				{
-					return size_t(size) > (sizeof(LinesFileBlockHeader) + (numLines * sizeof(Line)));
-				}
-
-				const Column* GetColumns() const
-				{
-					const Column* columns = reinterpret_cast<const Column*>(&lines[numLines]);
-					return columns;
-				}
 			};
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvconst.h#L88

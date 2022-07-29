@@ -76,9 +76,10 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 			{
 				if (lineSection->header.kind == PDB::CodeView::DBI::DebugSubsectionKind::S_LINES)
 				{
-					moduleLineStream.ForEachLinesBlock(lineSection, [&lines, &lineSection, &sections](const PDB::CodeView::DBI::LinesFileBlockHeader* linesBlockHeader)
+					moduleLineStream.ForEachLinesBlock(lineSection, 
+					[&lines, &lineSection, &sections](const PDB::CodeView::DBI::LinesFileBlockHeader* linesBlockHeader, const PDB::CodeView::DBI::Line* blocklines, const PDB::CodeView::DBI::Column* blockColumns)
 					{
-						const PDB::CodeView::DBI::Line& firstLine = linesBlockHeader->lines[0];
+						const PDB::CodeView::DBI::Line& firstLine = blocklines[0];
 
 						const uint16_t sectionIndex  = lineSection->linesHeader.sectionIndex;
 						const uint32_t sectionOffset = lineSection->linesHeader.sectionOffset;
@@ -91,7 +92,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 						for(uint32_t i = 1, size = linesBlockHeader->numLines; i < size; ++i)
 						{
-							const PDB::CodeView::DBI::Line& line = linesBlockHeader->lines[i];
+							const PDB::CodeView::DBI::Line& line = blocklines[i];
 
 							sections.push_back({ sectionIndex, sectionOffset + line.offset, lines.size() });
 
@@ -103,16 +104,14 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 						lines.back().codeSize = lineSection->linesHeader.codeSize - offset;
 
-						if (!linesBlockHeader->HasColumns())
+						if (blockColumns == nullptr)
 						{
 							return;
 						}
 
-						const PDB::CodeView::DBI::Column* columns = linesBlockHeader->GetColumns();
-
 						for (uint32_t i = 0, size = linesBlockHeader->numLines; i < size; ++i)
 						{
-							const PDB::CodeView::DBI::Column& column = columns[i];
+							const PDB::CodeView::DBI::Column& column = blockColumns[i];
 							(void)column;
 						}
 					});

@@ -53,8 +53,12 @@ namespace PDB
 			while (offset < headerEnd)
 			{
 				const CodeView::DBI::LinesFileBlockHeader* linesBlockHeader = m_stream.GetDataAtOffset<const CodeView::DBI::LinesFileBlockHeader>(offset);
+				const CodeView::DBI::Line* blockLines = m_stream.GetDataAtOffset<const CodeView::DBI::Line>(offset + sizeof(CodeView::DBI::LinesFileBlockHeader));
 
-				functor(linesBlockHeader);
+				const size_t blockColumnsOffset = sizeof(CodeView::DBI::LinesFileBlockHeader) + (linesBlockHeader->numLines * (sizeof(CodeView::DBI::Line)));
+				const CodeView::DBI::Column* blockColumns = blockColumnsOffset < linesBlockHeader->size ? m_stream.GetDataAtOffset<const CodeView::DBI::Column>(offset) : nullptr;
+
+				functor(linesBlockHeader, blockLines, blockColumns);
 
 				offset = BitUtil::RoundUpToMultiple<size_t>(offset + linesBlockHeader->size, 4u);
 			}
