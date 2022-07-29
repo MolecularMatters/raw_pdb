@@ -3,9 +3,11 @@
 
 #include "Examples_PCH.h"
 #include "ExampleTimedScope.h"
+#include "Foundation/PDB_PointerUtil.h"
 #include "PDB_RawFile.h"
 #include "PDB_DBIStream.h"
 #include "PDB_InfoStream.h"
+
 
 namespace
 {
@@ -157,7 +159,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 				Line& line = lines[i];
 
 				// look up FileChecksumHeader
-				const PDB::CodeView::DBI::FileChecksumHeader* checksumHeader = PDB::ModuleLineStream::GetFileChecksumHeaderAtOffset(moduleFileChecksumHeader, line.fileChecksumsOffset);
+				const PDB::CodeView::DBI::FileChecksumHeader* checksumHeader = PDB::Pointer::Offset<const PDB::CodeView::DBI::FileChecksumHeader*>(moduleFileChecksumHeader, line.fileChecksumsOffset);
 
 				PDB_ASSERT(checksumHeader->checksumKind >= PDB::CodeView::DBI::ChecksumKind::None && 
 							checksumHeader->checksumKind <= PDB::CodeView::DBI::ChecksumKind::SHA256,
