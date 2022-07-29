@@ -202,8 +202,8 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 		sortScope.Done(sections.size());
 
-
-#if 1
+// Disabled by default, as it will print a lot of lines for large PDBs :-)
+#if 0
 		// DIA2Dump style lines output
 		static const char hexChars[17] = "0123456789ABCDEF";
 		char checksumString[128];
@@ -222,10 +222,10 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 			// only print filename for a line if it is different from the previous one.
 			if (filename != prevFilename)
 			{
-				for (size_t i = 0, j = 0; i < line.checksumSize; ++i, j += 2)
+				for (size_t i = 0, j = 0; i < line.checksumSize; i++, j+=2)
 				{
-					checksumString[j] = hexChars[line.checksum[i] >> 4];
-					checksumString[j + 1] = hexChars[line.checksum[i] & 0xF];
+					checksumString[j]   = hexChars[line.checksum[i] >> 4];
+					checksumString[j+1] = hexChars[line.checksum[i] & 0xF];
 				}
 
 				checksumString[line.checksumSize * 2] = '\0';
