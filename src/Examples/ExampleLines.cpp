@@ -189,14 +189,14 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 		// sort sections, so we can iterate over lines by address order.
 		std::sort(sections.begin(), sections.end(), [](const Section& lhs, const Section& rhs)
+		{
+			if (lhs.index == rhs.index)
 			{
-				if (lhs.index == rhs.index)
-				{
-					return lhs.offset < rhs.offset;
-				}
+				return lhs.offset < rhs.offset;
+			}
 
-				return lhs.index < rhs.index;
-			});
+			return lhs.index < rhs.index;
+		});
 
 		sortScope.Done(sections.size());
 
