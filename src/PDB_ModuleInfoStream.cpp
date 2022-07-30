@@ -63,6 +63,13 @@ PDB_NO_DISCARD bool PDB::ModuleInfoStream::Module::HasSymbolStream(void) const P
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+PDB_NO_DISCARD bool PDB::ModuleInfoStream::Module::HasLineStream(void) const PDB_NO_EXCEPT
+{
+	return (m_info->c13Size > 0);
+}
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ModuleSymbolStream PDB::ModuleInfoStream::Module::CreateSymbolStream(const RawFile& file) const PDB_NO_EXCEPT
 {
 	PDB_ASSERT(HasSymbolStream(), "Module symbol stream index is invalid.");
@@ -70,6 +77,12 @@ PDB_NO_DISCARD PDB::ModuleSymbolStream PDB::ModuleInfoStream::Module::CreateSymb
 	return ModuleSymbolStream(file, m_info->moduleSymbolStreamIndex, m_info->symbolSize);
 }
 
+PDB_NO_DISCARD PDB::ModuleLineStream PDB::ModuleInfoStream::Module::CreateLineStream(const RawFile& file) const PDB_NO_EXCEPT
+{
+	PDB_ASSERT(HasLineStream(), "Module line stream is not present.");
+
+	return ModuleLineStream(file, m_info->moduleSymbolStreamIndex, m_info->symbolSize + m_info->c11Size + m_info->c13Size, m_info->symbolSize + m_info->c11Size);
+}
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------

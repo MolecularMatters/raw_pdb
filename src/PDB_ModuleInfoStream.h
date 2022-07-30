@@ -7,12 +7,11 @@
 #include "Foundation/PDB_ArrayView.h"
 #include "PDB_CoalescedMSFStream.h"
 #include "PDB_ModuleSymbolStream.h"
-
+#include "PDB_ModuleLineStream.h"
 
 namespace PDB
 {
 	class PDB_NO_DISCARD DirectMSFStream;
-
 
 	class PDB_NO_DISCARD ModuleInfoStream
 	{
@@ -28,8 +27,14 @@ namespace PDB
 			// Returns whether the module has a symbol stream.
 			PDB_NO_DISCARD bool HasSymbolStream(void) const PDB_NO_EXCEPT;
 
+			// Returns whether the module has a line stream.
+			PDB_NO_DISCARD bool HasLineStream(void) const PDB_NO_EXCEPT;
+
 			// Creates a symbol stream for the module.
 			PDB_NO_DISCARD ModuleSymbolStream CreateSymbolStream(const RawFile& file) const PDB_NO_EXCEPT;
+
+			// Create a line stream for the module
+			PDB_NO_DISCARD ModuleLineStream CreateLineStream(const RawFile& file) const PDB_NO_EXCEPT;
 
 			// Returns the name of the module.
 			PDB_NO_DISCARD inline ArrayView<char> GetName(void) const PDB_NO_EXCEPT

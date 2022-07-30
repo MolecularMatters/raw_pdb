@@ -18,6 +18,7 @@ namespace
 PDB::InfoStream::InfoStream(void) PDB_NO_EXCEPT
 	: m_stream()
 	, m_header(nullptr)
+	, m_namesStreamIndex(0)
 	, m_usesDebugFastlink(false)
 {
 }
@@ -52,7 +53,21 @@ PDB::InfoStream::InfoStream(const RawFile& file) PDB_NO_EXCEPT
 	//	"/LinkInfo"
 	//	"/TMCache"
 	//	"/names"
-	// however, none of those streams are of interest to us, so we just skip the whole hash table
+
+	const NamedStreamMap::HashTableEntry* namedStreamMapHashEntries = m_stream.GetDataAtOffset<const NamedStreamMap::HashTableEntry>(streamOffset);
+
+	// Find "/names" stream, used to look up filenames for lines.
+	for (uint32_t i = 0, size = hashTableHeader->size; i < size; ++i)
+	{
+		const NamedStreamMap::HashTableEntry& entry = namedStreamMapHashEntries[i];
+		const char* streamName = &namedStreamMap->stringTable[entry.stringTableOffset];
+
+		if (std::strcmp("/names", streamName) == 0)
+		{
+			m_namesStreamIndex = entry.streamIndex;
+		}
+	}
+
 	streamOffset += sizeof(NamedStreamMap::HashTableEntry) * hashTableHeader->size;
 
 	// read feature codes by consuming remaining bytes
@@ -69,3 +84,14 @@ PDB::InfoStream::InfoStream(const RawFile& file) PDB_NO_EXCEPT
 		}
 	}
 }
+
+bool PDB::InfoStream::HasNamesStream(void) const PDB_NO_EXCEPT
+{
+	return m_namesStreamIndex != 0;
+}
+
+PDB::NamesStream PDB::InfoStream::CreateNamesStream(const RawFile& file) const PDB_NO_EXCEPT
+{
+	return NamesStream(file, m_namesStreamIndex);
+}
+

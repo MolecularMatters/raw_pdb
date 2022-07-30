@@ -476,6 +476,134 @@ namespace PDB
 #pragma pack(pop)
 				} data;
 			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4576
+			enum class PDB_NO_DISCARD DebugSubsectionKind : uint32_t 
+			{
+				S_IGNORE = 0x80000000,    // if this bit is set in a subsection type then ignore the subsection contents
+
+				S_SYMBOLS = 0xF1,
+				S_LINES = 0xF2,
+				S_STRINGTABLE = 0xF3,
+				S_FILECHECKSUMS = 0xF4,
+				S_FRAMEDATA = 0xF5,
+				S_INLINEELINES = 0xF6,
+				S_CROSSSCOPEIMPORTS = 0xF7,
+				S_CROSSSCOPEEXPORTS = 0xF8,
+
+				S_IL_LINES = 0xF9,
+				S_FUNC_MDTOKEN_MAP = 0xFA,
+				S_TYPE_MDTOKEN_MAP = 0xFB,
+				S_MERGED_ASSEMBLYINPUT = 0xFC,
+
+				S_COFF_SYMBOL_RVA = 0xFD,
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4596
+			struct DebugSubsectionHeader
+			{
+				DebugSubsectionKind kind;
+				uint32_t size;
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4617
+			struct Line
+			{
+				uint32_t offset;             // Offset to start of code bytes for line number
+				uint32_t linenumStart : 24;  // line where statement/expression starts
+				uint32_t deltaLineEnd : 7;   // delta to line where statement ends (optional)
+				uint32_t fStatement : 1;     // true if a statement linenumber, else an expression line num
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4630
+			struct Column
+			{
+				uint16_t start;
+				uint16_t end;
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4601
+			struct LinesHeader 
+			{
+				uint32_t sectionOffset;
+				uint16_t sectionIndex;
+				struct
+				{
+					uint16_t fHasColumns : 1;
+					uint16_t pad : 15;
+				} flags;
+
+				int32_t  codeSize;
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4608
+			struct LinesFileBlockHeader
+			{
+				uint32_t fileChecksumOffset;
+				uint32_t numLines;
+				uint32_t size;
+				// Line lines[numLines];
+				// Column columns[numLines]; Might not be present
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvconst.h#L88
+			enum class PDB_NO_DISCARD ChecksumKind : uint8_t
+			{
+				None = 0,
+				MD5 = 1,
+				SHA1 = 2,
+				SHA256 = 3,
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/cvdump/dumpsym7.cpp#L1097
+			struct FileChecksumHeader
+			{
+				uint32_t filenameOffset;
+				uint8_t  checksumSize;
+				ChecksumKind checksumKind;
+				PDB_FLEXIBLE_ARRAY_MEMBER(uint8_t, checksum);
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4822
+			enum class InlineeSourceLineKind : uint32_t
+			{
+				Signature = 0,
+				SignatureEx = 1,
+			};
+
+			struct InlineeSourceLineHeader
+			{
+				InlineeSourceLineKind kind;
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4825
+			struct InlineeSourceLine
+			{
+				uint32_t inlinee;
+				uint32_t fileChecksumOffset;
+				uint32_t lineNumber;
+			};
+
+			struct InlineeSourceLineEx
+			{
+				uint32_t inlinee;
+				uint32_t fileChecksumOffset;
+				uint32_t lineNumber;
+				uint32_t extraLines;
+				PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, extrafileChecksumOffsets);
+			};
+
+			// Combine DebugSubsectionHeader and first subsection header into one struct.
+			struct LineSection
+			{
+				DebugSubsectionHeader header;
+				union
+				{
+					LinesHeader linesHeader;
+					FileChecksumHeader checksumHeader;
+					InlineeSourceLineHeader inlineeHeader;
+				};
+			};
 		}
 	}
 }

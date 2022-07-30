@@ -6,7 +6,7 @@
 #include "Foundation/PDB_Macros.h"
 #include "PDB_Types.h"
 #include "PDB_CoalescedMSFStream.h"
-
+#include "PDB_NamesStream.h"
 
 namespace PDB
 {
@@ -35,9 +35,16 @@ namespace PDB
 			return m_usesDebugFastlink;
 		}
 
+		// Returns whether the module has a names stream.
+		PDB_NO_DISCARD bool HasNamesStream(void) const PDB_NO_EXCEPT;
+
+		// Create names stream
+		PDB_NO_DISCARD NamesStream CreateNamesStream(const RawFile& file) const PDB_NO_EXCEPT;
+
 	private:
 		CoalescedMSFStream m_stream;
 		const Header* m_header;
+		uint32_t m_namesStreamIndex;
 		bool m_usesDebugFastlink;
 
 		PDB_DISABLE_COPY(InfoStream);
