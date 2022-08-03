@@ -8,6 +8,7 @@
 #include "PDB_InfoStream.h"
 #include "PDB_DBIStream.h"
 #include "PDB_TPIStream.h"
+#include "PDB_NamesStream.h"
 
 namespace
 {
@@ -75,6 +76,7 @@ namespace
 extern void ExampleSymbols(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleContributions(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleFunctionSymbols(const PDB::RawFile&, const PDB::DBIStream&);
+extern void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::InfoStream& infoStream);
 extern void ExampleTypes(const PDB::TPIStream&);
 
 int main(int argc, char** argv)
@@ -148,6 +150,7 @@ int main(int argc, char** argv)
 	ExampleContributions(rawPdbFile, dbiStream);
 	ExampleSymbols(rawPdbFile, dbiStream);
 	ExampleFunctionSymbols(rawPdbFile, dbiStream);
+	ExampleLines(rawPdbFile, dbiStream, infoStream);
 	ExampleTypes(tpiStream);
 
 	MemoryMappedFile::Close(pdbFile);

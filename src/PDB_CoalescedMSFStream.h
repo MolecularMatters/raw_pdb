@@ -3,9 +3,10 @@
 
 #pragma once
 
+#include "Foundation/PDB_Assert.h"
 #include "Foundation/PDB_Macros.h"
 #include "PDB_Types.h"
-
+#include <cinttypes>
 
 // https://llvm.org/docs/PDB/index.html#the-msf-container
 // https://llvm.org/docs/PDB/MsfFile.html
@@ -43,6 +44,18 @@ namespace PDB
 		PDB_NO_DISCARD inline const T* GetDataAtOffset(size_t offset) const PDB_NO_EXCEPT
 		{
 			return reinterpret_cast<const T*>(m_data + offset);
+		}
+
+		template <typename T>
+		PDB_NO_DISCARD inline size_t GetPointerOffset(const T* pointer) const PDB_NO_EXCEPT
+		{
+			const Byte* bytePointer = reinterpret_cast<const Byte*>(pointer);
+			const Byte* dataEnd = m_data + m_size;
+
+			 PDB_ASSERT(bytePointer >= m_data && bytePointer <= dataEnd,
+				"Pointer 0x%016" PRIXPTR " not within stream range [0x%016" PRIXPTR ":0x%016" PRIXPTR "]", (uintptr_t)bytePointer, (uintptr_t)m_data, (uintptr_t)dataEnd);
+			 
+			return static_cast<size_t>(bytePointer - m_data);
 		}
 
 	private:
