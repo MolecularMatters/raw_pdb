@@ -94,6 +94,10 @@ Running example "Contributions"
 20: 370272 bytes from LLVMNVPTXDesc.dir\RelWithDebInfo\NVPTXMCTargetDesc.obj
 </pre>
 
+This is at least an order of magnitude faster than DIA, even though the example code is completely serial and uses std::vector, std::string, and std::sort, which are used for illustration purposes only.
+
+When reading streams in a concurrent fashion, you will most likely be limited by the speed at which the OS can bring the data into your process.
+
 Running the **Lines** example on a 1.37 GiB PDB yields the following output:
 
 <pre>
@@ -114,10 +118,6 @@ Running example "Lines"
 | ---> done in 103.090ms (4023680 elements)
 
 </pre>
-
-This is at least an order of magnitude faster than DIA, even though the example code is completely serial and uses std::vector, std::string, and std::sort, which are used for illustration purposes only.
-
-When reading streams in a concurrent fashion, you will most likely be limited by the speed at which the OS can bring the data into your process.
 
 ## Supported streams
 
