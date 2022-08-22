@@ -36,8 +36,12 @@ set(SOURCES
 	PDB_IPITypes.h
 	PDB_ModuleInfoStream.cpp
 	PDB_ModuleInfoStream.h
+	PDB_ModuleLineStream.cpp
+	PDB_ModuleLineStream.h
 	PDB_ModuleSymbolStream.cpp
 	PDB_ModuleSymbolStream.h
+	PDB_NamesStream.cpp
+	PDB_NamesStream.h
 	PDB_PCH.cpp
 	PDB_PCH.h
 	PDB_PublicSymbolStream.cpp
