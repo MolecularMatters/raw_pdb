@@ -57,7 +57,7 @@ namespace PDB
 #else
 			unsigned int result = 0u;
 
-			result = __builtin_ffs(value);
+			result = static_cast<unsigned int>(__builtin_ffs(static_cast<int>(value)));
 			if (result)
 				--result;
 #endif

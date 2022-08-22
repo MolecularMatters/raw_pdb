@@ -231,7 +231,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 				printf("	line %u at [0x%08X][0x%04X:0x%08X], len = 0x%X %s (0x%02X: %s)\n",
 					line.lineNumber, rva, section.index, section.offset, line.codeSize,
-					filename, line.checksumKind, checksumString);
+					filename, static_cast<uint32_t>(line.checksumKind), checksumString);
 	
 				prevFilename = filename;
 			}
