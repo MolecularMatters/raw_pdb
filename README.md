@@ -94,6 +94,27 @@ Running example "Contributions"
 20: 370272 bytes from LLVMNVPTXDesc.dir\RelWithDebInfo\NVPTXMCTargetDesc.obj
 </pre>
 
+Running the **Lines** example on a 1.37 GiB PDB yields the following output:
+
+<pre>
+
+Opening PDB file C:\pdb-test-files\clang-debug.pdb
+Version 20000404, signature 1658696914, age 1, GUID 563dd8f1-f32b-459b-8c2beae0e70bc19b
+
+Running example "Lines"
+| Reading image section stream
+| ---> done in 0.313ms
+| Reading module info stream
+| ---> done in 0.403ms
+| Reading names stream
+| ---> done in 0.126ms
+| Storing lines from modules
+| ---> done in 306.720ms (1847 elements)
+| std::sort sections
+| ---> done in 103.090ms (4023680 elements)
+
+</pre>
+
 This is at least an order of magnitude faster than DIA, even though the example code is completely serial and uses std::vector, std::string, and std::sort, which are used for illustration purposes only.
 
 When reading streams in a concurrent fashion, you will most likely be limited by the speed at which the OS can bring the data into your process.
@@ -107,16 +128,16 @@ When reading streams in a concurrent fashion, you will most likely be limited by
 	* Global symbols
 	* Modules
 	* Module symbols
+	* Module lines (C13 line information)
 	* Image sections
 	* Info stream
+		* /names stream
 	* Section contributions
 	* Source files
 
 * IPI stream data
 
 * TPI stream data
-
-At the moment, there is no support for C13 line information, because Live++ does not make use of that information yet. However, we will gladly accept PRs, or implement support in the future.
 
 Furthermore, PDBs linked using /DEBUG:FASTLINK are not supported. These PDBs do not contain much information, since private symbol information is distributed among object files and library files.
 
