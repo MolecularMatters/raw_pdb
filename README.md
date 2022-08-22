@@ -131,7 +131,7 @@ When reading streams in a concurrent fashion, you will most likely be limited by
 	* Module lines (C13 line information)
 	* Image sections
 	* Info stream
-		* /names stream
+		* "/names" stream
 	* Section contributions
 	* Source files
 
@@ -159,7 +159,7 @@ Consult the example code to see how to read and parse the PDB streams.
 
 ### Symbols (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleSymbols.cpp">ExampleSymbols.cpp</a>)
 
-A basic example that shows how to load and symbols from public, global, and module streams.
+A basic example that shows how to load symbols from public, global, and module streams.
 
 ### Contributions (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleContributions.cpp">ExampleContributions.cpp</a>)
 
@@ -168,6 +168,14 @@ A basic example that shows how to load contributions, sort them by size, and out
 ### Function symbols (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleFunctionSymbols.cpp">ExampleFunctionSymbols.cpp</a>)
 
 An example intended for profiler developers that shows how to enumerate all function symbols and retrieve or compute their code size.
+
+### Lines (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleLines.cpp">ExampleLines.cpp</a>)
+
+An example that shows to how to load line information for all modules.
+
+### Types (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleTypes.cpp">ExampleTypes.cpp</a>)
+
+An example that prints all type records.
 
 ## Sponsoring or supporting RawPDB
 
