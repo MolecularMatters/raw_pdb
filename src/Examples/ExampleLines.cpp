@@ -30,6 +30,7 @@ namespace
 	};
 }
 
+void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::InfoStream& infoStream);
 void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::InfoStream& infoStream)
 {
 	if (!infoStream.HasNamesStream())
@@ -93,7 +94,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 						sections.push_back({ sectionIndex, sectionOffset, lines.size() });
 
 						// initially set code size of first line to 0, will be updated in loop below.
-						lines.push_back({ firstLine.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None, 0 });
+						lines.push_back({ firstLine.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None, 0, {0}});
 
 						for(uint32_t i = 1, size = linesBlockHeader->numLines; i < size; ++i)
 						{
@@ -103,7 +104,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 							lines.back().codeSize = line.offset - blocklines[i-1].offset;
 
 							sections.push_back({ sectionIndex, sectionOffset + line.offset, lines.size() });
-							lines.push_back({ line.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None, 0});
+							lines.push_back({ line.linenumStart, 0, fileChecksumOffset, 0, PDB::CodeView::DBI::ChecksumKind::None, 0, {0} });
 						}
 
 						// calc code size of last line
@@ -159,7 +160,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 				}
 				else
 				{
-					PDB_ASSERT(false, "Line Section kind 0x%X not handled", (uint32_t)lineSection->header.kind);
+					PDB_ASSERT(false, "Line Section kind 0x%X not handled", static_cast<uint32_t>(lineSection->header.kind));
 				}
 			});
 	

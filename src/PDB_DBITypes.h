@@ -533,7 +533,7 @@ namespace PDB
 					uint16_t pad : 15;
 				} flags;
 
-				int32_t  codeSize;
+				uint32_t  codeSize;
 			};
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4608

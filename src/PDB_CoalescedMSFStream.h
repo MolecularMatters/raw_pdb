@@ -53,7 +53,8 @@ namespace PDB
 			const Byte* dataEnd = m_data + m_size;
 
 			 PDB_ASSERT(bytePointer >= m_data && bytePointer <= dataEnd,
-				"Pointer 0x%016" PRIXPTR " not within stream range [0x%016" PRIXPTR ":0x%016" PRIXPTR "]", (uintptr_t)bytePointer, (uintptr_t)m_data, (uintptr_t)dataEnd);
+				"Pointer 0x%016" PRIXPTR " not within stream range [0x%016" PRIXPTR ":0x%016" PRIXPTR "]", 
+				reinterpret_cast<uintptr_t>(bytePointer), reinterpret_cast<uintptr_t>(m_data), reinterpret_cast<uintptr_t>(dataEnd));
 			 
 			return static_cast<size_t>(bytePointer - m_data);
 		}
