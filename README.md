@@ -98,6 +98,27 @@ This is at least an order of magnitude faster than DIA, even though the example 
 
 When reading streams in a concurrent fashion, you will most likely be limited by the speed at which the OS can bring the data into your process.
 
+Running the **Lines** example on a 1.37 GiB PDB yields the following output:
+
+<pre>
+
+Opening PDB file C:\pdb-test-files\clang-debug.pdb
+Version 20000404, signature 1658696914, age 1, GUID 563dd8f1-f32b-459b-8c2beae0e70bc19b
+
+Running example "Lines"
+| Reading image section stream
+| ---> done in 0.313ms
+| Reading module info stream
+| ---> done in 0.403ms
+| Reading names stream
+| ---> done in 0.126ms
+| Storing lines from modules
+| ---> done in 306.720ms (1847 elements)
+| std::sort sections
+| ---> done in 103.090ms (4023680 elements)
+
+</pre>
+
 ## Supported streams
 
 **RawPDB** gives you access to the following PDB stream data:
@@ -107,16 +128,16 @@ When reading streams in a concurrent fashion, you will most likely be limited by
 	* Global symbols
 	* Modules
 	* Module symbols
+	* Module lines (C13 line information)
 	* Image sections
 	* Info stream
+		* "/names" stream
 	* Section contributions
 	* Source files
 
 * IPI stream data
 
 * TPI stream data
-
-At the moment, there is no support for C13 line information, because Live++ does not make use of that information yet. However, we will gladly accept PRs, or implement support in the future.
 
 Furthermore, PDBs linked using /DEBUG:FASTLINK are not supported. These PDBs do not contain much information, since private symbol information is distributed among object files and library files.
 
@@ -138,7 +159,7 @@ Consult the example code to see how to read and parse the PDB streams.
 
 ### Symbols (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleSymbols.cpp">ExampleSymbols.cpp</a>)
 
-A basic example that shows how to load and symbols from public, global, and module streams.
+A basic example that shows how to load symbols from public, global, and module streams.
 
 ### Contributions (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleContributions.cpp">ExampleContributions.cpp</a>)
 
@@ -147,6 +168,14 @@ A basic example that shows how to load contributions, sort them by size, and out
 ### Function symbols (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleFunctionSymbols.cpp">ExampleFunctionSymbols.cpp</a>)
 
 An example intended for profiler developers that shows how to enumerate all function symbols and retrieve or compute their code size.
+
+### Lines (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleLines.cpp">ExampleLines.cpp</a>)
+
+An example that shows to how to load line information for all modules.
+
+### Types (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleTypes.cpp">ExampleTypes.cpp</a>)
+
+An example that prints all type records.
 
 ## Sponsoring or supporting RawPDB
 
