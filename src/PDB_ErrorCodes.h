@@ -17,6 +17,7 @@ namespace PDB
 		InvalidFreeBlockMap,
 
 		// stream validation
+		InvalidStream,
 		InvalidSignature,
 		InvalidStreamIndex,
 		UnknownVersion

@@ -100,6 +100,10 @@ PDB::DBIStream::DBIStream(const RawFile& file, const DBI::StreamHeader& header) 
 PDB_NO_DISCARD PDB::ErrorCode PDB::HasValidDBIStream(const RawFile& file) PDB_NO_EXCEPT
 {
 	DirectMSFStream stream = file.CreateMSFStream<DirectMSFStream>(DBIStreamIndex);
+	if (stream.GetSize() < sizeof(DBI::StreamHeader))
+	{
+		return ErrorCode::InvalidStream;
+	}
 
 	const DBI::StreamHeader header = stream.ReadAtOffset<DBI::StreamHeader>(0u);
 	if (header.signature != DBI::StreamHeader::Signature)

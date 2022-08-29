@@ -27,6 +27,10 @@ namespace
 				printf("Invalid free block map\n");
 				return true;
 
+			case PDB::ErrorCode::InvalidStream:
+				printf("Invalid stream\n");
+				return true;
+
 			case PDB::ErrorCode::InvalidSignature:
 				printf("Invalid stream signature\n");
 				return true;

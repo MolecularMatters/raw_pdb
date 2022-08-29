@@ -105,6 +105,10 @@ PDB::TPIStream::~TPIStream(void) PDB_NO_EXCEPT
 PDB_NO_DISCARD PDB::ErrorCode PDB::HasValidTPIStream(const RawFile& file) PDB_NO_EXCEPT
 {
 	DirectMSFStream stream = file.CreateMSFStream<DirectMSFStream>(TPIStreamIndex);
+	if (stream.GetSize() < sizeof(TPI::StreamHeader))
+	{
+		return ErrorCode::InvalidStream;
+	}
 
 	const TPI::StreamHeader header = stream.ReadAtOffset<TPI::StreamHeader>(0u);
 	if (header.version != TPI::StreamHeader::Version::V80)

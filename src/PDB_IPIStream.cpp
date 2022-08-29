@@ -107,6 +107,10 @@ PDB::IPIStream::~IPIStream(void) PDB_NO_EXCEPT
 PDB_NO_DISCARD PDB::ErrorCode PDB::HasValidIPIStream(const RawFile& file) PDB_NO_EXCEPT
 {
 	DirectMSFStream stream = file.CreateMSFStream<DirectMSFStream>(IPIStreamIndex);
+	if (stream.GetSize() < sizeof(IPI::StreamHeader))
+	{
+		return ErrorCode::InvalidStream;
+	}
 
 	const IPI::StreamHeader header = stream.ReadAtOffset<IPI::StreamHeader>(0u);
 	if (header.version != IPI::StreamHeader::Version::V80)
