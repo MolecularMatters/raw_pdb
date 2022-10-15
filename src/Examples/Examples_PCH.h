@@ -20,7 +20,9 @@
 #	pragma warning (disable : 4774)		// format string expected in argument 1 is not a string literal
 
 #ifdef _WIN32
+#	define NOMINMAX
 #	include <Windows.h>
+#	undef cdecl
 #endif
 #	include <vector>
 #	include <unordered_set>
@@ -28,5 +30,3 @@
 #	include <string>
 #	include <algorithm>
 #	include "Foundation/PDB_DisableWarningsPop.h"
-#	undef min
-#	undef max
