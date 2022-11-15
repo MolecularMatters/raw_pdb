@@ -198,6 +198,11 @@ void ExampleSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStr
 					name = record->data.S_GPROC32_ID.name;
 					rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_GPROC32_ID.section, record->data.S_GPROC32_ID.offset);
 				}
+				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_REGREL32)
+				{
+					name = record->data.S_REGREL32.name;
+					// You can only get the address while running the program by checking the register value and adding the offset
+				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_LDATA32)
 				{
 					name = record->data.S_LDATA32.name;

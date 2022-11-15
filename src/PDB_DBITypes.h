@@ -130,6 +130,7 @@ namespace PDB
 				S_PUB32 =			0x110Eu,		// public symbol
 				S_LPROC32 =			0x110Fu,		// local procedure start
 				S_GPROC32 =			0x1110u,		// global procedure start
+				S_REGREL32 =                    0x1111u,                // register relative address
 				S_LTHREAD32 =		0x1112u,		// (static) thread-local data
 				S_GTHREAD32 =		0x1113u,		// global thread-local data
 				S_PROCREF =			0x1125u,		// reference to function in any compiland
@@ -169,6 +170,11 @@ namespace PDB
 			{
 				Incremental,
 				BranchIsland
+			};
+
+			enum class PDB_NO_DISCARD Register : uint16_t
+			{
+				RSP = 335
 			};
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L3038
@@ -422,6 +428,14 @@ namespace PDB
 						ProcedureFlags flags;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
 					} S_LPROC32, S_GPROC32, S_LPROC32_ID, S_GPROC32_ID, S_LPROC32_DPC, S_LPROC32_DPC_ID;
+
+					struct
+					{
+						uint32_t offset;
+						uint32_t typeIndex;
+						Register reg;
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					} S_REGREL32;
 
 					struct
 					{
