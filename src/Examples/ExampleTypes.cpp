@@ -242,7 +242,7 @@ static const char* GetModifierName(const PDB::CodeView::TPI::Record* modifierRec
 		return "const";
 	else if (modifierRecord->data.LF_MODIFIER.attr.MOD_volatile)
 		return "volatile";
-	else if (modifierRecord->data.LF_MODIFIER.attr.MOD_volatile)
+	else if (modifierRecord->data.LF_MODIFIER.attr.MOD_unaligned)
 		return "unaligned";
 	
 	return "";
