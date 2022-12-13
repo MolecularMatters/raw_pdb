@@ -1,6 +1,6 @@
 # RawPDB
 
-**RawPDB** is a C++11 library that directly reads Microsoft Program DataBase PDB files. The code is extracted almost directly from the upcoming 2.0 release of <a href="https://liveplusplus.tech/">Live++</a>.
+**RawPDB** is a C++11 library that directly reads Microsoft Program DataBase PDB files. The code is extracted almost directly from <a href="https://liveplusplus.tech/">Live++ 2</a>, a battle-tested hot-reload tool for C++.
 
 ## Design
 
