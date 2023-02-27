@@ -8,6 +8,7 @@
 #include "PDB_DBIStream.h"
 #include "PDB_InfoStream.h"
 
+#include <cstring>
 
 namespace
 {
