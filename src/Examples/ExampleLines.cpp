@@ -217,7 +217,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 		sortScope.Done(sections.size());
 
 // Disabled by default, as it will print a lot of lines for large PDBs :-)
-#if 1
+#if 0
 		// DIA2Dump style lines output
 		static const char hexChars[17] = "0123456789ABCDEF";
 		char checksumString[128];
