@@ -130,7 +130,7 @@ namespace PDB
 				S_PUB32 =			0x110Eu,		// public symbol
 				S_LPROC32 =			0x110Fu,		// local procedure start
 				S_GPROC32 =			0x1110u,		// global procedure start
-				S_REGREL32 =                    0x1111u,                // register relative address
+				S_REGREL32 =		0x1111u,		// register relative address
 				S_LTHREAD32 =		0x1112u,		// (static) thread-local data
 				S_GTHREAD32 =		0x1113u,		// global thread-local data
 				S_PROCREF =			0x1125u,		// reference to function in any compiland
