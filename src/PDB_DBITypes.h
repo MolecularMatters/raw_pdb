@@ -150,8 +150,8 @@ namespace PDB
 				S_LPROC32_DPC =		0x1155u,
 				S_LPROC32_DPC_ID =	0x1156u,
 				S_INLINESITE2 =		0x115Du,		// extended inline site information
-				S_UDT =			0x1108u,		// user-defined type
-				S_UDT_ST =		0x1003u,		// user-defined structured types
+				S_UDT =				0x1108u,		// user-defined type
+				S_UDT_ST =			0x1003u,		// user-defined structured types
 			};
 
 			// https://docs.microsoft.com/en-us/visualstudio/debugger/debug-interface-access/thunk-ordinal
