@@ -147,6 +147,49 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					printf("%*sS_DEFRANGE_REGISTER: Register 0x%X\n", blockIndent * 4, "", record->data.S_DEFRANGE_REGISTER.reg);
 				}
+				else if(kind == SymbolRecordKind::S_DEFRANGE_FRAMEPOINTER_REL)
+				{
+					printf("%*sS_DEFRANGE_FRAMEPOINTER_REL: <TODO>\n", blockIndent * 4, "");
+				}
+				else if(kind == SymbolRecordKind::S_DEFRANGE_SUBFIELD_REGISTER)
+				{
+					printf("%*sS_DEFRANGE_SUBFIELD_REGISTER: <TODO>\n", blockIndent * 4, "");
+				}
+				else if (kind == SymbolRecordKind::S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE)
+				{
+					printf("%*sS_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE: Offset 0x%X\n", blockIndent * 4, "", record->data.S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE.offsetFramePointer);
+				}
+				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER_REL)
+				{
+					printf("%*sS_DEFRANGE_REGISTER_REL: <TODO>\n", blockIndent * 4, "");
+				}
+				else if(kind == SymbolRecordKind::S_FILESTATIC)
+				{
+					printf("%*sS_FILESTATIC: '%s'\n", blockIndent * 4, "", data.S_FILESTATIC.name);
+				}
+				else if (kind == SymbolRecordKind::S_INLINESITE)
+				{
+					printf("%*sS_INLINESITE: Parent 0x%X\n", blockIndent * 4, "", data.S_INLINESITE.parent);
+					blockIndent++;
+				}
+				else if (kind == SymbolRecordKind::S_INLINESITE_END)
+				{
+					PDB_ASSERT(blockIndent > 0, "BlockIndent for S_INLINESITE_END is 0");
+					blockIndent--;					
+					printf("%*sS_INLINESITE_END:\n", blockIndent * 4, "");
+				}
+				else if (kind == SymbolRecordKind::S_CALLEES)
+				{
+					printf("%*sS_CALLEES: Count %u\n", blockIndent * 4, "", data.S_CALLEES.count);
+				}
+				else if (kind == SymbolRecordKind::S_CALLERS)
+				{
+					printf("%*sS_CALLERS: Count %u\n", blockIndent * 4, "", data.S_CALLERS.count);
+				}
+				else if (kind == SymbolRecordKind::S_INLINEES)
+				{
+					printf("%*sS_INLINEES: Count %u\n", blockIndent * 4, "", data.S_INLINEES.count);
+				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_LDATA32)
 				{
 					if (blockIndent > 0)
