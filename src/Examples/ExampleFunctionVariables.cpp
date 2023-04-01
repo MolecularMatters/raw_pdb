@@ -296,7 +296,10 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 
 				printf("%*sFunction: '%s' | RVA 0x%X\n", blockIndent*4, "", name, rva);
 
-				blockIndent++;
+				if (kind != SymbolRecordKind::S_TRAMPOLINE)
+				{
+					blockIndent++;
+				}
 
 				functionSymbols.push_back(FunctionSymbol{ name, rva, size, nullptr, {0, 0} });
 				seenFunctionRVAs.emplace(rva);
