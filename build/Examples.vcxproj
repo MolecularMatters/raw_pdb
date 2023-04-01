@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\Examples\ExampleContributions.cpp" />
     <ClCompile Include="..\src\Examples\ExampleFunctionSymbols.cpp" />
+    <ClCompile Include="..\src\Examples\ExampleFunctionVariables.cpp" />
     <ClCompile Include="..\src\Examples\ExampleLines.cpp" />
     <ClCompile Include="..\src\Examples\ExampleMain.cpp" />
     <ClCompile Include="..\src\Examples\ExampleMemoryMappedFile.cpp" />

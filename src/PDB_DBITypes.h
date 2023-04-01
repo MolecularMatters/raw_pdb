@@ -119,39 +119,42 @@ namespace PDB
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2735
 			enum class PDB_NO_DISCARD SymbolRecordKind : uint16_t
 			{
-				S_END =				0x0006u,		// block, procedure, "with" or thunk end
-				S_FRAMEPROC =		0x1012u,		// extra frame and proc information
-				S_OBJNAME =			0x1101u,		// full path to the original compiled .obj. can point to remote locations and temporary files, not necessarily the file that was linked into the executable
-				S_THUNK32 =			0x1102u,		// thunk start
-				S_BLOCK32 =			0x1103u,		// block start
-				S_LABEL32 =			0x1105u,		// code label
-				S_LDATA32 =			0x110Cu,		// (static) local data
-				S_GDATA32 =			0x110Du,		// global data
-				S_PUB32 =			0x110Eu,		// public symbol
-				S_LPROC32 =			0x110Fu,		// local procedure start
-				S_GPROC32 =			0x1110u,		// global procedure start
-				S_REGREL32 =		0x1111u,		// register relative address
-				S_LTHREAD32 =		0x1112u,		// (static) thread-local data
-				S_GTHREAD32 =		0x1113u,		// global thread-local data
-				S_PROCREF =			0x1125u,		// reference to function in any compiland
-				S_LPROCREF =		0x1127u,		// local reference to function in any compiland
-				S_TRAMPOLINE =		0x112Cu,		// incremental linking trampoline
-				S_SEPCODE =			0x1132u,		// separated code (from the compiler)
-				S_SECTION =			0x1136u,		// a COFF section in an executable
-				S_COFFGROUP =		0x1137u,		// original COFF group before it was merged into executable sections by the linker, e.g. .CRT$XCU, .rdata, .bss, .lpp_prepatch_hooks
-				S_COMPILE3 =		0x113Cu,		// replacement for S_COMPILE2, more info
-				S_ENVBLOCK =		0x113Du,		// environment block split off from S_COMPILE2
-				S_LPROC32_ID =		0x1146u,		// S_PROC symbol that references ID instead of type
-				S_GPROC32_ID =		0x1147u,		// S_PROC symbol that references ID instead of type
-				S_BUILDINFO =		0x114Cu,		// build info/environment details of a compiland/translation unit
-				S_INLINESITE =		0x114Du,		// inlined function callsite
-				S_INLINESITE_END =	0x114Eu,
-				S_PROC_ID_END =		0x114Fu,
-				S_LPROC32_DPC =		0x1155u,
-				S_LPROC32_DPC_ID =	0x1156u,
-				S_INLINESITE2 =		0x115Du,		// extended inline site information
-				S_UDT =				0x1108u,		// user-defined type
-				S_UDT_ST =			0x1003u,		// user-defined structured types
+				S_END =					0x0006u,		// block, procedure, "with" or thunk end
+				S_FRAMEPROC =			0x1012u,		// extra frame and proc information
+				S_OBJNAME =				0x1101u,		// full path to the original compiled .obj. can point to remote locations and temporary files, not necessarily the file that was linked into the executable
+				S_THUNK32 =				0x1102u,		// thunk start
+				S_BLOCK32 =				0x1103u,		// block start
+				S_LABEL32 =				0x1105u,		// code label
+				S_CONSTANT =        	0x1107u,        // constant symbol
+				S_LDATA32 =				0x110Cu,		// (static) local data
+				S_GDATA32 =				0x110Du,		// global data
+				S_PUB32 =				0x110Eu,		// public symbol
+				S_LPROC32 =				0x110Fu,		// local procedure start
+				S_GPROC32 =				0x1110u,		// global procedure start
+				S_REGREL32 =			0x1111u,		// register relative address
+				S_LTHREAD32 =			0x1112u,		// (static) thread-local data
+				S_GTHREAD32 =			0x1113u,		// global thread-local data
+				S_PROCREF =				0x1125u,		// reference to function in any compiland
+				S_LPROCREF =			0x1127u,		// local reference to function in any compiland
+				S_TRAMPOLINE =			0x112Cu,		// incremental linking trampoline
+				S_SEPCODE =				0x1132u,		// separated code (from the compiler)
+				S_SECTION =				0x1136u,		// a COFF section in an executable
+				S_COFFGROUP =			0x1137u,		// original COFF group before it was merged into executable sections by the linker, e.g. .CRT$XCU, .rdata, .bss, .lpp_prepatch_hooks
+				S_COMPILE3 =			0x113Cu,		// replacement for S_COMPILE2, more info
+				S_ENVBLOCK =			0x113Du,		// environment block split off from S_COMPILE2
+				S_LOCAL =				0x113Eu,		// defines a local symbol in optimized code 
+				S_DEFRANGE_REGISTER =	0x1141u,		// ranges for en-registered symbol
+				S_LPROC32_ID =			0x1146u,		// S_PROC symbol that references ID instead of type
+				S_GPROC32_ID =			0x1147u,		// S_PROC symbol that references ID instead of type
+				S_BUILDINFO =			0x114Cu,		// build info/environment details of a compiland/translation unit
+				S_INLINESITE =			0x114Du,		// inlined function callsite
+				S_INLINESITE_END =		0x114Eu,
+				S_PROC_ID_END =			0x114Fu,
+				S_LPROC32_DPC =			0x1155u,
+				S_LPROC32_DPC_ID =		0x1156u,
+				S_INLINESITE2 =			0x115Du,		// extended inline site information
+				S_UDT =					0x1108u,		// user-defined type
+				S_UDT_ST =				0x1003u,		// user-defined structured types
 			};
 
 			// https://docs.microsoft.com/en-us/visualstudio/debugger/debug-interface-access/thunk-ordinal
@@ -172,8 +175,16 @@ namespace PDB
 				BranchIsland
 			};
 
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvconst.h#L392
 			enum class PDB_NO_DISCARD Register : uint16_t
 			{
+				RAX = 328,
+				RBX = 329,
+				RCX = 330,
+				RDX = 331,
+				RSI = 332,
+				RDI = 333,
+				RBP = 334,
 				RSP = 335
 			};
 
@@ -297,6 +308,24 @@ namespace PDB
 				ARM64X = 0xF9,
 				D3D11_Shader = 0x100
 			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L3100
+			// represents an address range, used for optimized code debug info
+			struct LocalVariableAddressRange // defines a range of addresses
+			{
+				uint32_t offsetStart;
+				uint16_t isectionStart;
+				uint16_t length;
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L3108
+			// Represents the holes in overall address range, all address is pre-bbt. 
+			// it is for compress and reduce the amount of relocations need.
+			struct LocalVariableAddressGap
+			{
+    			uint16_t offset; // relative offset from the beginning of the live range.
+    			uint16_t length; // length of this gap.
+    		};
 
 			// https://llvm.org/docs/PDB/CodeViewTypes.html#leaf-types
 			struct RecordHeader
@@ -457,6 +486,13 @@ namespace PDB
 
 					struct
 					{
+						uint32_t typeIndex;
+						uint16_t value;
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					} S_CONSTANT;
+
+					struct
+					{
 						uint32_t typeIndex;	// refers to a type index in the IPI stream
 					} S_BUILDINFO;
 
@@ -482,9 +518,51 @@ namespace PDB
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, strings);
 					} S_ENVBLOCK;
 
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4190
 					struct
 					{
-						unsigned long typind;
+						uint32_t typeIndex;
+
+						struct 
+						{
+							uint16_t fIsParam : 1; 			// variable is a parameter
+							uint16_t fAddrTaken : 1; 		// address is taken
+							uint16_t fCompGenx : 1; 		// variable is compiler generated
+							uint16_t fIsAggregate : 1;		// the symbol is splitted in temporaries,
+															// which are treated by compiler as 
+															// independent entities
+							uint16_t fIsAggregated : 1;		// Counterpart of fIsAggregate - tells
+															// that it is a part of a fIsAggregate symbol
+							uint16_t fIsAliased : 1;		// variable has multiple simultaneous lifetimes
+							uint16_t fIsAlias : 1; 			// represents one of the multiple simultaneous lifetimes
+							uint16_t fIsRetValue : 1;		// represents a function return value
+							uint16_t fIsOptimizedOut : 1;	// variable has no lifetimes
+							uint16_t fIsEnregGlob : 1; 		// variable is an enregistered global
+							uint16_t fIsEnregStat : 1; 		// variable is an enregistered static
+							uint16_t unused : 5; 			// must be zero
+						} flags;
+
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					} S_LOCAL;
+
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4236
+					struct
+					{
+						uint16_t reg; // Register to hold the value of the symbol
+
+						struct
+						{
+							uint16_t maybe : 1;		// May have no user name on one of control flow path.
+							uint16_t padding : 15;	// Padding for future use.
+						} attribute; // Attribute of the register range.
+
+						LocalVariableAddressRange range; // Range of addresses where this program is valid
+						PDB_FLEXIBLE_ARRAY_MEMBER(LocalVariableAddressGap, gaps); // The value is not available in following gaps.
+					} S_DEFRANGE_REGISTER;
+
+					struct
+					{
+						uint32_t typeIndex;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
 					} S_UDT, S_UDT_ST;
 #pragma pack(pop)

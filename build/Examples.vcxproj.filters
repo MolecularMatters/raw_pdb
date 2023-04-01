@@ -33,6 +33,9 @@
     <ClCompile Include="..\src\Examples\ExampleLines.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Examples\ExampleFunctionVariables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Examples\ExampleMemoryMappedFile.h">
