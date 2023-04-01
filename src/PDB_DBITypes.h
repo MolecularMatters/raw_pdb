@@ -140,6 +140,8 @@ namespace PDB
 				S_SEPCODE =									0x1132u,		// separated code (from the compiler)
 				S_SECTION =									0x1136u,		// a COFF section in an executable
 				S_COFFGROUP =								0x1137u,		// original COFF group before it was merged into executable sections by the linker, e.g. .CRT$XCU, .rdata, .bss, .lpp_prepatch_hooks
+				S_CALLSITEINFO = 							0x1139u,		// Indirect call site information
+				S_FRAMECOOKIE = 							0x113Au, 		// Security cookie information
 				S_COMPILE3 =								0x113Cu,		// replacement for S_COMPILE2, more info
 				S_ENVBLOCK =								0x113Du,		// environment block split off from S_COMPILE2
 				S_LOCAL =									0x113Eu,		// defines a local symbol in optimized code 
@@ -160,6 +162,7 @@ namespace PDB
 				S_CALLEES =									0x115Au,
 				S_CALLERS =									0x115Bu,
 				S_INLINESITE2 =								0x115Du,		// extended inline site information
+				S_HEAPALLOCSITE = 							0x115Eu,		// heap allocation site
 				S_INLINEES =            					0x1168u,		// https://llvm.org/docs/PDB/CodeViewSymbols.html#s-inlinees-0x1168
 				S_UDT =										0x1108u,		// user-defined type
 				S_UDT_ST =									0x1003u,		// user-defined structured types
@@ -183,6 +186,14 @@ namespace PDB
 				BranchIsland
 			};
 
+			enum class PDB_NO_DISCARD CookieType : uint8_t
+			{
+			   COPY = 0, 
+			   XOR_SP, 
+			   XOR_BP,
+			   XOR_R13,
+			};
+
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvconst.h#L392
 			enum class PDB_NO_DISCARD Register : uint16_t
 			{
@@ -195,6 +206,7 @@ namespace PDB
 				RBP = 334,
 				RSP = 335
 			};
+
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L3038
 			enum class PDB_NO_DISCARD ProcedureFlags : uint8_t
@@ -331,9 +343,9 @@ namespace PDB
 			// it is for compress and reduce the amount of relocations need.
 			struct LocalVariableAddressGap
 			{
-    			uint16_t offset; // relative offset from the beginning of the live range.
-    			uint16_t length; // length of this gap.
-    		};
+				uint16_t offset; // relative offset from the beginning of the live range.
+				uint16_t length; // length of this gap.
+			};
 
 			// https://llvm.org/docs/PDB/CodeViewTypes.html#leaf-types
 			struct RecordHeader
@@ -438,6 +450,22 @@ namespace PDB
 						uint16_t section;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
 					} S_COFFGROUP;
+
+					struct
+					{
+						uint32_t offset ;	// offset of call site
+						uint16_t section; 	// section index of call site
+						uint16_t padding; 	// alignment padding field, must be zero
+						uint32_t typeIndex;	// type index describing function signature
+					} S_CALLSITEINFO;
+
+					struct
+					{
+						uint32_t offset; 		// Frame relative offset
+						uint16_t reg;			// Register index
+						CookieType cookietype;	// Type of the cookie
+						uint8_t    flags;		// Flags describing this cookie
+					} S_FRAMECOOKIE;
 
 					struct
 					{
@@ -604,6 +632,7 @@ namespace PDB
 						PDB_FLEXIBLE_ARRAY_MEMBER(LocalVariableAddressGap, gaps); // The value is not available in following gaps.
 					} S_DEFRANGE_REGISTER;
 
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4245
 					struct
 					{
 						uint32_t offsetFramePointer;
@@ -611,6 +640,7 @@ namespace PDB
 						PDB_FLEXIBLE_ARRAY_MEMBER(LocalVariableAddressGap, gaps); // The value is not available in following gaps.
 					} S_DEFRANGE_FRAMEPOINTER_REL;
 
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4265
 					struct
 					{
 						uint16_t reg; // Register to hold the value of the symbol
@@ -627,10 +657,20 @@ namespace PDB
 						PDB_FLEXIBLE_ARRAY_MEMBER(LocalVariableAddressGap, gaps); // The value is not available in following gaps.
 					} S_DEFRANGE_SUBFIELD_REGISTER;
 
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4255
 					struct
 					{
 						uint32_t offsetFramePointer;  // offset to frame pointer
 					} S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE;
+
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4500
+					struct 
+					{
+						uint32_t offset;			// offset of call site
+						uint16_t section;			// section index of call site
+						uint16_t instructionLength; // length of heap allocation call instruction
+						uint32_t typeIndex;			// type index describing function signature
+					} S_HEAPALLOCSITE;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4382
 					struct
@@ -638,7 +678,7 @@ namespace PDB
 						uint32_t count; // Number of functions
 						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, funcs); // List of functions, dim == count
 						// uint32_t   invocations[CV_ZEROLEN]; Followed by a parallel array of
-    					// invocation counts. Counts > reclen are assumed to be zero
+						// invocation counts. Counts > reclen are assumed to be zero
 					} S_CALLERS, S_CALLEES, S_INLINEES;
 
 					struct

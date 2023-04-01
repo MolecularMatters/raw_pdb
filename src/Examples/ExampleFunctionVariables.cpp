@@ -212,6 +212,18 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 
 					printf("%*sS_REGREL32: '%s' -> '%s' | Register %i | Register Offset 0x%X\n", blockIndent * 4, "", data.S_REGREL32.name, typeName.c_str(), data.S_REGREL32.reg, data.S_REGREL32.offset);
 				}
+				else if(kind == SymbolRecordKind::S_FRAMECOOKIE)
+				{
+					printf("%*sS_FRAMECOOKIE <TODO>\n", blockIndent * 4, "");
+				}
+				else if(kind == SymbolRecordKind::S_CALLSITEINFO)
+				{
+					printf("%*sS_CALLSITEINFO <TODO>\n", blockIndent * 4, "");
+				}
+				else if(kind == SymbolRecordKind::S_HEAPALLOCSITE)
+				{
+					printf("%*sS_HEAPALLOCSITE <TODO>\n", blockIndent * 4, "");
+				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_FRAMEPROC)
 				{
 					functionSymbols[functionSymbols.size() - 1].frameProc = record;
@@ -266,25 +278,10 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else
 				{
-				
-					if (blockIndent != 0 &&
-						//kind != SymbolRecordKind::S_OBJNAME && 
-						//kind != SymbolRecordKind::S_COMPILE3 &&
-						//kind != (SymbolRecordKind)0x1124 && // S_UNAMESPACE
-						kind != (SymbolRecordKind)0x113a && // S_FRAMECOOKIE
-						kind != (SymbolRecordKind)0x1139 && // && // S_CALLSITEINFO 
-						kind != (SymbolRecordKind)0x115E // && // S_HEAPALLOCSITE
-						//kind != SymbolRecordKind::S_BUILDINFO &&
-						//kind != SymbolRecordKind::S_LABEL32
-					)
+					if (blockIndent != 0)
 					{
 						PDB_ASSERT(false, "Unhandled record kind 0x%X\n", record->header.kind);
 					}
-				}
-
-				if (rva == 0x7B3C20)
-				{
-					printf("Debug\n");
 				}
 
 				if (rva == 0u)
