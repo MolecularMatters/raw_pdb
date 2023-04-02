@@ -717,8 +717,6 @@ std::string GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex)
 
 	if (typeName == nullptr)
 	{
-		std::string result;
-
 		PDB_ASSERT(referencedType != nullptr, "Neither typeName nor referencedType are set.");
 
 		if (referencedType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_POINTER)
@@ -759,7 +757,20 @@ std::string GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex)
 				return "resolving method type failed";
 			}
 
-			return methodPrototype;
+			std::string classTypeName = GetTypeName(tpiStream, referencedType->data.LF_MFUNCTION.classtype);
+			classTypeName += "::*";
+
+			const int stringLength = std::snprintf(nullptr, 0, methodPrototype.c_str(), classTypeName.c_str());
+
+			PDB_ASSERT(stringLength > 0, "String length %i <= 0", stringLength);
+
+			std::string result;
+
+			result.resize((uint64_t)stringLength);
+
+			std::snprintf(result.data(), result.size() + 1, methodPrototype.c_str(), classTypeName.c_str());
+
+			return result;
 		}
 		else
 		{
