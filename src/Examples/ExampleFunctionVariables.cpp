@@ -190,14 +190,23 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					printf("%*sS_INLINEES: Count %u\n", blockIndent * 4, "", data.S_INLINEES.count);
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_LDATA32)
+				else if (kind == SymbolRecordKind::S_LDATA32)
 				{
 					if (blockIndent > 0)
 					{
-						const std::string typeName = GetTypeName(tpiStream, record->data.S_CONSTANT.typeIndex);
+						const std::string typeName = GetTypeName(tpiStream, record->data.S_LDATA32.typeIndex);
 						printf("%*sS_LDATA32: '%s' -> '%s'\n", blockIndent * 4, "", record->data.S_LDATA32.name, typeName.c_str());
 					}
 				}
+				else if (kind == SymbolRecordKind::S_LTHREAD32)
+				{
+					if (blockIndent > 0)
+					{
+						const std::string typeName = GetTypeName(tpiStream, record->data.S_LTHREAD32.typeIndex);
+						printf("%*sS_LTHREAD32: '%s' -> '%s'\n", blockIndent * 4, "", data.S_LTHREAD32.name, typeName.c_str());
+					}
+				}
+
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_UDT)
 				{
 					const std::string typeName = GetTypeName(tpiStream, record->data.S_UDT.typeIndex);
@@ -280,7 +289,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					if (blockIndent != 0)
 					{
-						PDB_ASSERT(false, "Unhandled record kind 0x%X\n", record->header.kind);
+						PDB_ASSERT(false, "Unhandled record kind 0x%X with block identation %u\n", record->header.kind, blockIndent);
 					}
 				}
 
