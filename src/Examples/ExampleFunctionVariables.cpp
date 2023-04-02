@@ -223,11 +223,12 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if(kind == SymbolRecordKind::S_FRAMECOOKIE)
 				{
-					printf("%*sS_FRAMECOOKIE <TODO>\n", blockIndent * 4, "");
+					printf("%*sS_FRAMECOOKIE Offset 0x%X | Register %u | Type %u\n", blockIndent * 4, "", data.S_FRAMECOOKIE.offset, data.S_FRAMECOOKIE.reg, data.S_FRAMECOOKIE.cookietype);
 				}
 				else if(kind == SymbolRecordKind::S_CALLSITEINFO)
 				{
-					printf("%*sS_CALLSITEINFO <TODO>\n", blockIndent * 4, "");
+					const std::string typeName = GetTypeName(tpiStream, data.S_CALLSITEINFO.typeIndex);
+					printf("%*sS_CALLSITEINFO '%s' | Offset 0x%X | Section %u\n", blockIndent * 4, "" , typeName.c_str(), data.S_CALLSITEINFO.offset, data.S_CALLSITEINFO.section);
 				}
 				else if(kind == SymbolRecordKind::S_HEAPALLOCSITE)
 				{
