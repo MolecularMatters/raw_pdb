@@ -230,7 +230,13 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 			return GetLeafName(typeRecord->data.LF_UNION.data, typeRecord->header.kind);
 		case PDB::CodeView::TPI::TypeRecordKind::LF_ENUM:
 			return &typeRecord->data.LF_ENUM.name[0];
+		case PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION:
+			if (referencedType)
+				*referencedType = typeRecord;
+			return nullptr;
+	
 		default:
+			PDB_ASSERT(false, "Unhandled TypeRecordKind 0x%X", typeRecord->header.kind);
 			break;
 		}
 	   
@@ -743,9 +749,21 @@ std::string GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex)
 
 			return functionPrototype;
 		}
+		else if (referencedType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
+		{
+			std::string methodPrototype;
+
+			if (!GetMethodPrototype(tpiStream, referencedType, methodPrototype))
+			{
+				PDB_ASSERT(false, "Resolving method prototype failed");
+				return "resolving method type failed";
+			}
+
+			return methodPrototype;
+		}
 		else
 		{
-			PDB_ASSERT(referencedType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_POINTER, "Unhandled referencedType kind 0x%X", referencedType->header.kind);
+			PDB_ASSERT(false, "Unhandled referencedType kind 0x%X", referencedType->header.kind);
 			return "not found";
 		}
 	}
