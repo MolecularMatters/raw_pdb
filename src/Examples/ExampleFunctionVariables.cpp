@@ -54,8 +54,22 @@ namespace
 
 using SymbolRecordKind = PDB::CodeView::DBI::SymbolRecordKind;
 
-// Defined in ExampleTypes.cpp
-extern std::string GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex);
+static std::string GetVariableTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex)
+{
+	// Defined in ExampleTypes.cpp
+	extern std::string GetTypeName(const PDB::TPIStream & tpiStream, uint32_t typeIndex);
+
+	std::string typeName = GetTypeName(tpiStream, typeIndex);
+
+	// Remove any '%s' substring used to insert a variable/field name.
+	const uint64_t markerPos = typeName.find("%s");
+	if (markerPos != typeName.npos)
+	{
+		typeName.erase(markerPos, 2);
+	}
+
+	return typeName;
+}
 
 void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::TPIStream& tpiStream);
 void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::TPIStream& tpiStream)
@@ -81,7 +95,6 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 	TimedScope symbolStreamScope("Reading symbol record stream");
 	const PDB::CoalescedMSFStream symbolRecordStream = dbiStream.CreateSymbolRecordStream(rawPdbFile);
 	symbolStreamScope.Done();
-
 
 	// note that we only use unordered_set in order to keep the example code easy to understand.
 	// using other hash set implementations like e.g. abseil's Swiss Tables (https://abseil.io/about/design/swisstables) is *much* faster.
@@ -134,13 +147,13 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if(kind == SymbolRecordKind::S_CONSTANT)
 				{
-					const std::string typeName = GetTypeName(tpiStream, record->data.S_CONSTANT.typeIndex);
+					const std::string typeName = GetVariableTypeName(tpiStream, record->data.S_CONSTANT.typeIndex);
 
 					printf("%*sS_CONSTANT: '%s' -> '%s' | Value 0x%X\n", blockIndent*4, "", typeName.c_str(), data.S_CONSTANT.name, data.S_CONSTANT.value);
 				}
 				else if(kind == SymbolRecordKind::S_LOCAL)
 				{
-					const std::string typeName = GetTypeName(tpiStream, data.S_LOCAL.typeIndex);
+					const std::string typeName = GetVariableTypeName(tpiStream, data.S_LOCAL.typeIndex);
 					printf("%*sS_LOCAL: '%s' -> '%s'\n", blockIndent*4, "", typeName.c_str(), data.S_LOCAL.name);
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER)
@@ -194,31 +207,33 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					if (blockIndent > 0)
 					{
-						const std::string typeName = GetTypeName(tpiStream, record->data.S_LDATA32.typeIndex);
-						printf("%*sS_LDATA32: '%s' -> '%s'\n", blockIndent * 4, "", record->data.S_LDATA32.name, typeName.c_str());
+						// Not sure why some type index 0 (T_NO_TYPE) are included in some PDBs.
+						if (record->data.S_LDATA32.typeIndex != 0) // PDB::CodeView::TPI::TypeIndexKind::T_NOTYPE)
+						{
+							const std::string typeName = GetVariableTypeName(tpiStream, record->data.S_LDATA32.typeIndex);
+							printf("%*sS_LDATA32: '%s' -> '%s'\n", blockIndent * 4, "", record->data.S_LDATA32.name, typeName.c_str());
+						}						
 					}
 				}
 				else if (kind == SymbolRecordKind::S_LTHREAD32)
 				{
 					if (blockIndent > 0)
 					{
-						const std::string typeName = GetTypeName(tpiStream, record->data.S_LTHREAD32.typeIndex);
+						const std::string typeName = GetVariableTypeName(tpiStream, record->data.S_LTHREAD32.typeIndex);
 						printf("%*sS_LTHREAD32: '%s' -> '%s'\n", blockIndent * 4, "", data.S_LTHREAD32.name, typeName.c_str());
 					}
 				}
 
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_UDT)
 				{
-					const std::string typeName = GetTypeName(tpiStream, record->data.S_UDT.typeIndex);
+					const std::string typeName = GetVariableTypeName(tpiStream, record->data.S_UDT.typeIndex);
 
 					printf("%*sS_UDT: '%s' -> '%s'\n", blockIndent * 4, "", record->data.S_UDT.name, typeName.c_str());
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_REGREL32)
 				{
-					const std::string typeName = GetTypeName(tpiStream, record->data.S_REGREL32.typeIndex);
-
-					//PDB_ASSERT(data.S_REGREL32.reg == PDB::CodeView::DBI::Register::RSP, "Register %i != RSP", (uint16_t)data.S_REGREL32.reg);
-
+					std::string typeName = GetVariableTypeName(tpiStream, record->data.S_REGREL32.typeIndex);
+	
 					printf("%*sS_REGREL32: '%s' -> '%s' | Register %i | Register Offset 0x%X\n", blockIndent * 4, "", data.S_REGREL32.name, typeName.c_str(), data.S_REGREL32.reg, data.S_REGREL32.offset);
 				}
 				else if(kind == SymbolRecordKind::S_FRAMECOOKIE)
@@ -227,7 +242,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if(kind == SymbolRecordKind::S_CALLSITEINFO)
 				{
-					const std::string typeName = GetTypeName(tpiStream, data.S_CALLSITEINFO.typeIndex);
+					const std::string typeName = GetVariableTypeName(tpiStream, data.S_CALLSITEINFO.typeIndex);
 					printf("%*sS_CALLSITEINFO '%s' | Offset 0x%X | Section %u\n", blockIndent * 4, "" , typeName.c_str(), data.S_CALLSITEINFO.offset, data.S_CALLSITEINFO.section);
 				}
 				else if(kind == SymbolRecordKind::S_HEAPALLOCSITE)
