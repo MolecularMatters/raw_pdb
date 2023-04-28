@@ -72,6 +72,8 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 		auto type = static_cast<PDB::CodeView::TPI::TypeIndexKind>(typeIndex);
 		switch (type)
 		{
+		case PDB::CodeView::TPI::TypeIndexKind::T_NOTYPE:
+			return "<NO TYPE>";
 		case PDB::CodeView::TPI::TypeIndexKind::T_HRESULT:
 			return "HRESULT";
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PHRESULT:
@@ -84,15 +86,27 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 		case PDB::CodeView::TPI::TypeIndexKind::T_PVOID:
 			return "PVOID";
 
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PBOOL08:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PBOOL16:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PBOOL32:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PBOOL64:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PBOOL08:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PBOOL16:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PBOOL32:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PBOOL64:
+			return "PBOOL";
+
 		case PDB::CodeView::TPI::TypeIndexKind::T_BOOL08:
 		case PDB::CodeView::TPI::TypeIndexKind::T_BOOL16:
 		case PDB::CodeView::TPI::TypeIndexKind::T_BOOL32:
 			return "BOOL";
+
 		case PDB::CodeView::TPI::TypeIndexKind::T_RCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_CHAR:
 			return "CHAR";
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PRCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PCHAR:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PRCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_PRCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_PCHAR:
@@ -171,6 +185,7 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 		case PDB::CodeView::TPI::TypeIndexKind::T_PUINT4:
 			return "PUINT";
 		default:
+			PDB_ASSERT(false, "Unhandled special type %u", typeIndex);
 			break;
 		}
 	}
