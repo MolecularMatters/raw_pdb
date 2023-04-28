@@ -294,7 +294,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 
 				PDB_ASSERT(blockLevel == 0, "BlockLevel %u != 0", blockLevel);
 
-				printf("%*sFunction: '%s' | RVA 0x%X\n", blockLevel*4, "", name, rva);
+				Printf(blockLevel, "Function: '%s' | RVA 0x%X\n", name, rva);
 
 				if (kind != SymbolRecordKind::S_TRAMPOLINE)
 				{
