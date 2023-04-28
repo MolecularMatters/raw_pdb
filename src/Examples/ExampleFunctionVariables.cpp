@@ -136,7 +136,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					const std::string typeName = GetTypeName(tpiStream, record->data.S_CONSTANT.typeIndex);
 
-					printf("%*sS_CONSTANT: '%s' | Value 0x%X\n", blockIndent*4, "", typeName.c_str(), data.S_CONSTANT.value);
+					printf("%*sS_CONSTANT: '%s' -> '%s' | Value 0x%X\n", blockIndent*4, "", typeName.c_str(), data.S_CONSTANT.name, data.S_CONSTANT.value);
 				}
 				else if(kind == SymbolRecordKind::S_LOCAL)
 				{
