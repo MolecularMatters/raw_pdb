@@ -71,6 +71,17 @@ static std::string GetVariableTypeName(const PDB::TPIStream& tpiStream, uint32_t
 	return typeName;
 }
 
+void Printf(uint32_t indent, const char* format, ...) 
+{
+	va_list args;
+	va_start(args, format);
+
+	printf("%*s", indent * 4, "");
+	vprintf(format, args);
+
+	va_end(args);
+}
+
 void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::TPIStream& tpiStream);
 void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::TPIStream& tpiStream)
 {
@@ -108,7 +119,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 
 		const PDB::ArrayView<PDB::ModuleInfoStream::Module> modules = moduleInfoStream.GetModules();
 
-		uint32_t blockIndent = 0;
+		uint32_t blockLevel = 0;
 
 		for (const PDB::ModuleInfoStream::Module& module : modules)
 		{
@@ -118,7 +129,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 			}
 
 			const PDB::ModuleSymbolStream moduleSymbolStream = module.CreateSymbolStream(rawPdbFile);
-			moduleSymbolStream.ForEachSymbol([&tpiStream, &functionSymbols, &seenFunctionRVAs, &imageSectionStream, &blockIndent](const PDB::CodeView::DBI::Record* record)
+			moduleSymbolStream.ForEachSymbol([&tpiStream, &functionSymbols, &seenFunctionRVAs, &imageSectionStream, &blockLevel](const PDB::CodeView::DBI::Record* record)
 			{
 				const SymbolRecordKind kind = record->header.kind;
 				const PDB::CodeView::DBI::Record::Data& data = record->data;
@@ -130,124 +141,125 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 
 				if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_END)
 				{
-					PDB_ASSERT(blockIndent > 0, "BlockIndent for S_END is 0");
-					blockIndent--;
-					printf("%*sS_END\n", blockIndent * 4, "");
+					PDB_ASSERT(blockLevel > 0, "BlockIndent for S_END is 0");
+					blockLevel--;
+					printf("%*sS_END\n", blockLevel * 4, "");
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_BLOCK32)
 				{
 					const uint32_t offset = imageSectionStream.ConvertSectionOffsetToRVA(data.S_BLOCK32.section, data.S_BLOCK32.offset);
 
-					printf("%*sS_BLOCK32: '%s' | Code Offset 0x%X\n", blockIndent*4, "", data.S_BLOCK32.name, offset);
-					blockIndent++;
+					printf("%*sS_BLOCK32: '%s' | Code Offset 0x%X\n", blockLevel*4, "", data.S_BLOCK32.name, offset);
+					blockLevel++;
 				}
 				else if (kind == SymbolRecordKind::S_LABEL32)
 				{
-					printf("%*sS_LABEL32: '%s' | Offset 0x%X\n", blockIndent * 4, "", data.S_LABEL32.name, data.S_LABEL32.offset);
+					printf("%*sS_LABEL32: '%s' | Offset 0x%X\n", blockLevel * 4, "", data.S_LABEL32.name, data.S_LABEL32.offset);
 				}
 				else if(kind == SymbolRecordKind::S_CONSTANT)
 				{
-					const std::string typeName = GetVariableTypeName(tpiStream, record->data.S_CONSTANT.typeIndex);
+					const std::string typeName = GetVariableTypeName(tpiStream, data.S_CONSTANT.typeIndex);
 
-					printf("%*sS_CONSTANT: '%s' -> '%s' | Value 0x%X\n", blockIndent*4, "", typeName.c_str(), data.S_CONSTANT.name, data.S_CONSTANT.value);
+					printf("%*sS_CONSTANT: '%s' -> '%s' | Value 0x%X\n", blockLevel*4, "", typeName.c_str(), data.S_CONSTANT.name, data.S_CONSTANT.value);
 				}
 				else if(kind == SymbolRecordKind::S_LOCAL)
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_LOCAL.typeIndex);
-					printf("%*sS_LOCAL: '%s' -> '%s'\n", blockIndent*4, "", typeName.c_str(), data.S_LOCAL.name);
+					printf("%*sS_LOCAL: '%s' -> '%s'\n", blockLevel*4, "", typeName.c_str(), data.S_LOCAL.name);
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER)
 				{
-					printf("%*sS_DEFRANGE_REGISTER: Register 0x%X\n", blockIndent * 4, "", record->data.S_DEFRANGE_REGISTER.reg);
+					printf("%*sS_DEFRANGE_REGISTER: Register 0x%X\n", blockLevel * 4, "", data.S_DEFRANGE_REGISTER.reg);
 				}
 				else if(kind == SymbolRecordKind::S_DEFRANGE_FRAMEPOINTER_REL)
 				{
-					printf("%*sS_DEFRANGE_FRAMEPOINTER_REL: <TODO>\n", blockIndent * 4, "");
+					printf("%*sS_DEFRANGE_FRAMEPOINTER_REL: <TODO>\n", blockLevel * 4, "");
 				}
 				else if(kind == SymbolRecordKind::S_DEFRANGE_SUBFIELD_REGISTER)
 				{
-					printf("%*sS_DEFRANGE_SUBFIELD_REGISTER: <TODO>\n", blockIndent * 4, "");
+					printf("%*sS_DEFRANGE_SUBFIELD_REGISTER: <TODO>\n", blockLevel * 4, "");
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE)
 				{
-					printf("%*sS_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE: Offset 0x%X\n", blockIndent * 4, "", record->data.S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE.offsetFramePointer);
+					printf("%*sS_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE: Offset 0x%X\n", blockLevel * 4, "", data.S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE.offsetFramePointer);
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER_REL)
 				{
-					printf("%*sS_DEFRANGE_REGISTER_REL: <TODO>\n", blockIndent * 4, "");
+					printf("%*sS_DEFRANGE_REGISTER_REL: <TODO>\n", blockLevel * 4, "");
 				}
 				else if(kind == SymbolRecordKind::S_FILESTATIC)
 				{
-					printf("%*sS_FILESTATIC: '%s'\n", blockIndent * 4, "", data.S_FILESTATIC.name);
+					printf("%*sS_FILESTATIC: '%s'\n", blockLevel * 4, "", data.S_FILESTATIC.name);
 				}
 				else if (kind == SymbolRecordKind::S_INLINESITE)
 				{
-					printf("%*sS_INLINESITE: Parent 0x%X\n", blockIndent * 4, "", data.S_INLINESITE.parent);
-					blockIndent++;
+					printf("%*sS_INLINESITE: Parent 0x%X\n", blockLevel * 4, "", data.S_INLINESITE.parent);
+					blockLevel++;
 				}
 				else if (kind == SymbolRecordKind::S_INLINESITE_END)
 				{
-					PDB_ASSERT(blockIndent > 0, "BlockIndent for S_INLINESITE_END is 0");
-					blockIndent--;					
-					printf("%*sS_INLINESITE_END:\n", blockIndent * 4, "");
+					PDB_ASSERT(blockLevel > 0, "BlockIndent for S_INLINESITE_END is 0");
+					blockLevel--;					
+					printf("%*sS_INLINESITE_END:\n", blockLevel * 4, "");
 				}
 				else if (kind == SymbolRecordKind::S_CALLEES)
 				{
-					printf("%*sS_CALLEES: Count %u\n", blockIndent * 4, "", data.S_CALLEES.count);
+					printf("%*sS_CALLEES: Count %u\n", blockLevel * 4, "", data.S_CALLEES.count);
 				}
 				else if (kind == SymbolRecordKind::S_CALLERS)
 				{
-					printf("%*sS_CALLERS: Count %u\n", blockIndent * 4, "", data.S_CALLERS.count);
+					printf("%*sS_CALLERS: Count %u\n", blockLevel * 4, "", data.S_CALLERS.count);
 				}
 				else if (kind == SymbolRecordKind::S_INLINEES)
 				{
-					printf("%*sS_INLINEES: Count %u\n", blockIndent * 4, "", data.S_INLINEES.count);
+					printf("%*sS_INLINEES: Count %u\n", blockLevel * 4, "", data.S_INLINEES.count);
 				}
 				else if (kind == SymbolRecordKind::S_LDATA32)
 				{
-					if (blockIndent > 0)
+					if (blockLevel > 0)
 					{
 						// Not sure why some type index 0 (T_NO_TYPE) are included in some PDBs.
-						if (record->data.S_LDATA32.typeIndex != 0) // PDB::CodeView::TPI::TypeIndexKind::T_NOTYPE)
+						if (data.S_LDATA32.typeIndex != 0) // PDB::CodeView::TPI::TypeIndexKind::T_NOTYPE)
 						{
-							const std::string typeName = GetVariableTypeName(tpiStream, record->data.S_LDATA32.typeIndex);
-							printf("%*sS_LDATA32: '%s' -> '%s'\n", blockIndent * 4, "", record->data.S_LDATA32.name, typeName.c_str());
+							const std::string typeName = GetVariableTypeName(tpiStream, data.S_LDATA32.typeIndex);
+							printf("%*sS_LDATA32: '%s' -> '%s'\n", blockLevel * 4, "", data.S_LDATA32.name, typeName.c_str());
 						}						
 					}
 				}
 				else if (kind == SymbolRecordKind::S_LTHREAD32)
 				{
-					if (blockIndent > 0)
+					if (blockLevel > 0)
 					{
-						const std::string typeName = GetVariableTypeName(tpiStream, record->data.S_LTHREAD32.typeIndex);
-						printf("%*sS_LTHREAD32: '%s' -> '%s'\n", blockIndent * 4, "", data.S_LTHREAD32.name, typeName.c_str());
+						const std::string typeName = GetVariableTypeName(tpiStream, data.S_LTHREAD32.typeIndex);
+						printf("%*sS_LTHREAD32: '%s' -> '%s'\n", blockLevel * 4, "", data.S_LTHREAD32.name, typeName.c_str());
 					}
 				}
 
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_UDT)
 				{
-					const std::string typeName = GetVariableTypeName(tpiStream, record->data.S_UDT.typeIndex);
+					const std::string typeName = GetVariableTypeName(tpiStream, data.S_UDT.typeIndex);
 
-					printf("%*sS_UDT: '%s' -> '%s'\n", blockIndent * 4, "", record->data.S_UDT.name, typeName.c_str());
+					printf("%*sS_UDT: '%s' -> '%s'\n", blockLevel * 4, "", data.S_UDT.name, typeName.c_str());
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_REGREL32)
 				{
-					std::string typeName = GetVariableTypeName(tpiStream, record->data.S_REGREL32.typeIndex);
+					std::string typeName = GetVariableTypeName(tpiStream, data.S_REGREL32.typeIndex);
 	
-					printf("%*sS_REGREL32: '%s' -> '%s' | Register %i | Register Offset 0x%X\n", blockIndent * 4, "", data.S_REGREL32.name, typeName.c_str(), data.S_REGREL32.reg, data.S_REGREL32.offset);
+					printf("%*sS_REGREL32: '%s' -> '%s' | Register %i | Register Offset 0x%X\n", blockLevel * 4, "", data.S_REGREL32.name, typeName.c_str(), data.S_REGREL32.reg, data.S_REGREL32.offset);
 				}
 				else if(kind == SymbolRecordKind::S_FRAMECOOKIE)
 				{
-					printf("%*sS_FRAMECOOKIE Offset 0x%X | Register %u | Type %u\n", blockIndent * 4, "", data.S_FRAMECOOKIE.offset, data.S_FRAMECOOKIE.reg, data.S_FRAMECOOKIE.cookietype);
+					printf("%*sS_FRAMECOOKIE Offset 0x%X | Register %u | Type %u\n", blockLevel * 4, "", data.S_FRAMECOOKIE.offset, data.S_FRAMECOOKIE.reg, data.S_FRAMECOOKIE.cookietype);
 				}
 				else if(kind == SymbolRecordKind::S_CALLSITEINFO)
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_CALLSITEINFO.typeIndex);
-					printf("%*sS_CALLSITEINFO '%s' | Offset 0x%X | Section %u\n", blockIndent * 4, "" , typeName.c_str(), data.S_CALLSITEINFO.offset, data.S_CALLSITEINFO.section);
+					printf("%*sS_CALLSITEINFO '%s' | Offset 0x%X | Section %u\n", blockLevel * 4, "" , typeName.c_str(), data.S_CALLSITEINFO.offset, data.S_CALLSITEINFO.section);
 				}
 				else if(kind == SymbolRecordKind::S_HEAPALLOCSITE)
 				{
-					printf("%*sS_HEAPALLOCSITE <TODO>\n", blockIndent * 4, "");
+					const std::string typeName = GetVariableTypeName(tpiStream, data.S_HEAPALLOCSITE.typeIndex);
+					Printf(blockLevel, "S_HEAPALLOCSITE '%s' | Offset 0x%X | Section %u | Instruction Length %u\n", typeName.c_str(), data.S_HEAPALLOCSITE.offset, data.S_HEAPALLOCSITE.section, data.S_HEAPALLOCSITE.instructionLength);
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_FRAMEPROC)
 				{
@@ -256,17 +268,17 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_THUNK32)
 				{
-					if (record->data.S_THUNK32.thunk == PDB::CodeView::DBI::ThunkOrdinal::TrampolineIncremental)
+					if (data.S_THUNK32.thunk == PDB::CodeView::DBI::ThunkOrdinal::TrampolineIncremental)
 					{
 						// we have never seen incremental linking thunks stored inside a S_THUNK32 symbol, but better safe than sorry
 						name = "ILT - Thunk";
-						rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_THUNK32.section, record->data.S_THUNK32.offset);
+						rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_THUNK32.section, data.S_THUNK32.offset);
 						size = 5u;
 					}
 					else
 					{
-						name = record->data.S_THUNK32.name;
-						rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_THUNK32.section, record->data.S_THUNK32.offset);
+						name = data.S_THUNK32.name;
+						rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_THUNK32.section, data.S_THUNK32.offset);
 						size = data.S_THUNK32.length; // Correct ?
 					}
 				}
@@ -274,38 +286,38 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					// incremental linking thunks are stored in the linker module
 					name = "ILT - Trampoline";
-					rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_TRAMPOLINE.thunkSection, record->data.S_TRAMPOLINE.thunkOffset);
+					rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_TRAMPOLINE.thunkSection, data.S_TRAMPOLINE.thunkOffset);
 					size = 5u;
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_LPROC32)
 				{
-					name = record->data.S_LPROC32.name;
-					rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_LPROC32.section, record->data.S_LPROC32.offset);
-					size = record->data.S_LPROC32.codeSize;
+					name = data.S_LPROC32.name;
+					rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_LPROC32.section, data.S_LPROC32.offset);
+					size = data.S_LPROC32.codeSize;
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_GPROC32)
 				{
-					name = record->data.S_GPROC32.name;
-					rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_GPROC32.section, record->data.S_GPROC32.offset);
-					size = record->data.S_GPROC32.codeSize;
+					name = data.S_GPROC32.name;
+					rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_GPROC32.section, data.S_GPROC32.offset);
+					size = data.S_GPROC32.codeSize;
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_LPROC32_ID)
 				{
-					name = record->data.S_LPROC32_ID.name;
-					rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_LPROC32_ID.section, record->data.S_LPROC32_ID.offset);
-					size = record->data.S_LPROC32_ID.codeSize;
+					name = data.S_LPROC32_ID.name;
+					rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_LPROC32_ID.section, data.S_LPROC32_ID.offset);
+					size = data.S_LPROC32_ID.codeSize;
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_GPROC32_ID)
 				{
-					name = record->data.S_GPROC32_ID.name;
-					rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_GPROC32_ID.section, record->data.S_GPROC32_ID.offset);
-					size = record->data.S_GPROC32_ID.codeSize;
+					name = data.S_GPROC32_ID.name;
+					rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_GPROC32_ID.section, data.S_GPROC32_ID.offset);
+					size = data.S_GPROC32_ID.codeSize;
 				}
 				else
 				{
-					if (blockIndent != 0)
+					if (blockLevel != 0)
 					{
-						PDB_ASSERT(false, "Unhandled record kind 0x%X with block identation %u\n", record->header.kind, blockIndent);
+						PDB_ASSERT(false, "Unhandled record kind 0x%X with block identation %u\n", record->header.kind, blockLevel);
 					}
 				}
 
@@ -314,13 +326,13 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 					return;
 				}
 
-				PDB_ASSERT(blockIndent == 0, "BlockIndent %u != 0", blockIndent);
+				PDB_ASSERT(blockLevel == 0, "BlockLevel %u != 0", blockLevel);
 
-				printf("%*sFunction: '%s' | RVA 0x%X\n", blockIndent*4, "", name, rva);
+				printf("%*sFunction: '%s' | RVA 0x%X\n", blockLevel*4, "", name, rva);
 
 				if (kind != SymbolRecordKind::S_TRAMPOLINE)
 				{
-					blockIndent++;
+					blockLevel++;
 				}
 
 				functionSymbols.push_back(FunctionSymbol{ name, rva, size, nullptr, {0, 0} });
