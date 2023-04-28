@@ -464,7 +464,7 @@ namespace PDB
 						uint32_t offset; 		// Frame relative offset
 						uint16_t reg;			// Register index
 						CookieType cookietype;	// Type of the cookie
-						uint8_t    flags;		// Flags describing this cookie
+						uint8_t flags;			// Flags describing this cookie
 					} S_FRAMECOOKIE;
 
 					struct
