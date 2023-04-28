@@ -9,46 +9,12 @@
 
 namespace
 {
-	struct FunctionRecords
-	{
-		size_t index;
-		size_t size;
-	};
-
-	struct FunctionRecord
-	{
-		enum class Kind : uint8_t
-		{
-			None = 0,
-			Block = 1,
-			Variable = 2
-		};
-
-		Kind kind;
-
-		union
-		{
-			struct
-			{
-				size_t nameIndex;
-				size_t typeIndex;
-			} variable;
-
-			struct
-			{
-				FunctionRecords records;
-			} block;
-		};
-	};
-
 	struct FunctionSymbol
 	{
 		std::string name;
 		uint32_t rva;
 		uint32_t size;
 		const PDB::CodeView::DBI::Record* frameProc;
-
-		FunctionRecords records;
 	};
 }
 
@@ -143,76 +109,76 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					PDB_ASSERT(blockLevel > 0, "BlockIndent for S_END is 0");
 					blockLevel--;
-					printf("%*sS_END\n", blockLevel * 4, "");
+					Printf(blockLevel, "S_END\n");
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_BLOCK32)
 				{
 					const uint32_t offset = imageSectionStream.ConvertSectionOffsetToRVA(data.S_BLOCK32.section, data.S_BLOCK32.offset);
 
-					printf("%*sS_BLOCK32: '%s' | Code Offset 0x%X\n", blockLevel*4, "", data.S_BLOCK32.name, offset);
+					Printf(blockLevel, "S_BLOCK32: '%s' | Code Offset 0x%X\n", data.S_BLOCK32.name, offset);
 					blockLevel++;
 				}
 				else if (kind == SymbolRecordKind::S_LABEL32)
 				{
-					printf("%*sS_LABEL32: '%s' | Offset 0x%X\n", blockLevel * 4, "", data.S_LABEL32.name, data.S_LABEL32.offset);
+					Printf(blockLevel, "S_LABEL32: '%s' | Offset 0x%X\n", data.S_LABEL32.name, data.S_LABEL32.offset);
 				}
 				else if(kind == SymbolRecordKind::S_CONSTANT)
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_CONSTANT.typeIndex);
 
-					printf("%*sS_CONSTANT: '%s' -> '%s' | Value 0x%X\n", blockLevel*4, "", typeName.c_str(), data.S_CONSTANT.name, data.S_CONSTANT.value);
+					Printf(blockLevel, "S_CONSTANT: '%s' -> '%s' | Value 0x%X\n", typeName.c_str(), data.S_CONSTANT.name, data.S_CONSTANT.value);
 				}
 				else if(kind == SymbolRecordKind::S_LOCAL)
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_LOCAL.typeIndex);
-					printf("%*sS_LOCAL: '%s' -> '%s'\n", blockLevel*4, "", typeName.c_str(), data.S_LOCAL.name);
+					Printf(blockLevel, "S_LOCAL: '%s' -> '%s'\n", typeName.c_str(), data.S_LOCAL.name);
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER)
 				{
-					printf("%*sS_DEFRANGE_REGISTER: Register 0x%X\n", blockLevel * 4, "", data.S_DEFRANGE_REGISTER.reg);
+					Printf(blockLevel, "S_DEFRANGE_REGISTER: Register 0x % X\n", data.S_DEFRANGE_REGISTER.reg);
 				}
 				else if(kind == SymbolRecordKind::S_DEFRANGE_FRAMEPOINTER_REL)
 				{
-					printf("%*sS_DEFRANGE_FRAMEPOINTER_REL: <TODO>\n", blockLevel * 4, "");
+					Printf(blockLevel, "S_DEFRANGE_FRAMEPOINTER_REL: <TODO>\n");
 				}
 				else if(kind == SymbolRecordKind::S_DEFRANGE_SUBFIELD_REGISTER)
 				{
-					printf("%*sS_DEFRANGE_SUBFIELD_REGISTER: <TODO>\n", blockLevel * 4, "");
+					Printf(blockLevel, "S_DEFRANGE_SUBFIELD_REGISTER: <TODO>\n");
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE)
 				{
-					printf("%*sS_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE: Offset 0x%X\n", blockLevel * 4, "", data.S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE.offsetFramePointer);
+					Printf(blockLevel, "S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE: Offset 0x%X\n", data.S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE.offsetFramePointer);
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER_REL)
 				{
-					printf("%*sS_DEFRANGE_REGISTER_REL: <TODO>\n", blockLevel * 4, "");
+					Printf(blockLevel, "S_DEFRANGE_REGISTER_REL: <TODO>\n");
 				}
 				else if(kind == SymbolRecordKind::S_FILESTATIC)
 				{
-					printf("%*sS_FILESTATIC: '%s'\n", blockLevel * 4, "", data.S_FILESTATIC.name);
+					Printf(blockLevel, "S_FILESTATIC: '%s'\n", data.S_FILESTATIC.name);
 				}
 				else if (kind == SymbolRecordKind::S_INLINESITE)
 				{
-					printf("%*sS_INLINESITE: Parent 0x%X\n", blockLevel * 4, "", data.S_INLINESITE.parent);
+					Printf(blockLevel, "S_INLINESITE: Parent 0x % X\n", data.S_INLINESITE.parent);
 					blockLevel++;
 				}
 				else if (kind == SymbolRecordKind::S_INLINESITE_END)
 				{
 					PDB_ASSERT(blockLevel > 0, "BlockIndent for S_INLINESITE_END is 0");
 					blockLevel--;					
-					printf("%*sS_INLINESITE_END:\n", blockLevel * 4, "");
+					Printf(blockLevel, "S_INLINESITE_END:\n");
 				}
 				else if (kind == SymbolRecordKind::S_CALLEES)
 				{
-					printf("%*sS_CALLEES: Count %u\n", blockLevel * 4, "", data.S_CALLEES.count);
+					Printf(blockLevel, "S_CALLEES: Count %u\n", data.S_CALLEES.count);
 				}
 				else if (kind == SymbolRecordKind::S_CALLERS)
 				{
-					printf("%*sS_CALLERS: Count %u\n", blockLevel * 4, "", data.S_CALLERS.count);
+					Printf(blockLevel, "S_CALLERS: Count %u\n", data.S_CALLERS.count);
 				}
 				else if (kind == SymbolRecordKind::S_INLINEES)
 				{
-					printf("%*sS_INLINEES: Count %u\n", blockLevel * 4, "", data.S_INLINEES.count);
+					Printf(blockLevel, "S_INLINEES: Count %u\n", data.S_INLINEES.count);
 				}
 				else if (kind == SymbolRecordKind::S_LDATA32)
 				{
@@ -222,7 +188,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						if (data.S_LDATA32.typeIndex != 0) // PDB::CodeView::TPI::TypeIndexKind::T_NOTYPE)
 						{
 							const std::string typeName = GetVariableTypeName(tpiStream, data.S_LDATA32.typeIndex);
-							printf("%*sS_LDATA32: '%s' -> '%s'\n", blockLevel * 4, "", data.S_LDATA32.name, typeName.c_str());
+							Printf(blockLevel, "S_LDATA32: '%s' -> '%s'\n", data.S_LDATA32.name, typeName.c_str());
 						}						
 					}
 				}
@@ -231,7 +197,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 					if (blockLevel > 0)
 					{
 						const std::string typeName = GetVariableTypeName(tpiStream, data.S_LTHREAD32.typeIndex);
-						printf("%*sS_LTHREAD32: '%s' -> '%s'\n", blockLevel * 4, "", data.S_LTHREAD32.name, typeName.c_str());
+						Printf(blockLevel, "S_LTHREAD32: '%s' -> '%s'\n", data.S_LTHREAD32.name, typeName.c_str());
 					}
 				}
 
@@ -239,27 +205,27 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_UDT.typeIndex);
 
-					printf("%*sS_UDT: '%s' -> '%s'\n", blockLevel * 4, "", data.S_UDT.name, typeName.c_str());
+					Printf(blockLevel, "S_UDT: '%s' -> '%s'\n", data.S_UDT.name, typeName.c_str());
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_REGREL32)
 				{
-					std::string typeName = GetVariableTypeName(tpiStream, data.S_REGREL32.typeIndex);
+					const std::string typeName = GetVariableTypeName(tpiStream, data.S_REGREL32.typeIndex);
 	
-					printf("%*sS_REGREL32: '%s' -> '%s' | Register %i | Register Offset 0x%X\n", blockLevel * 4, "", data.S_REGREL32.name, typeName.c_str(), data.S_REGREL32.reg, data.S_REGREL32.offset);
+					Printf(blockLevel, "S_REGREL32: '%s' -> '%s' | Register %i | Register Offset 0x%X\n", data.S_REGREL32.name, typeName.c_str(), data.S_REGREL32.reg, data.S_REGREL32.offset);
 				}
 				else if(kind == SymbolRecordKind::S_FRAMECOOKIE)
 				{
-					printf("%*sS_FRAMECOOKIE Offset 0x%X | Register %u | Type %u\n", blockLevel * 4, "", data.S_FRAMECOOKIE.offset, data.S_FRAMECOOKIE.reg, data.S_FRAMECOOKIE.cookietype);
+					Printf(blockLevel, "S_FRAMECOOKIE: Offset 0x%X | Register %u | Type %u\n", data.S_FRAMECOOKIE.offset, data.S_FRAMECOOKIE.reg, data.S_FRAMECOOKIE.cookietype);
 				}
 				else if(kind == SymbolRecordKind::S_CALLSITEINFO)
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_CALLSITEINFO.typeIndex);
-					printf("%*sS_CALLSITEINFO '%s' | Offset 0x%X | Section %u\n", blockLevel * 4, "" , typeName.c_str(), data.S_CALLSITEINFO.offset, data.S_CALLSITEINFO.section);
+					Printf(blockLevel, "S_CALLSITEINFO: '%s' | Offset 0x%X | Section %u\n", typeName.c_str(), data.S_CALLSITEINFO.offset, data.S_CALLSITEINFO.section);
 				}
 				else if(kind == SymbolRecordKind::S_HEAPALLOCSITE)
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_HEAPALLOCSITE.typeIndex);
-					Printf(blockLevel, "S_HEAPALLOCSITE '%s' | Offset 0x%X | Section %u | Instruction Length %u\n", typeName.c_str(), data.S_HEAPALLOCSITE.offset, data.S_HEAPALLOCSITE.section, data.S_HEAPALLOCSITE.instructionLength);
+					Printf(blockLevel, "S_HEAPALLOCSITE: '%s' | Offset 0x%X | Section %u | Instruction Length %u\n", typeName.c_str(), data.S_HEAPALLOCSITE.offset, data.S_HEAPALLOCSITE.section, data.S_HEAPALLOCSITE.instructionLength);
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_FRAMEPROC)
 				{
@@ -335,7 +301,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 					blockLevel++;
 				}
 
-				functionSymbols.push_back(FunctionSymbol{ name, rva, size, nullptr, {0, 0} });
+				functionSymbols.push_back(FunctionSymbol{ name, rva, size, nullptr });
 				seenFunctionRVAs.emplace(rva);
 			});
 		}
@@ -383,7 +349,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 
 			// this is a new function symbol, so store it.
 			// note that we don't know its size yet.
-			functionSymbols.push_back(FunctionSymbol{ record->data.S_PUB32.name, rva, 0u, nullptr, {0, 0} });
+			functionSymbols.push_back(FunctionSymbol{ record->data.S_PUB32.name, rva, 0u, nullptr});
 		}
 
 		scope.Done(count);
