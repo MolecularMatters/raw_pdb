@@ -7,17 +7,6 @@
 #include "PDB_DBIStream.h"
 #include "PDB_TPIStream.h"
 
-namespace
-{
-	struct FunctionSymbol
-	{
-		std::string name;
-		uint32_t rva;
-		uint32_t size;
-		const PDB::CodeView::DBI::Record* frameProc;
-	};
-}
-
 using SymbolRecordKind = PDB::CodeView::DBI::SymbolRecordKind;
 
 static std::string GetVariableTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex)
@@ -92,7 +81,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				const SymbolRecordKind kind = record->header.kind;
 				const PDB::CodeView::DBI::Record::Data& data = record->data;
 
-				if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_END)
+				if (kind == SymbolRecordKind::S_END)
 				{
 					PDB_ASSERT(blockLevel > 0, "Block level for S_END is 0");
 					blockLevel--;
@@ -103,7 +92,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						Printf(0, "\n");
 					}
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_BLOCK32)
+				else if (kind == SymbolRecordKind::S_BLOCK32)
 				{
 					const uint32_t offset = imageSectionStream.ConvertSectionOffsetToRVA(data.S_BLOCK32.section, data.S_BLOCK32.offset);
 
@@ -208,13 +197,13 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						Printf(blockLevel, "S_LTHREAD32: '%s' -> '%s'\n", data.S_LTHREAD32.name, typeName.c_str());
 					}
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_UDT)
+				else if (kind == SymbolRecordKind::S_UDT)
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_UDT.typeIndex);
 
 					Printf(blockLevel, "S_UDT: '%s' -> '%s'\n", data.S_UDT.name, typeName.c_str());
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_REGREL32)
+				else if (kind == PDB::CodeView::DBI::SymbolRecordKind::S_REGREL32)
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_REGREL32.typeIndex);
 	
@@ -243,7 +232,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						data.S_HEAPALLOCSITE.section, 
 						data.S_HEAPALLOCSITE.instructionLength);
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_FRAMEPROC)
+				else if (kind == SymbolRecordKind::S_FRAMEPROC)
 				{
 					Printf(blockLevel, "S_FRAMEPROC: Size %u | Padding %u | Padding Offset 0x%X | Callee Registers Size %u\n", 
 						data.S_FRAMEPROC.cbFrame, 
@@ -251,7 +240,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						data.S_FRAMEPROC.offPad, 
 						data.S_FRAMEPROC.cbSaveRegs);
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_THUNK32)
+				else if (kind == SymbolRecordKind::S_THUNK32)
 				{
 					PDB_ASSERT(blockLevel == 0, "BlockLevel %u != 0", blockLevel);
 
@@ -268,35 +257,35 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						blockLevel++;
 					}
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_TRAMPOLINE)
+				else if (kind == SymbolRecordKind::S_TRAMPOLINE)
 				{
 					PDB_ASSERT(blockLevel == 0, "BlockLevel %u != 0", blockLevel);
 					// incremental linking thunks are stored in the linker module
 					const uint32_t rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_TRAMPOLINE.thunkSection, data.S_TRAMPOLINE.thunkOffset);
 					Printf(blockLevel, "Function 'ILT/Trampoline' | RVA 0x%X\n", rva);
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_LPROC32)
+				else if (kind == SymbolRecordKind::S_LPROC32)
 				{
 					PDB_ASSERT(blockLevel == 0, "BlockLevel %u != 0", blockLevel);
 					const uint32_t rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_LPROC32.section, data.S_LPROC32.offset);
 					Printf(blockLevel, "S_LPROC32 Function '%s' | RVA 0x%X\n", data.S_LPROC32.name, rva);
 					blockLevel++;
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_GPROC32)
+				else if (kind == SymbolRecordKind::S_GPROC32)
 				{
 					PDB_ASSERT(blockLevel == 0, "BlockLevel %u != 0", blockLevel);
 					const uint32_t rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_GPROC32.section, data.S_GPROC32.offset);
 					Printf(blockLevel, "S_GPROC32 Function '%s' | RVA 0x%X\n", data.S_GPROC32.name, rva);
 					blockLevel++;
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_LPROC32_ID)
+				else if (kind == SymbolRecordKind::S_LPROC32_ID)
 				{
 					PDB_ASSERT(blockLevel == 0, "BlockLevel %u != 0", blockLevel);
 					const uint32_t rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_LPROC32_ID.section, data.S_LPROC32_ID.offset);
 					Printf(blockLevel, "S_LPROC32_ID Function '%s' | RVA 0x%X\n", data.S_LPROC32_ID.name, rva);
 					blockLevel++;
 				}
-				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_GPROC32_ID)
+				else if (kind == SymbolRecordKind::S_GPROC32_ID)
 				{
 					PDB_ASSERT(blockLevel == 0, "BlockLevel %u != 0", blockLevel);
 					const uint32_t rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_GPROC32_ID.section, data.S_GPROC32_ID.offset);
