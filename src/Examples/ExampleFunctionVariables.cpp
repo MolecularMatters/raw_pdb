@@ -131,11 +131,20 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if(kind == SymbolRecordKind::S_DEFRANGE_FRAMEPOINTER_REL)
 				{
-					Printf(blockLevel, "S_DEFRANGE_FRAMEPOINTER_REL: <TODO>\n");
+					Printf(blockLevel, "S_DEFRANGE_FRAMEPOINTER_REL: Frame Pointer Offset 0x%X | Range Start 0x%X | Range Section Start 0x%X | Range Length %u\n", 
+							data.S_DEFRANGE_FRAMEPOINTER_REL.offsetFramePointer, 
+							data.S_DEFRANGE_FRAMEPOINTER_REL.range.offsetStart, 
+							data.S_DEFRANGE_FRAMEPOINTER_REL.range.isectionStart, 
+							data.S_DEFRANGE_FRAMEPOINTER_REL.range.length);
 				}
 				else if(kind == SymbolRecordKind::S_DEFRANGE_SUBFIELD_REGISTER)
 				{
-					Printf(blockLevel, "S_DEFRANGE_SUBFIELD_REGISTER: <TODO>\n");
+					Printf(blockLevel, "S_DEFRANGE_SUBFIELD_REGISTER: Register %u | Parent offset 0x%X | Range Start 0x%X | Range Section Start 0x%X | Range Length %u\n", 
+						data.S_DEFRANGE_SUBFIELD_REGISTER.reg,
+						data.S_DEFRANGE_SUBFIELD_REGISTER.offsetParent,
+						data.S_DEFRANGE_SUBFIELD_REGISTER.range.offsetStart, 
+						data.S_DEFRANGE_SUBFIELD_REGISTER.range.isectionStart, 
+						data.S_DEFRANGE_SUBFIELD_REGISTER.range.length);
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE)
 				{
@@ -143,7 +152,14 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER_REL)
 				{
-					Printf(blockLevel, "S_DEFRANGE_REGISTER_REL: <TODO>\n");
+					Printf(blockLevel, "S_DEFRANGE_REGISTER_REL: Base Register %u | Parent offset 0x%X | Base Register Offset 0x%X | Range Start 0x%X | Range Section Start 0x%X | Range Length %u\n",
+						data.S_DEFRANGE_REGISTER_REL.baseRegister,
+						data.S_DEFRANGE_REGISTER_REL.offsetParent,
+						data.S_DEFRANGE_REGISTER_REL.offsetBasePointer,
+						data.S_DEFRANGE_REGISTER_REL.offsetParent,
+						data.S_DEFRANGE_REGISTER_REL.range.offsetStart, 
+						data.S_DEFRANGE_REGISTER_REL.range.isectionStart, 
+						data.S_DEFRANGE_REGISTER_REL.range.length);						
 				}
 				else if(kind == SymbolRecordKind::S_FILESTATIC)
 				{
@@ -156,7 +172,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if (kind == SymbolRecordKind::S_INLINESITE_END)
 				{
-					PDB_ASSERT(blockLevel > 0, "BlockIndent for S_INLINESITE_END is 0");
+					PDB_ASSERT(blockLevel > 0, "Block level for S_INLINESITE_END is 0");
 					blockLevel--;					
 					Printf(blockLevel, "S_INLINESITE_END:\n");
 				}
@@ -202,11 +218,17 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_REGREL32.typeIndex);
 	
-					Printf(blockLevel, "S_REGREL32: '%s' -> '%s' | Register %i | Register Offset 0x%X\n", data.S_REGREL32.name, typeName.c_str(), data.S_REGREL32.reg, data.S_REGREL32.offset);
+					Printf(blockLevel, "S_REGREL32: '%s' -> '%s' | Register %i | Register Offset 0x%X\n", 
+						data.S_REGREL32.name, typeName.c_str(), 
+						data.S_REGREL32.reg, 
+						data.S_REGREL32.offset);
 				}
 				else if(kind == SymbolRecordKind::S_FRAMECOOKIE)
 				{
-					Printf(blockLevel, "S_FRAMECOOKIE: Offset 0x%X | Register %u | Type %u\n", data.S_FRAMECOOKIE.offset, data.S_FRAMECOOKIE.reg, data.S_FRAMECOOKIE.cookietype);
+					Printf(blockLevel, "S_FRAMECOOKIE: Offset 0x%X | Register %u | Type %u\n", 
+						data.S_FRAMECOOKIE.offset, 
+						data.S_FRAMECOOKIE.reg, 
+						data.S_FRAMECOOKIE.cookietype);
 				}
 				else if(kind == SymbolRecordKind::S_CALLSITEINFO)
 				{
@@ -216,11 +238,18 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				else if(kind == SymbolRecordKind::S_HEAPALLOCSITE)
 				{
 					const std::string typeName = GetVariableTypeName(tpiStream, data.S_HEAPALLOCSITE.typeIndex);
-					Printf(blockLevel, "S_HEAPALLOCSITE: '%s' | Offset 0x%X | Section %u | Instruction Length %u\n", typeName.c_str(), data.S_HEAPALLOCSITE.offset, data.S_HEAPALLOCSITE.section, data.S_HEAPALLOCSITE.instructionLength);
+					Printf(blockLevel, "S_HEAPALLOCSITE: '%s' | Offset 0x%X | Section %u | Instruction Length %u\n", typeName.c_str(), 
+						data.S_HEAPALLOCSITE.offset, 
+						data.S_HEAPALLOCSITE.section, 
+						data.S_HEAPALLOCSITE.instructionLength);
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_FRAMEPROC)
 				{
-					Printf(blockLevel, "S_FRAMEPROC: Size %u | Padding %u | Padding Offset 0x%X | Callee Registers Size %u\n", data.S_FRAMEPROC.cbFrame, data.S_FRAMEPROC.cbPad, data.S_FRAMEPROC.offPad, data.S_FRAMEPROC.cbSaveRegs);
+					Printf(blockLevel, "S_FRAMEPROC: Size %u | Padding %u | Padding Offset 0x%X | Callee Registers Size %u\n", 
+						data.S_FRAMEPROC.cbFrame, 
+						data.S_FRAMEPROC.cbPad, 
+						data.S_FRAMEPROC.offPad, 
+						data.S_FRAMEPROC.cbSaveRegs);
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_THUNK32)
 				{
