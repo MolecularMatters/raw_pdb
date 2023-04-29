@@ -397,7 +397,7 @@ namespace PDB
 							uint32_t fGuardCFW : 1;					// function contains CFW checks and/or instrumentation
 							uint32_t pad : 9;						// must be zero
 						} flags;
-					}S_FRAMEPROC;
+					} S_FRAMEPROC;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L3696
 					struct
