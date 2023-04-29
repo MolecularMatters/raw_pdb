@@ -220,7 +220,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_FRAMEPROC)
 				{
-					Printf(blockLevel, "S_FRAMEPROC: <TODO>\n");
+					Printf(blockLevel, "S_FRAMEPROC: Size %u | Padding %u | Padding Offset 0x%X | Callee Registers Size %u\n", data.S_FRAMEPROC.cbFrame, data.S_FRAMEPROC.cbPad, data.S_FRAMEPROC.offPad, data.S_FRAMEPROC.cbSaveRegs);
 				}
 				else if (record->header.kind == PDB::CodeView::DBI::SymbolRecordKind::S_THUNK32)
 				{
