@@ -3,6 +3,7 @@ project(Examples)
 set(SOURCES
 	ExampleContributions.cpp
 	ExampleFunctionSymbols.cpp
+	ExampleFunctionVariables.cpp
 	ExampleLines.cpp
 	ExampleMain.cpp
 	ExampleMemoryMappedFile.cpp

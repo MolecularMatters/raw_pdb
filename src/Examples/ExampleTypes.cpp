@@ -72,6 +72,8 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 		auto type = static_cast<PDB::CodeView::TPI::TypeIndexKind>(typeIndex);
 		switch (type)
 		{
+		case PDB::CodeView::TPI::TypeIndexKind::T_NOTYPE:
+			return "<NO TYPE>";
 		case PDB::CodeView::TPI::TypeIndexKind::T_HRESULT:
 			return "HRESULT";
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PHRESULT:
@@ -84,15 +86,27 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 		case PDB::CodeView::TPI::TypeIndexKind::T_PVOID:
 			return "PVOID";
 
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PBOOL08:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PBOOL16:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PBOOL32:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PBOOL64:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PBOOL08:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PBOOL16:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PBOOL32:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PBOOL64:
+			return "PBOOL";
+
 		case PDB::CodeView::TPI::TypeIndexKind::T_BOOL08:
 		case PDB::CodeView::TPI::TypeIndexKind::T_BOOL16:
 		case PDB::CodeView::TPI::TypeIndexKind::T_BOOL32:
 			return "BOOL";
+
 		case PDB::CodeView::TPI::TypeIndexKind::T_RCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_CHAR:
 			return "CHAR";
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PRCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PCHAR:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PRCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_PRCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_PCHAR:
@@ -171,6 +185,7 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 		case PDB::CodeView::TPI::TypeIndexKind::T_PUINT4:
 			return "PUINT";
 		default:
+			PDB_ASSERT(false, "Unhandled special type %u", typeIndex);
 			break;
 		}
 	}
@@ -202,22 +217,26 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 
 			return GetTypeName(tpiStream, typeRecord->data.LF_POINTER.utype, pointerLevel, &typeRecord, modifierRecord);
 		case PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE:
-			*referencedType = typeRecord;
+			if (referencedType)
+				*referencedType = typeRecord;
 			return nullptr;
 		case PDB::CodeView::TPI::TypeRecordKind::LF_BITFIELD:
 			if (typeRecord->data.LF_BITFIELD.type < typeIndexBegin)
 			{
 				typeName = GetTypeName(tpiStream, typeRecord->data.LF_BITFIELD.type, pointerLevel, nullptr, modifierRecord);
-				*referencedType = typeRecord;
+				if (referencedType)
+					*referencedType = typeRecord;
 				return typeName;
 			}
 			else
 			{
-				*referencedType = typeRecord;
+				if (referencedType)
+					*referencedType = typeRecord;
 				return nullptr;
 			}
 		case PDB::CodeView::TPI::TypeRecordKind::LF_ARRAY:
-			*referencedType = typeRecord;
+			if (referencedType)
+				*referencedType = typeRecord;
 			return GetTypeName(tpiStream, typeRecord->data.LF_ARRAY.elemtype, pointerLevel, &typeRecord, modifierRecord);
 		case PDB::CodeView::TPI::TypeRecordKind::LF_CLASS:
 		case PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE:
@@ -226,7 +245,13 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 			return GetLeafName(typeRecord->data.LF_UNION.data, typeRecord->header.kind);
 		case PDB::CodeView::TPI::TypeRecordKind::LF_ENUM:
 			return &typeRecord->data.LF_ENUM.name[0];
+		case PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION:
+			if (referencedType)
+				*referencedType = typeRecord;
+			return nullptr;
+	
 		default:
+			PDB_ASSERT(false, "Unhandled TypeRecordKind 0x%X", typeRecord->header.kind);
 			break;
 		}
 	   
@@ -234,7 +259,6 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 
 	return "unknown_type";
 }
-
 
 static const char* GetModifierName(const PDB::CodeView::TPI::Record* modifierRecord)
 {
@@ -697,6 +721,81 @@ static void DisplayFields(const PDB::TPIStream& tpiStream, const PDB::CodeView::
 	}
 }
 
+// Used in ExamplesFunctionVariables
+std::string GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex)
+{
+	uint8_t pointerLevel = 0;
+	const PDB::CodeView::TPI::Record* referencedType = nullptr;
+	const PDB::CodeView::TPI::Record* modifierRecord = nullptr;
+
+	const char* typeName = GetTypeName(tpiStream, typeIndex, pointerLevel, &referencedType, &modifierRecord);
+
+	if (typeName == nullptr)
+	{
+		PDB_ASSERT(referencedType != nullptr, "Neither typeName nor referencedType are set.");
+
+		if (referencedType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_POINTER)
+		{
+			std::string pointerType = GetTypeName(tpiStream, referencedType->data.LF_POINTER.utype);
+
+			for (size_t i = 0; i < pointerLevel; i++)
+				pointerType += '*';
+
+			return pointerType;
+		}
+		else if (referencedType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_ARRAY)
+		{
+			const std::string elementType = GetTypeName(tpiStream, referencedType->data.LF_ARRAY.elemtype);
+			const std::string indexType = GetTypeName(tpiStream, referencedType->data.LF_ARRAY.idxtype);
+
+			return elementType + "[" + indexType + "]";
+		}
+		else if (referencedType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
+		{
+			std::string functionPrototype;
+
+			if (!GetFunctionPrototype(tpiStream, referencedType, functionPrototype))
+			{
+				PDB_ASSERT(false, "Resolving function prototype failed");
+				return "resolving function type failed";
+			}
+
+			return functionPrototype;
+		}
+		else if (referencedType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
+		{
+			std::string methodPrototype;
+
+			if (!GetMethodPrototype(tpiStream, referencedType, methodPrototype))
+			{
+				PDB_ASSERT(false, "Resolving method prototype failed");
+				return "resolving method type failed";
+			}
+
+			std::string classTypeName = GetTypeName(tpiStream, referencedType->data.LF_MFUNCTION.classtype);
+			classTypeName += "::*";
+
+			const int stringLength = std::snprintf(nullptr, 0, methodPrototype.c_str(), classTypeName.c_str());
+
+			PDB_ASSERT(stringLength > 0, "String length %i <= 0", stringLength);
+
+			std::string result;
+
+			result.resize((uint64_t)stringLength);
+
+			std::snprintf(result.data(), result.size() + 1, methodPrototype.c_str(), classTypeName.c_str());
+
+			return result;
+		}
+		else
+		{
+			PDB_ASSERT(false, "Unhandled referencedType kind 0x%X", referencedType->header.kind);
+			return "not found";
+		}
+	}
+
+	return typeName;
+}
 
 static void DisplayEnumerates(const PDB::CodeView::TPI::Record* record, uint8_t underlyingTypeSize)
 {
