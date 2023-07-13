@@ -169,6 +169,10 @@ A basic example that shows how to load contributions, sort them by size, and out
 
 An example intended for profiler developers that shows how to enumerate all function symbols and retrieve or compute their code size.
 
+### Function variables (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleFunctionVariables.cpp">ExampleFunctionVariables.cpp</a>)
+
+An example intended for debugger developers that shows how to enumerate all function records needed for displaying function variables. 
+
 ### Lines (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExampleLines.cpp">ExampleLines.cpp</a>)
 
 An example that shows to how to load line information for all modules.
