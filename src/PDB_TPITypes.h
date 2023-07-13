@@ -134,106 +134,116 @@ namespace PDB
 			};
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L328
+			// https://github.com/ValveSoftware/wine/blob/cd165953c8b379a78418711f07417022e503c81b/include/wine/mscvpdb.h
 			enum class TypeIndexKind : uint16_t
 			{
-				T_NOTYPE = 0x0000u,			// uncharacterized type (no type)
+				T_NOTYPE = 0x0000u,				// uncharacterized type (no type)
 				T_ABS = 0x0001u,				// absolute symbol
 				T_SEGMENT = 0x0002u,			// segment type
-				T_VOID = 0x0003u,			// void
+				T_VOID = 0x0003u,				// void
 				T_HRESULT = 0x0008u,			// OLE/COM HRESULT
-				T_32PHRESULT = 0x0408u,		// OLE/COM HRESULT __ptr32 *
-				T_64PHRESULT = 0x0608u,		// OLE/COM HRESULT __ptr64 *
+				T_32PHRESULT = 0x0408u,			// OLE/COM HRESULT __ptr32 *
+				T_64PHRESULT = 0x0608u,			// OLE/COM HRESULT __ptr64 *
 
-				T_PVOID = 0x0103u,			// near pointer to void
-				T_PFVOID = 0x0203u,			// far pointer to void
-				T_PHVOID = 0x0303u,			// huge pointer to void
+				T_PVOID = 0x0103u,				// near pointer to void
+				T_PFVOID = 0x0203u,				// far pointer to void
+				T_PHVOID = 0x0303u,				// huge pointer to void
 				T_32PVOID = 0x0403u,			// 32 bit pointer to void
-				T_32PFVOID = 0x0503u,		// 16:32 pointer to void
+				T_32PFVOID = 0x0503u,			// 16:32 pointer to void
 				T_64PVOID = 0x0603u,			// 64 bit pointer to void
 				T_CURRENCY = 0x0004u,			// BASIC 8 byte currency value
-				T_NBASICSTR = 0x0005u,		// Near BASIC string
-				T_FBASICSTR = 0x0006u,		// Far BASIC string
+				T_NBASICSTR = 0x0005u,			// Near BASIC string
+				T_FBASICSTR = 0x0006u,			// Far BASIC string
 				T_NOTTRANS = 0x0007u,			// type not translated by cvpack
 				T_BIT = 0x0060u,				// bit
 				T_PASCHAR = 0x0061u,			// Pascal CHAR
 				T_BOOL32FF = 0x0062u,			// 32-bit BOOL where true is 0xffffffff
 
 				T_CHAR = 0x0010u,				// 8 bit signed
-				T_PCHAR = 0x0110u,			// 16 bit pointer to 8 bit signed
-				T_PFCHAR = 0x0210u,			// 16:16 far pointer to 8 bit signed
-				T_PHCHAR = 0x0310u,			// 16:16 huge pointer to 8 bit signed
+				T_PCHAR = 0x0110u,				// 16 bit pointer to 8 bit signed
+				T_PFCHAR = 0x0210u,				// 16:16 far pointer to 8 bit signed
+				T_PHCHAR = 0x0310u,				// 16:16 huge pointer to 8 bit signed
 				T_32PCHAR = 0x0410u,			// 32 bit pointer to 8 bit signed
-				T_32PFCHAR = 0x0510u,		// 16:32 pointer to 8 bit signed
+				T_32PFCHAR = 0x0510u,			// 16:32 pointer to 8 bit signed
 				T_64PCHAR = 0x0610u,			// 64 bit pointer to 8 bit signed
 
-				T_UCHAR = 0x0020u,			// 8 bit unsigned
-				T_PUCHAR = 0x0120u,			// 16 bit pointer to 8 bit unsigned
+				T_UCHAR = 0x0020u,				// 8 bit unsigned
+				T_PUCHAR = 0x0120u,				// 16 bit pointer to 8 bit unsigned
 				T_PFUCHAR = 0x0220u,			// 16:16 far pointer to 8 bit unsigned
 				T_PHUCHAR = 0x0320u,			// 16:16 huge pointer to 8 bit unsigned
-				T_32PUCHAR = 0x0420u,		// 32 bit pointer to 8 bit unsigned
-				T_32PFUCHAR = 0x0520u,		// 16:32 pointer to 8 bit unsigned
-				T_64PUCHAR = 0x0620u,		// 64 bit pointer to 8 bit unsigned
+				T_32PUCHAR = 0x0420u,			// 32 bit pointer to 8 bit unsigned
+				T_32PFUCHAR = 0x0520u,			// 16:32 pointer to 8 bit unsigned
+				T_64PUCHAR = 0x0620u,			// 64 bit pointer to 8 bit unsigned
 
-				T_RCHAR = 0x0070u,			// really a char
-				T_PRCHAR = 0x0170u,			// 16 bit pointer to a real char
+				T_RCHAR = 0x0070u,				// really a char
+				T_PRCHAR = 0x0170u,				// 16 bit pointer to a real char
 				T_PFRCHAR = 0x0270u,			// 16:16 far pointer to a real char
 				T_PHRCHAR = 0x0370u,			// 16:16 huge pointer to a real char
-				T_32PRCHAR = 0x0470u,		// 32 bit pointer to a real char
-				T_32PFRCHAR = 0x0570u,		// 16:32 pointer to a real char
-				T_64PRCHAR = 0x0670u,		// 64 bit pointer to a real char
+				T_32PRCHAR = 0x0470u,			// 32 bit pointer to a real char
+				T_32PFRCHAR = 0x0570u,			// 16:32 pointer to a real char
+				T_64PRCHAR = 0x0670u,			// 64 bit pointer to a real char
 
 				// wide character types
-				T_WCHAR = 0x0071u,			// wide char
-				T_PWCHAR = 0x0171u,			// 16 bit pointer to a wide char
+				T_WCHAR = 0x0071u,				// wide char
+				T_PWCHAR = 0x0171u,				// 16 bit pointer to a wide char
 				T_PFWCHAR = 0x0271u,			// 16:16 far pointer to a wide char
 				T_PHWCHAR = 0x0371u,			// 16:16 huge pointer to a wide char
-				T_32PWCHAR = 0x0471u,		// 32 bit pointer to a wide char
-				T_32PFWCHAR = 0x0571u,		// 16:32 pointer to a wide char
-				T_64PWCHAR = 0x0671u,		// 64 bit pointer to a wide char
+				T_32PWCHAR = 0x0471u,			// 32 bit pointer to a wide char
+				T_32PFWCHAR = 0x0571u,			// 16:32 pointer to a wide char
+				T_64PWCHAR = 0x0671u,			// 64 bit pointer to a wide char
+
+				// 8-bit unicode char
+				T_CHAR8 = 0x007c,				// 8-bit unicode char (C++ 20)
+				T_PCHAR8 = 0x017c,				// Near pointer to 8-bit unicode char
+				T_PFCHAR8 = 0x027c,				// Far pointer to 8-bit unicode char
+				T_PHCHAR8 = 0x037c,				// Huge pointer to 8-bit unicode char
+				T_32PCHAR8 = 0x047c,			// 16:32 near pointer to 8-bit unicode char
+				T_32PFCHAR8 = 0x057c,			// 16:32 far pointer to 8-bit unicode char
+				T_64PCHAR8 = 0x067c,			// 64 bit near pointer to 8-bit unicode char
 
 				// 16-bit unicode char
-				T_CHAR16 = 0x007au,			// 16-bit unicode char
+				T_CHAR16 = 0x007au,				// 16-bit unicode char
 				T_PCHAR16 = 0x017au,			// 16 bit pointer to a 16-bit unicode char
 				T_PFCHAR16 = 0x027au,			// 16:16 far pointer to a 16-bit unicode char
 				T_PHCHAR16 = 0x037au,			// 16:16 huge pointer to a 16-bit unicode char
-				T_32PCHAR16 = 0x047au,		// 32 bit pointer to a 16-bit unicode char
-				T_32PFCHAR16 = 0x057au,		// 16:32 pointer to a 16-bit unicode char
-				T_64PCHAR16 = 0x067au,		// 64 bit pointer to a 16-bit unicode char
+				T_32PCHAR16 = 0x047au,			// 32 bit pointer to a 16-bit unicode char
+				T_32PFCHAR16 = 0x057au,			// 16:32 pointer to a 16-bit unicode char
+				T_64PCHAR16 = 0x067au,			// 64 bit pointer to a 16-bit unicode char
 
 				// 32-bit unicode char
-				T_CHAR32 = 0x007bu,			// 32-bit unicode char
+				T_CHAR32 = 0x007bu,				// 32-bit unicode char
 				T_PCHAR32 = 0x017bu,			// 16 bit pointer to a 32-bit unicode char
 				T_PFCHAR32 = 0x027bu,			// 16:16 far pointer to a 32-bit unicode char
 				T_PHCHAR32 = 0x037bu,			// 16:16 huge pointer to a 32-bit unicode char
-				T_32PCHAR32 = 0x047bu,		// 32 bit pointer to a 32-bit unicode char
-				T_32PFCHAR32 = 0x057bu,		// 16:32 pointer to a 32-bit unicode char
-				T_64PCHAR32 = 0x067bu,		// 64 bit pointer to a 32-bit unicode char
+				T_32PCHAR32 = 0x047bu,			// 32 bit pointer to a 32-bit unicode char
+				T_32PFCHAR32 = 0x057bu,			// 16:32 pointer to a 32-bit unicode char
+				T_64PCHAR32 = 0x067bu,			// 64 bit pointer to a 32-bit unicode char
 
 				// 8 bit int types
 				T_INT1 = 0x0068u,				// 8 bit signed int
-				T_PINT1 = 0x0168u,			// 16 bit pointer to 8 bit signed int
-				T_PFINT1 = 0x0268u,			// 16:16 far pointer to 8 bit signed int
-				T_PHINT1 = 0x0368u,			// 16:16 huge pointer to 8 bit signed int
+				T_PINT1 = 0x0168u,				// 16 bit pointer to 8 bit signed int
+				T_PFINT1 = 0x0268u,				// 16:16 far pointer to 8 bit signed int
+				T_PHINT1 = 0x0368u,				// 16:16 huge pointer to 8 bit signed int
 				T_32PINT1 = 0x0468u,			// 32 bit pointer to 8 bit signed int
-				T_32PFINT1 = 0x0568u,		// 16:32 pointer to 8 bit signed int
+				T_32PFINT1 = 0x0568u,			// 16:32 pointer to 8 bit signed int
 				T_64PINT1 = 0x0668u,			// 64 bit pointer to 8 bit signed int
 
-				T_UINT1 = 0x0069u,			// 8 bit unsigned int
-				T_PUINT1 = 0x0169u,			// 16 bit pointer to 8 bit unsigned int
+				T_UINT1 = 0x0069u,				// 8 bit unsigned int
+				T_PUINT1 = 0x0169u,				// 16 bit pointer to 8 bit unsigned int
 				T_PFUINT1 = 0x0269u,			// 16:16 far pointer to 8 bit unsigned int
 				T_PHUINT1 = 0x0369u,			// 16:16 huge pointer to 8 bit unsigned int
-				T_32PUINT1 = 0x0469u,		// 32 bit pointer to 8 bit unsigned int
-				T_32PFUINT1 = 0x0569u,		// 16:32 pointer to 8 bit unsigned int
-				T_64PUINT1 = 0x0669u,		// 64 bit pointer to 8 bit unsigned int
+				T_32PUINT1 = 0x0469u,			// 32 bit pointer to 8 bit unsigned int
+				T_32PFUINT1 = 0x0569u,			// 16:32 pointer to 8 bit unsigned int
+				T_64PUINT1 = 0x0669u,			// 64 bit pointer to 8 bit unsigned int
 
 				// 16 bit short types
-				T_SHORT = 0x0011u,			// 16 bit signed
-				T_PSHORT = 0x0111u,			// 16 bit pointer to 16 bit signed
+				T_SHORT = 0x0011u,				// 16 bit signed
+				T_PSHORT = 0x0111u,				// 16 bit pointer to 16 bit signed
 				T_PFSHORT = 0x0211u,			// 16:16 far pointer to 16 bit signed
 				T_PHSHORT = 0x0311u,			// 16:16 huge pointer to 16 bit signed
-				T_32PSHORT = 0x0411u,		// 32 bit pointer to 16 bit signed
-				T_32PFSHORT = 0x0511u,		// 16:32 pointer to 16 bit signed
-				T_64PSHORT = 0x0611u,		// 64 bit pointer to 16 bit signed
+				T_32PSHORT = 0x0411u,			// 32 bit pointer to 16 bit signed
+				T_32PFSHORT = 0x0511u,			// 16:32 pointer to 16 bit signed
+				T_64PSHORT = 0x0611u,			// 64 bit pointer to 16 bit signed
 
 				T_USHORT = 0x0021u,
 				T_PUSHORT = 0x0121u,

@@ -118,12 +118,38 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PUCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_PUCHAR:
 			return "PUCHAR";
+
 		case PDB::CodeView::TPI::TypeIndexKind::T_WCHAR:
 			return "WCHAR";
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PWCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PWCHAR:
 		case PDB::CodeView::TPI::TypeIndexKind::T_PWCHAR:
 			return "PWCHAR";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_CHAR8:
+			return "CHAR8";
+		case PDB::CodeView::TPI::TypeIndexKind::T_PCHAR8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PFCHAR8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PHCHAR8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PCHAR8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PFCHAR8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PCHAR8:
+			return "PCHAR8";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_CHAR16:
+			return "CHAR16";
+		case PDB::CodeView::TPI::TypeIndexKind::T_PCHAR16:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PCHAR16:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PCHAR16:
+			return "PCHAR16";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_CHAR32:
+			return "CHAR32";
+		case PDB::CodeView::TPI::TypeIndexKind::T_PCHAR32:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PCHAR32:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PCHAR32:
+			return "PCHAR32";
+
 		case PDB::CodeView::TPI::TypeIndexKind::T_SHORT:
 			return "SHORT";
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PSHORT:
@@ -184,6 +210,27 @@ static const char* GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeInd
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PUINT4:
 		case PDB::CodeView::TPI::TypeIndexKind::T_PUINT4:
 			return "PUINT";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_UINT8:
+			return "UINT8";
+		case PDB::CodeView::TPI::TypeIndexKind::T_PUINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PFUINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PHUINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PUINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PFUINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PUINT8:
+			return "PUINT8";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_INT8:
+			return "INT8";
+		case PDB::CodeView::TPI::TypeIndexKind::T_PINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PFINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PHINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PFINT8:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PINT8:
+			return "PINT8";
+
 		default:
 			PDB_ASSERT(false, "Unhandled special type %u", typeIndex);
 			break;
