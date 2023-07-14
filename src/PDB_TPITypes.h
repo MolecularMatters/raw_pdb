@@ -593,6 +593,18 @@ namespace PDB
 						};
 					}LF_BCLASS;
 
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2483
+
+					// index leaf - contains type index of another leaf
+					// a major use of this leaf is to allow the compilers to emit a
+					// long complex list (LF_FIELD) in smaller pieces.
+					struct
+					{
+						uint16_t leaf; // LF_INDEX
+						uint16_t pad0; // internal padding, must be 0
+						uint16_t type; // type index of referenced leaf
+					} LF_INDEX;
+
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2615
 					struct
 					{
