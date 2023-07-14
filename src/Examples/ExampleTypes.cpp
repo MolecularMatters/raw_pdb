@@ -571,6 +571,7 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 		// Other kinds of records are not implemented
 		PDB_ASSERT(
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_BCLASS ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_INDEX ||
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VFUNCTAB ||
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_NESTTYPE ||
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUM ||
@@ -749,6 +750,12 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 			leafName = GetLeafName(fieldRecord->data.LF_BCLASS.offset, fieldRecord->data.LF_BCLASS.lfEasy.kind);
 
 			i += static_cast<size_t>(leafName - reinterpret_cast<const char*>(fieldRecord));
+			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
+			continue;
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_INDEX)
+		{
+			i += sizeof(PDB::CodeView::TPI::FieldList::Data::LF_INDEX);
 			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
 			continue;
 		}
