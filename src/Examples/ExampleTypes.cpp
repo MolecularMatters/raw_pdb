@@ -323,6 +323,9 @@ static const char* GetModifierName(const PDB::CodeView::TPI::Record* modifierRec
 
 static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView::TPI::Record* functionRecord, std::string& functionPrototype)
 {
+	PDB_ASSERT(functionRecord->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE, "TPI Record kind is 0x%X, expected 0x%X (LF_PROCEDURE)",
+		(uint32_t)functionRecord->header.kind, (uint32_t)PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE);
+
 	std::string underlyingTypePrototype;
 
 	size_t markerPos = 0;
@@ -430,6 +433,9 @@ static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView
 
 static bool GetMethodPrototype(const TypeTable& typeTable, const PDB::CodeView::TPI::Record* methodRecord, std::string& methodPrototype)
 {
+	PDB_ASSERT(methodRecord->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION, "TPI Record kind is 0x%X, expected 0x%X (LF_MFUNCTION)",
+		(uint32_t)methodRecord->header.kind, (uint32_t)PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION);
+
 	std::string underlyingTypePrototype;
 
 	size_t markerPos = 0;
@@ -460,8 +466,20 @@ static bool GetMethodPrototype(const TypeTable& typeTable, const PDB::CodeView::
 		if (!underlyingType)
 			return false;
 
-		if (!GetFunctionPrototype(typeTable, underlyingType, underlyingTypePrototype))
-			return false;
+		if (underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
+		{
+			if (!GetFunctionPrototype(typeTable, underlyingType, underlyingTypePrototype))
+				return false;
+		}
+		else if(underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
+		{
+			if (!GetMethodPrototype(typeTable, underlyingType, underlyingTypePrototype))
+				return false;
+		}
+		else
+		{
+			PDB_ASSERT(false, "Unhandled underlyingType kind 0x%X", (uint32_t)underlyingType->header.kind);
+		}
 
 		markerPos = underlyingTypePrototype.find("%s");
 		underlyingTypePrototype.erase(markerPos, 2);
