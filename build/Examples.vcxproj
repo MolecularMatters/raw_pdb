@@ -26,11 +26,13 @@
     </ClCompile>
     <ClCompile Include="..\src\Examples\ExampleTimedScope.cpp" />
     <ClCompile Include="..\src\Examples\ExampleTypes.cpp" />
+    <ClCompile Include="..\src\Examples\ExampleTypeTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Examples\ExampleMemoryMappedFile.h" />
     <ClInclude Include="..\src\Examples\Examples_PCH.h" />
     <ClInclude Include="..\src\Examples\ExampleTimedScope.h" />
+    <ClInclude Include="..\src\Examples\ExampleTypeTable.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
