@@ -40,6 +40,7 @@ PDB::DirectMSFStream::DirectMSFStream(const void* data, uint32_t blockSize, cons
 // ------------------------------------------------------------------------------------------------
 void PDB::DirectMSFStream::ReadAtOffset(void* destination, size_t size, size_t offset) const PDB_NO_EXCEPT
 {
+	PDB_ASSERT(destination != nullptr, "Destination buffer not set");
 	PDB_ASSERT(offset + size <= m_size, "Not enough data left to read.");
 
 	// work out which block and offset within the block the read offset corresponds to
