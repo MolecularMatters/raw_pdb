@@ -830,7 +830,7 @@ std::string GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex)
 
 			result.resize((uint64_t)stringLength);
 
-			std::snprintf(result.data(), result.size() + 1, methodPrototype.c_str(), classTypeName.c_str());
+			std::snprintf(const_cast<char*>(result.data()), result.size() + 1, methodPrototype.c_str(), classTypeName.c_str());
 
 			return result;
 		}
