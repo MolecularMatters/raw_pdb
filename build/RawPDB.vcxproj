@@ -139,7 +139,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <AdditionalIncludeDirectories>..\src</AdditionalIncludeDirectories>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp14</LanguageStandard>
       <AdditionalOptions>/Gw /Zc:__cplusplus /wd4577 %(AdditionalOptions)</AdditionalOptions>
       <SDLCheck>true</SDLCheck>
       <StringPooling>false</StringPooling>
@@ -183,7 +183,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp14</LanguageStandard>
       <GuardEHContMetadata>false</GuardEHContMetadata>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>

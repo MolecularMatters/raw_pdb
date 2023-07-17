@@ -823,16 +823,13 @@ std::string GetTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex)
 			classTypeName += "::*";
 
 			const int stringLength = std::snprintf(nullptr, 0, methodPrototype.c_str(), classTypeName.c_str());
-
 			PDB_ASSERT(stringLength > 0, "String length %i <= 0", stringLength);
 
-			std::string result;
+			std::vector<char> resultString(static_cast<size_t>(stringLength) + 1u);
 
-			result.resize((uint64_t)stringLength);
+			std::snprintf(&resultString[0], resultString.size(), methodPrototype.c_str(), classTypeName.c_str());
 
-			std::snprintf(result.data(), result.size() + 1, methodPrototype.c_str(), classTypeName.c_str());
-
-			return result;
+			return std::string(resultString.data());
 		}
 		else
 		{
