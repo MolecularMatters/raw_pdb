@@ -22,8 +22,13 @@ TypeTable::TypeTable(const PDB::TPIStream& tpiStream) PDB_NO_EXCEPT
 	// parse the CodeView records
 	uint32_t typeIndex = 0u;
 
-	tpiStream.ForEachTypeRecordOffset([this, &typeIndex](size_t offset)
+	tpiStream.ForEachTypeRecordHeaderAndOffset([this, &typeIndex](const PDB::CodeView::TPI::RecordHeader& header, size_t offset)
 		{
+			// The header includes the record kind and size, which can be stored along with offset
+			// to allow for lazy loading of the types on-demand directly from the TPIStream::GetDirectMSFStream()
+			// using DirectMSFStream::ReadAtOffset(...). Thus not needing a CoalescedMSFStream to look up the types.
+			(void)header;
+
 			const PDB::CodeView::TPI::Record* record = m_stream.GetDataAtOffset<const PDB::CodeView::TPI::Record>(offset);
 			m_records[typeIndex] = record;
 			++typeIndex;

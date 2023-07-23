@@ -53,7 +53,7 @@ namespace PDB
 		}
 
 		template <typename F>
-		void ForEachTypeRecordOffset(F&& functor) const PDB_NO_EXCEPT
+		void ForEachTypeRecordHeaderAndOffset(F&& functor) const PDB_NO_EXCEPT
 		{
 			// ignore the stream's header
 			size_t offset = sizeof(TPI::StreamHeader);
@@ -62,7 +62,7 @@ namespace PDB
 			{
 				const CodeView::TPI::RecordHeader header = ReadTypeRecordHeader(offset);
 
-				functor(offset);
+				functor(header, offset);
 
 				// position the stream offset at the next record
 				offset += sizeof(CodeView::TPI::RecordHeader) + header.size - sizeof(uint16_t);
