@@ -14,6 +14,8 @@ set(SOURCES
 	ExampleTypes.cpp
 	ExampleTimedScope.cpp
 	ExampleTimedScope.h
+	ExampleTypeTable.cpp
+	ExampleTypeTable.h
 )
 
 source_group(src FILES

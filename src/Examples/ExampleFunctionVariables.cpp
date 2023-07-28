@@ -3,18 +3,19 @@
 
 #include "Examples_PCH.h"
 #include "ExampleTimedScope.h"
+#include "ExampleTypeTable.h"
 #include "PDB_RawFile.h"
 #include "PDB_DBIStream.h"
 #include "PDB_TPIStream.h"
 
 using SymbolRecordKind = PDB::CodeView::DBI::SymbolRecordKind;
 
-static std::string GetVariableTypeName(const PDB::TPIStream& tpiStream, uint32_t typeIndex)
+static std::string GetVariableTypeName(const TypeTable& typeTable, uint32_t typeIndex)
 {
 	// Defined in ExampleTypes.cpp
-	extern std::string GetTypeName(const PDB::TPIStream & tpiStream, uint32_t typeIndex);
+	extern std::string GetTypeName(const TypeTable & typeTable, uint32_t typeIndex);
 
-	std::string typeName = GetTypeName(tpiStream, typeIndex);
+	std::string typeName = GetTypeName(typeTable, typeIndex);
 
 	// Remove any '%s' substring used to insert a variable/field name.
 	const uint64_t markerPos = typeName.find("%s");
@@ -41,6 +42,10 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::TPIStream& tpiStream)
 {
 	TimedScope total("\nRunning example \"Function variables\"");
+
+	TimedScope typeTableScope("Create TypeTable");
+	TypeTable typeTable(tpiStream);
+	typeTableScope.Done();
 
 	// in order to keep the example easy to understand, we load the PDB data serially.
 	// note that this can be improved a lot by reading streams concurrently.
@@ -76,7 +81,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 			}
 
 			const PDB::ModuleSymbolStream moduleSymbolStream = module.CreateSymbolStream(rawPdbFile);
-			moduleSymbolStream.ForEachSymbol([&tpiStream, &imageSectionStream, &blockLevel, &recordCount](const PDB::CodeView::DBI::Record* record)
+			moduleSymbolStream.ForEachSymbol([&typeTable, &imageSectionStream, &blockLevel, &recordCount](const PDB::CodeView::DBI::Record* record)
 			{
 				const SymbolRecordKind kind = record->header.kind;
 				const PDB::CodeView::DBI::Record::Data& data = record->data;
@@ -105,13 +110,13 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if(kind == SymbolRecordKind::S_CONSTANT)
 				{
-					const std::string typeName = GetVariableTypeName(tpiStream, data.S_CONSTANT.typeIndex);
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_CONSTANT.typeIndex);
 
 					Printf(blockLevel, "S_CONSTANT: '%s' -> '%s' | Value 0x%X\n", typeName.c_str(), data.S_CONSTANT.name, data.S_CONSTANT.value);
 				}
 				else if(kind == SymbolRecordKind::S_LOCAL)
 				{
-					const std::string typeName = GetVariableTypeName(tpiStream, data.S_LOCAL.typeIndex);
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_LOCAL.typeIndex);
 					Printf(blockLevel, "S_LOCAL: '%s' -> '%s'\n", typeName.c_str(), data.S_LOCAL.name);
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER)
@@ -184,7 +189,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						// Not sure why some type index 0 (T_NO_TYPE) are included in some PDBs.
 						if (data.S_LDATA32.typeIndex != 0) // PDB::CodeView::TPI::TypeIndexKind::T_NOTYPE)
 						{
-							const std::string typeName = GetVariableTypeName(tpiStream, data.S_LDATA32.typeIndex);
+							const std::string typeName = GetVariableTypeName(typeTable, data.S_LDATA32.typeIndex);
 							Printf(blockLevel, "S_LDATA32: '%s' -> '%s'\n", data.S_LDATA32.name, typeName.c_str());
 						}						
 					}
@@ -193,19 +198,19 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					if (blockLevel > 0)
 					{
-						const std::string typeName = GetVariableTypeName(tpiStream, data.S_LTHREAD32.typeIndex);
+						const std::string typeName = GetVariableTypeName(typeTable, data.S_LTHREAD32.typeIndex);
 						Printf(blockLevel, "S_LTHREAD32: '%s' -> '%s'\n", data.S_LTHREAD32.name, typeName.c_str());
 					}
 				}
 				else if (kind == SymbolRecordKind::S_UDT)
 				{
-					const std::string typeName = GetVariableTypeName(tpiStream, data.S_UDT.typeIndex);
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_UDT.typeIndex);
 
 					Printf(blockLevel, "S_UDT: '%s' -> '%s'\n", data.S_UDT.name, typeName.c_str());
 				}
 				else if (kind == PDB::CodeView::DBI::SymbolRecordKind::S_REGREL32)
 				{
-					const std::string typeName = GetVariableTypeName(tpiStream, data.S_REGREL32.typeIndex);
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_REGREL32.typeIndex);
 	
 					Printf(blockLevel, "S_REGREL32: '%s' -> '%s' | Register %i | Register Offset 0x%X\n", 
 						data.S_REGREL32.name, typeName.c_str(), 
@@ -221,12 +226,12 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if(kind == SymbolRecordKind::S_CALLSITEINFO)
 				{
-					const std::string typeName = GetVariableTypeName(tpiStream, data.S_CALLSITEINFO.typeIndex);
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_CALLSITEINFO.typeIndex);
 					Printf(blockLevel, "S_CALLSITEINFO: '%s' | Offset 0x%X | Section %u\n", typeName.c_str(), data.S_CALLSITEINFO.offset, data.S_CALLSITEINFO.section);
 				}
 				else if(kind == SymbolRecordKind::S_HEAPALLOCSITE)
 				{
-					const std::string typeName = GetVariableTypeName(tpiStream, data.S_HEAPALLOCSITE.typeIndex);
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_HEAPALLOCSITE.typeIndex);
 					Printf(blockLevel, "S_HEAPALLOCSITE: '%s' | Offset 0x%X | Section %u | Instruction Length %u\n", typeName.c_str(), 
 						data.S_HEAPALLOCSITE.offset, 
 						data.S_HEAPALLOCSITE.section, 

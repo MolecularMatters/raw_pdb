@@ -36,6 +36,9 @@
     <ClCompile Include="..\src\Examples\ExampleFunctionVariables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Examples\ExampleTypeTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Examples\ExampleMemoryMappedFile.h">
@@ -45,6 +48,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Examples\ExampleTimedScope.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Examples\ExampleTypeTable.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
