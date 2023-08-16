@@ -79,3 +79,30 @@ target_precompile_headers(raw_pdb
 )
 
 add_subdirectory(Examples)
+
+if (UNIX)
+	include(GNUInstallDirs)
+
+	install(
+		TARGETS raw_pdb
+		LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+	)
+
+	file(GLOB_RECURSE HEADER_FILES
+		"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+	)
+
+	file(GLOB_RECURSE HEADER_FILES_FOUNDATION
+		"${CMAKE_CURRENT_SOURCE_DIR}/Foundation/*.h"
+	)
+
+	install(
+		FILES ${HEADER_FILES}
+		DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/raw_pdb/"
+	)
+
+	install(
+		FILES ${HEADER_FILES_FOUNDATION}
+		DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/raw_pdb/Foundation"
+	)
+endif (UNIX)
