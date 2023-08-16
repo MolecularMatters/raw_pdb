@@ -44,6 +44,8 @@ namespace PDB
 		PDB_NO_DISCARD SectionContributionStream CreateSectionContributionStream(const RawFile& file) const PDB_NO_EXCEPT;
 		PDB_NO_DISCARD ModuleInfoStream CreateModuleInfoStream(const RawFile& file) const PDB_NO_EXCEPT;
 
+		PDB_NO_DISCARD const DBI::StreamHeader& GetHeader() const PDB_NO_EXCEPT { return m_header; }
+
 	private:
 		DBI::StreamHeader m_header;
 		DirectMSFStream m_stream;
