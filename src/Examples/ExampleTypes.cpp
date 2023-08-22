@@ -289,6 +289,11 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 		case PDB::CodeView::TPI::TypeRecordKind::LF_CLASS:
 		case PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE:
 			return GetLeafName(typeRecord->data.LF_CLASS.data, typeRecord->header.kind);
+
+		case PDB::CodeView::TPI::TypeRecordKind::LF_CLASS2:
+		case PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE2:
+			return GetLeafName(typeRecord->data.LF_CLASS2.data, typeRecord->header.kind);
+
 		case  PDB::CodeView::TPI::TypeRecordKind::LF_UNION:
 			return GetLeafName(typeRecord->data.LF_UNION.data, typeRecord->header.kind);
 		case PDB::CodeView::TPI::TypeRecordKind::LF_ENUM:

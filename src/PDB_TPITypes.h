@@ -103,6 +103,8 @@ namespace PDB
 				LF_MEMBERMODIFY = 0x001513u,
 				LF_MANAGED = 0x001514u,
 				LF_TYPESERVER2 = 0x001515u,
+				LF_CLASS2 = 0x001608u,
+				LF_STRUCTURE2 = 0x001609u,
 
 				LF_NUMERIC = 0x8000u,
 				LF_CHAR = 0x8000u,
@@ -807,6 +809,20 @@ namespace PDB
 							LeafEasy lfEasy;
 						};
 					} LF_CLASS;
+
+					struct
+					{
+						uint16_t count;			// count of number of elements in class
+						uint32_t property;		// property attribute field
+						uint32_t field;			// type index of LF_FIELD descriptor list
+						uint32_t derived;		// type index of derived from list if not zero
+						uint32_t vshape;		// type index of vshape table for this class
+						union
+						{
+							PDB_FLEXIBLE_ARRAY_MEMBER(char, data);
+							LeafEasy lfEasy;
+						};
+					} LF_CLASS2;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1647
 					struct
