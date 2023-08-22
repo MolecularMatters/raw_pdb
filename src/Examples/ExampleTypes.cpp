@@ -187,6 +187,12 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PREAL64:
 		case PDB::CodeView::TPI::TypeIndexKind::T_PREAL64:
 			return "PDOUBLE";
+		case PDB::CodeView::TPI::TypeIndexKind::T_REAL80:
+			return "REAL80";
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PREAL80:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PREAL80:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PREAL80:
+			return "PREAL80";
 		case PDB::CodeView::TPI::TypeIndexKind::T_QUAD:
 			return "LONGLONG";
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PQUAD:
