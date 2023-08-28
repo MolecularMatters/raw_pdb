@@ -103,7 +103,7 @@ namespace PDB
 				"InlineeSourceLineKind %X != :InlineeSourceLineKind::Signature (%X)", static_cast<uint32_t>(section->header.kind), static_cast<uint32_t>(CodeView::DBI::InlineeSourceLineKind::Signature));
 
 			size_t offset = m_stream.GetPointerOffset(section);
-			const size_t headerEnd = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader) + section->header.size, 4u);
+			const size_t headerEnd = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + section->header.size, 4u);
 
 			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader), 4u);
 
@@ -128,7 +128,7 @@ namespace PDB
 				"InlineeSourceLineKind %X != :InlineeSourceLineKind::SignatureEx (%X)", static_cast<uint32_t>(section->header.kind), static_cast<uint32_t>(CodeView::DBI::InlineeSourceLineKind::SignatureEx));
 
 			size_t offset = m_stream.GetPointerOffset(section);
-			const size_t headerEnd = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader) + section->header.size, 4u);
+			const size_t headerEnd = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + section->header.size, 4u);
 
 			offset = BitUtil::RoundUpToMultiple<size_t>(offset + sizeof(CodeView::DBI::DebugSubsectionHeader) + sizeof(CodeView::DBI::InlineeSourceLineHeader), 4u);
 
