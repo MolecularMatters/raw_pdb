@@ -149,6 +149,13 @@ void ExampleFunctionSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream
 		for (const PDB::HashRecord& hashRecord : hashRecords)
 		{
 			const PDB::CodeView::DBI::Record* record = publicSymbolStream.GetRecord(symbolRecordStream, hashRecord);
+			if (record->header.kind != PDB::CodeView::DBI::SymbolRecordKind::S_PUB32)
+			{
+				// normally, a PDB only contains S_PUB32 symbols in the public symbol stream, but we have seen PDBs that also store S_CONSTANT as public symbols.
+				// ignore these.
+				continue;
+			}
+
 			if ((PDB_AS_UNDERLYING(record->data.S_PUB32.flags) & PDB_AS_UNDERLYING(PDB::CodeView::DBI::PublicSymbolFlags::Function)) == 0u)
 			{
 				// ignore everything that is not a function

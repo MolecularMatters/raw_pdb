@@ -39,11 +39,5 @@ PDB_NO_DISCARD const PDB::CodeView::DBI::Record* PDB::PublicSymbolStream::GetRec
 	// https://llvm.org/docs/PDB/CodeViewSymbols.html
 	const CodeView::DBI::Record* record = symbolRecordStream.GetDataAtOffset<const CodeView::DBI::Record>(headerOffset);
 
-	if (record->header.kind != CodeView::DBI::SymbolRecordKind::S_PUB32)
-	{
-		// malformed data
-		return nullptr;
-	}
-
 	return record;
 }

@@ -63,6 +63,13 @@ void ExampleSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStr
 		for (const PDB::HashRecord& hashRecord : hashRecords)
 		{
 			const PDB::CodeView::DBI::Record* record = publicSymbolStream.GetRecord(symbolRecordStream, hashRecord);
+			if (record->header.kind != PDB::CodeView::DBI::SymbolRecordKind::S_PUB32)
+			{
+				// normally, a PDB only contains S_PUB32 symbols in the public symbol stream, but we have seen PDBs that also store S_CONSTANT as public symbols.
+				// ignore these.
+				continue;
+			}
+
 			const uint32_t rva = imageSectionStream.ConvertSectionOffsetToRVA(record->data.S_PUB32.section, record->data.S_PUB32.offset);
 			if (rva == 0u)
 			{
