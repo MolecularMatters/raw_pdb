@@ -181,6 +181,10 @@ An example that shows to how to load line information for all modules.
 
 An example that prints all type records.
 
+### PDBSize (<a href="https://github.com/MolecularMatters/raw_pdb/blob/main/src/Examples/ExamplePDBSize.cpp">ExamplePDBSize.cpp</a>)
+
+An example that could serve as a starting point for people wanting to investigate and optimize the size of their PDBs.
+
 ## Sponsoring or supporting RawPDB
 
 We have chosen a very liberal license to let **RawPDB** be used in as many scenarios as possible, including commercial applications. If you would like to support its development, consider licensing <a href="https://liveplusplus.tech/">Live++</a> instead. Not only do you give something back, but get a great productivity enhancement on top!

@@ -36,6 +36,13 @@ namespace PDB
 			// Create a line stream for the module
 			PDB_NO_DISCARD ModuleLineStream CreateLineStream(const RawFile& file) const PDB_NO_EXCEPT;
 
+
+			// Returns the PDB module info.
+			PDB_NO_DISCARD inline const DBI::ModuleInfo* GetInfo(void) const PDB_NO_EXCEPT
+			{
+				return m_info;
+			}
+
 			// Returns the name of the module.
 			PDB_NO_DISCARD inline ArrayView<char> GetName(void) const PDB_NO_EXCEPT
 			{

@@ -77,8 +77,9 @@ namespace
 
 
 // declare all examples
-extern void ExampleSymbols(const PDB::RawFile&, const PDB::DBIStream&);
+extern void ExamplePDBSize(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleContributions(const PDB::RawFile&, const PDB::DBIStream&);
+extern void ExampleSymbols(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleFunctionSymbols(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::TPIStream&);
 extern void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::InfoStream& infoStream);
@@ -152,6 +153,7 @@ int main(int argc, char** argv)
 	}
 
 	// run all examples
+	ExamplePDBSize(rawPdbFile, dbiStream);
 	ExampleContributions(rawPdbFile, dbiStream);
 	ExampleSymbols(rawPdbFile, dbiStream);
 	ExampleFunctionSymbols(rawPdbFile, dbiStream);

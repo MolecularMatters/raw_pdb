@@ -17,6 +17,7 @@
     <ClCompile Include="..\src\Examples\ExampleLines.cpp" />
     <ClCompile Include="..\src\Examples\ExampleMain.cpp" />
     <ClCompile Include="..\src\Examples\ExampleMemoryMappedFile.cpp" />
+    <ClCompile Include="..\src\Examples\ExamplePDBSize.cpp" />
     <ClCompile Include="..\src\Examples\ExampleSymbols.cpp" />
     <ClCompile Include="..\src\Examples\Examples_PCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
