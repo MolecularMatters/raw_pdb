@@ -46,10 +46,12 @@ namespace PDB
 			return m_streamCount;
 		}
 
-		// Returns the size of the stream with the given index.
+		// Returns the size of the stream with the given index, taking into account nil page sizes.
 		PDB_NO_DISCARD inline uint32_t GetStreamSize(uint32_t streamIndex) const PDB_NO_EXCEPT
 		{
-			return m_streamSizes[streamIndex];
+			const uint32_t streamSize = m_streamSizes[streamIndex];
+
+			return (streamSize == NilPageSize) ? 0u : streamSize;
 		}
 
 	private:
