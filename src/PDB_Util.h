@@ -22,7 +22,7 @@ namespace PDB
 	PDB_NO_DISCARD inline uint32_t ConvertSizeToBlockCount(uint32_t sizeInBytes, uint32_t blockSize) PDB_NO_EXCEPT
 	{
 		// integer ceil to account for non-full blocks
-		return (static_cast<size_t>(sizeInBytes) + blockSize - 1u) / blockSize;
+		return static_cast<uint32_t>((static_cast<size_t>(sizeInBytes) + blockSize - 1u) / blockSize);
 	};
 
 	// Returns the actual size of the data associated with a CodeView record, not including the size of the header
