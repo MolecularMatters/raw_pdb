@@ -111,7 +111,7 @@ PDB_NO_DISCARD PDB::DirectMSFStream::IndexAndOffset PDB::DirectMSFStream::GetBlo
 PDB_NO_DISCARD size_t PDB::DirectMSFStream::GetDataOffsetForIndexAndOffset(const IndexAndOffset& indexAndOffset) const PDB_NO_EXCEPT
 {
 	// work out the offset within the data based on the block indices
-	const size_t offsetWithinData = (m_blockIndices[indexAndOffset.index] << m_blockSizeLog2) + indexAndOffset.offsetWithinBlock;
+	const size_t offsetWithinData = (static_cast<size_t>(m_blockIndices[indexAndOffset.index]) << m_blockSizeLog2) + indexAndOffset.offsetWithinBlock;
 
 	return offsetWithinData;
 }

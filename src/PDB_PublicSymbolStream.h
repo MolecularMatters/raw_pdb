@@ -30,8 +30,7 @@ namespace PDB
 
 		PDB_DEFAULT_MOVE(PublicSymbolStream);
 
-		// Turns a given hash record into a DBI record using the given symbol stream..
-		// Returns nullptr in case the record is not of type S_PUB32, which should only happen for invalid PDBs.
+		// Turns a given hash record into a DBI record using the given symbol stream.
 		PDB_NO_DISCARD const CodeView::DBI::Record* GetRecord(const CoalescedMSFStream& symbolRecordStream, const HashRecord& hashRecord) const PDB_NO_EXCEPT;
 
 		// Returns a view of all the records in the stream.

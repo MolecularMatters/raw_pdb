@@ -14,6 +14,10 @@ namespace PDB
 	// emulating std::byte from C++17 to make the intention clear that we're dealing with untyped data in certain cases, without actually requiring C++17
 	enum class Byte : unsigned char {};
 
+	// PDB files have the notion of "nil" pages, denoted by a special size
+	// https://github.com/microsoft/microsoft-pdb/blob/master/PDB/msf/msf.cpp#L177
+	const uint32_t NilPageSize = 0xffffffffu;
+
 	// this matches the definition in guiddef.h, but we don't want to pull that in
 	struct GUID
 	{

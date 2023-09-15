@@ -97,7 +97,7 @@ PDB::RawFile::RawFile(const void* data) PDB_NO_EXCEPT
 	const uint32_t* indicesForCurrentBlock = directoryStreamBlocks;
 	for (uint32_t i = 0u; i < m_streamCount; ++i)
 	{
-		const uint32_t sizeInBytes = m_streamSizes[i];
+		const uint32_t sizeInBytes = GetStreamSize(i);
 		const uint32_t blockCount = ConvertSizeToBlockCount(sizeInBytes, m_superBlock->blockSize);
 		m_streamBlocks[i] = indicesForCurrentBlock;
 		
@@ -119,7 +119,7 @@ PDB::RawFile::~RawFile(void) PDB_NO_EXCEPT
 template <typename T>
 PDB_NO_DISCARD T PDB::RawFile::CreateMSFStream(uint32_t streamIndex) const PDB_NO_EXCEPT
 {
-	return T(m_data, m_superBlock->blockSize, m_streamBlocks[streamIndex], m_streamSizes[streamIndex]);
+	return T(m_data, m_superBlock->blockSize, m_streamBlocks[streamIndex], GetStreamSize(streamIndex));
 }
 
 
@@ -128,7 +128,7 @@ PDB_NO_DISCARD T PDB::RawFile::CreateMSFStream(uint32_t streamIndex) const PDB_N
 template <typename T>
 PDB_NO_DISCARD T PDB::RawFile::CreateMSFStream(uint32_t streamIndex, uint32_t streamSize) const PDB_NO_EXCEPT
 {
-	PDB_ASSERT(streamSize <= m_streamSizes[streamIndex], "Invalid stream size.");
+	PDB_ASSERT(streamSize <= GetStreamSize(streamIndex), "Invalid stream size.");
 
 	return T(m_data, m_superBlock->blockSize, m_streamBlocks[streamIndex], streamSize);
 }

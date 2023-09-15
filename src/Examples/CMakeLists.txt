@@ -8,6 +8,7 @@ set(SOURCES
 	ExampleMain.cpp
 	ExampleMemoryMappedFile.cpp
 	ExampleMemoryMappedFile.h
+	ExamplePDBSize.cpp
 	Examples_PCH.cpp
 	Examples_PCH.h
 	ExampleSymbols.cpp
