@@ -297,6 +297,15 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 					Printf(blockLevel, "S_GPROC32_ID Function '%s' | RVA 0x%X\n", data.S_GPROC32_ID.name, rva);
 					blockLevel++;
 				}
+				else if (kind == SymbolRecordKind::S_REGREL32_INDIR)
+				{
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_REGREL32_INDIR.typeIndex);
+
+					Printf(blockLevel, "S_REGREL32_INDIR: '%s' -> '%s' | Register %i | Unknown1 0x%X | Unknown2 0x%X\n",
+						data.S_REGREL32_INDIR.name, typeName.c_str(),
+						data.S_REGREL32_INDIR.unknown1,
+						data.S_REGREL32_INDIR.unknown1);
+				}
 				else
 				{
 					// We only care about records inside functions.
