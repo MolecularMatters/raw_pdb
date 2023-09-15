@@ -163,7 +163,8 @@ namespace PDB
 				S_CALLERS =									0x115Bu,
 				S_INLINESITE2 =								0x115Du,		// extended inline site information
 				S_HEAPALLOCSITE = 							0x115Eu,		// heap allocation site
-				S_INLINEES =            					0x1168u,		// https://llvm.org/docs/PDB/CodeViewSymbols.html#s-inlinees-0x1168
+				S_INLINEES =			 					0x1168u,		// https://llvm.org/docs/PDB/CodeViewSymbols.html#s-inlinees-0x1168
+				S_REGREL32_INDIR =							0x1171u,
 				S_UDT =										0x1108u,		// user-defined type
 				S_UDT_ST =									0x1003u,		// user-defined structured types
 			};
@@ -698,6 +699,16 @@ namespace PDB
 						uint32_t typeIndex;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
 					} S_UDT, S_UDT_ST;
+
+					struct
+					{
+						uint32_t unknown1;
+						uint32_t typeIndex;
+						uint32_t unknown2;
+						Register reg;
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+
+					} S_REGREL32_INDIR;
 #pragma pack(pop)
 				} data;
 			};

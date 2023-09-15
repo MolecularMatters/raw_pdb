@@ -16,6 +16,7 @@ PDB_DISABLE_WARNING_CLANG("-Wswitch-enum")
 PDB_DISABLE_WARNING_MSVC(4774)
 PDB_DISABLE_WARNING_CLANG("-Wformat-nonliteral")
 
+std::string GetTypeName(const TypeTable& typeTable, uint32_t typeIndex);
 
 static uint8_t GetLeafSize(PDB::CodeView::TPI::TypeRecordKind kind)
 {
@@ -367,8 +368,15 @@ static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView
 		if (!underlyingType)
 			return false;
 
-		if (!GetFunctionPrototype(typeTable, underlyingType, underlyingTypePrototype))
-			return false;
+		if (underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
+		{
+			if (!GetFunctionPrototype(typeTable, underlyingType, underlyingTypePrototype))
+				return false;
+		}
+		else
+		{
+			PDB_ASSERT(false, "Unhandled underlyingType kind 0x%X", (uint32_t)underlyingType->header.kind);
+		}
 
 		markerPos = underlyingTypePrototype.find("%s");
 		underlyingTypePrototype.erase(markerPos, 2);
@@ -396,7 +404,7 @@ static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView
 						return false;
 				}
 
-				if (!underlyingType || underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
+				if (!underlyingType || (underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE && underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION))
 				{
 					if (modifierRecord)
 					{
@@ -412,7 +420,7 @@ static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView
 					else if (referencedType->data.LF_POINTER.attr.isconst)
 						functionPrototype += "const";
 				}
-				else
+				else if(underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
 				{
 					if (!GetFunctionPrototype(typeTable, underlyingType, underlyingTypePrototype))
 						return false;
@@ -424,6 +432,10 @@ static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView
 						underlyingTypePrototype.insert(markerPos, 1, '*');
 
 					functionPrototype += underlyingTypePrototype;
+				}
+				else if(underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
+				{
+					functionPrototype += GetTypeName(typeTable, argList->data.LF_ARGLIST.arg[i]);
 				}
 			}
 			else
@@ -518,7 +530,7 @@ static bool GetMethodPrototype(const TypeTable& typeTable, const PDB::CodeView::
 						return false;
 				}
 
-				if (!underlyingType || underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
+				if (!underlyingType || (underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE && underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION))
 				{
 					if (modifierRecord)
 					{
@@ -534,7 +546,7 @@ static bool GetMethodPrototype(const TypeTable& typeTable, const PDB::CodeView::
 					else if (referencedType->data.LF_POINTER.attr.isconst)
 						methodPrototype += "const";
 				}
-				else
+				else if (underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
 				{
 					if (!GetFunctionPrototype(typeTable, underlyingType, underlyingTypePrototype))
 						return false;
@@ -546,6 +558,10 @@ static bool GetMethodPrototype(const TypeTable& typeTable, const PDB::CodeView::
 						underlyingTypePrototype.insert(markerPos, 1, '*');
 
 					methodPrototype += underlyingTypePrototype;
+				}
+				else if (underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
+				{
+					methodPrototype += GetTypeName(typeTable, argList->data.LF_ARGLIST.arg[i]);
 				}
 			}
 			else
