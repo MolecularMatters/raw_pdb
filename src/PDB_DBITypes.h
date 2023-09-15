@@ -165,6 +165,7 @@ namespace PDB
 				S_HEAPALLOCSITE = 							0x115Eu,		// heap allocation site
 				S_INLINEES =			 					0x1168u,		// https://llvm.org/docs/PDB/CodeViewSymbols.html#s-inlinees-0x1168
 				S_REGREL32_INDIR =							0x1171u,
+				S_REGREL32_ENCTMP =                         0x1179u,
 				S_UDT =										0x1108u,		// user-defined type
 				S_UDT_ST =									0x1003u,		// user-defined structured types
 			};
@@ -501,7 +502,7 @@ namespace PDB
 						uint32_t typeIndex;
 						Register reg;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
-					} S_REGREL32;
+					} S_REGREL32, S_REGREL32_ENCTMP;
 
 					struct
 					{
