@@ -306,6 +306,15 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						data.S_REGREL32_INDIR.unknown1,
 						data.S_REGREL32_INDIR.unknown1);
 				}
+				else if (kind == SymbolRecordKind::S_REGREL32_ENCTMP)
+				{
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_REGREL32.typeIndex);
+
+					Printf(blockLevel, "S_REGREL32_ENCTMP: '%s' -> '%s' | Register %i | Register Offset 0x%X\n",
+						data.S_REGREL32.name, typeName.c_str(),
+						data.S_REGREL32.reg,
+						data.S_REGREL32.offset);
+						}
 				else
 				{
 					// We only care about records inside functions.
