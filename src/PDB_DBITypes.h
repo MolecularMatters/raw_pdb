@@ -164,9 +164,9 @@ namespace PDB
 				S_INLINESITE2 =								0x115Du,		// extended inline site information
 				S_HEAPALLOCSITE = 							0x115Eu,		// heap allocation site
 				S_INLINEES =            					0x1168u,		// https://llvm.org/docs/PDB/CodeViewSymbols.html#s-inlinees-0x1168
+				S_REGREL32_INDIR =							0x1171u,
 				S_UDT =										0x1108u,		// user-defined type
 				S_UDT_ST =									0x1003u,		// user-defined structured types
-				S_REGREL32_INDIR =                          0x1171u,
 			};
 
 			// https://docs.microsoft.com/en-us/visualstudio/debugger/debug-interface-access/thunk-ordinal
