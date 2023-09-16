@@ -663,6 +663,8 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 		// Other kinds of records are not implemented
 		PDB_ASSERT(
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_BCLASS ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VBCLASS ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_IVBCLASS ||
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_INDEX ||
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VFUNCTAB ||
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_NESTTYPE ||
