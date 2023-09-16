@@ -18,6 +18,16 @@ PDB_DISABLE_WARNING_CLANG("-Wformat-nonliteral")
 
 std::string GetTypeName(const TypeTable& typeTable, uint32_t typeIndex);
 
+static void Printf(const char* format, ...) 
+{
+	va_list args;
+	va_start(args, format);
+
+	vprintf(format, args);
+
+	va_end(args);
+}
+
 static uint8_t GetLeafSize(PDB::CodeView::TPI::TypeRecordKind kind)
 {
 	if (kind < PDB::CodeView::TPI::TypeRecordKind::LF_NUMERIC)
@@ -45,7 +55,7 @@ static uint8_t GetLeafSize(PDB::CodeView::TPI::TypeRecordKind kind)
 		return sizeof(PDB::CodeView::TPI::TypeRecordKind) + sizeof(uint64_t);
 
 	default:
-		printf("Error! 0x%04x bogus type encountered, aborting...\n", PDB_AS_UNDERLYING(kind));
+		Printf("Error! 0x%04x bogus type encountered, aborting...\n", PDB_AS_UNDERLYING(kind));
 	}
 	return 0;
 }
@@ -651,44 +661,44 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 						if (underlyingType->header.kind != PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
 						{
 							if (modifierRecord)
-								printf("[0x%X]%s %s", offset, GetModifierName(modifierRecord), typeName);
+								Printf("[0x%X]%s %s", offset, GetModifierName(modifierRecord), typeName);
 							else
-								printf("[0x%X]%s", offset, typeName);
+								Printf("[0x%X]%s", offset, typeName);
 
 							for (size_t j = 0; j < pointerLevel; j++)
-								printf("*");
+								Printf("*");
 
-							printf(" %s\n", leafName);
+							Printf(" %s\n", leafName);
 						}
 						else
 						{
 							if (!GetFunctionPrototype(typeTable, underlyingType, functionPrototype))
 								break;
 
-							printf("[0x%X]", offset);
-							printf(functionPrototype.c_str(), leafName);
-							printf("\n");
+							Printf("[0x%X]", offset);
+							Printf(functionPrototype.c_str(), leafName);
+							Printf("\n");
 						}
 					}
 					else
 					{
-						printf("[0x%X]%s", offset, typeName);
+						Printf("[0x%X]%s", offset, typeName);
 
 						for (size_t j = 0; j < pointerLevel; j++)
-							printf("*");
+							Printf("*");
 
 						if (referencedType->data.LF_POINTER.attr.isvolatile)
-							printf(" volatile");
+							Printf(" volatile");
 						else if (referencedType->data.LF_POINTER.attr.isconst)
-							printf(" const");
+							Printf(" const");
 
-						printf(" %s\n", leafName);
+						Printf(" %s\n", leafName);
 					}
 					break;
 				case PDB::CodeView::TPI::TypeRecordKind::LF_BITFIELD:
 					if (typeName)
 					{
-						printf("[0x%X]%s %s : %d\n",
+						Printf("[0x%X]%s %s : %d\n",
 							offset,
 							typeName,
 							leafName,
@@ -700,7 +710,7 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 						if (!modifierRecord)
 							break;
 
-						printf("[0x%X]%s %s %s : %d\n",
+						Printf("[0x%X]%s %s %s : %d\n",
 							offset,
 							GetModifierName(modifierRecord),
 							GetTypeName(typeTable, modifierRecord->data.LF_MODIFIER.type, pointerLevel, nullptr, nullptr),
@@ -711,7 +721,7 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 				case PDB::CodeView::TPI::TypeRecordKind::LF_ARRAY:
 					if (!modifierRecord)
 					{
-						printf("[0x%X]%s %s[] /*0x%X*/\n",
+						Printf("[0x%X]%s %s[] /*0x%X*/\n",
 							offset,
 							typeName,
 							leafName,
@@ -719,7 +729,7 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 					}
 					else
 					{
-						printf("[0x%X]%s %s %s[] /*0x%X*/\n",
+						Printf("[0x%X]%s %s %s[] /*0x%X*/\n",
 							offset,
 							GetModifierName(modifierRecord),
 							GetTypeName(typeTable, modifierRecord->data.LF_MODIFIER.type, pointerLevel, nullptr, nullptr),
@@ -734,9 +744,9 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 			else
 			{
 				if (modifierRecord)
-					printf("[0x%X]%s %s %s\n", offset, GetModifierName(modifierRecord), typeName, leafName);
+					Printf("[0x%X]%s %s %s\n", offset, GetModifierName(modifierRecord), typeName, leafName);
 				else
-					printf("[0x%X]%s %s\n", offset, typeName, leafName);
+					Printf("[0x%X]%s %s\n", offset, typeName, leafName);
 			}
 		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_NESTTYPE)
@@ -744,7 +754,7 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 			leafName = &fieldRecord->data.LF_NESTTYPE.name[0];
 			typeName = GetTypeName(typeTable, fieldRecord->data.LF_NESTTYPE.index, pointerLevel, &referencedType, &modifierRecord);
 
-			printf("%s %s\n", typeName, leafName);
+			Printf("%s %s\n", typeName, leafName);
 		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_STMEMBER)
 		{
@@ -752,9 +762,9 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 			typeName = GetTypeName(typeTable, fieldRecord->data.LF_STMEMBER.index, pointerLevel, &referencedType, &modifierRecord);
 
 			if (!modifierRecord)
-				printf("%s %s\n", typeName, leafName);
+				Printf("%s %s\n", typeName, leafName);
 			else
-				printf("%s %s %s\n", GetModifierName(modifierRecord), typeName, leafName);
+				Printf("%s %s %s\n", GetModifierName(modifierRecord), typeName, leafName);
 		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_METHOD)
 		{
@@ -772,8 +782,8 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 				if (!GetMethodPrototype(typeTable, typeTable.GetTypeRecord(methodList->data.LF_METHODLIST.mList[j]), functionPrototype))
 					break;
 
-				printf(functionPrototype.c_str(), leafName);
-				printf("\n");
+				Printf(functionPrototype.c_str(), leafName);
+				Printf("\n");
 			}
 		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_ONEMETHOD)
@@ -787,8 +797,8 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 			if (!GetMethodPrototype(typeTable, referencedType, functionPrototype))
 				break;
 
-			printf(functionPrototype.c_str(), leafName);
-			printf("\n");
+			Printf(functionPrototype.c_str(), leafName);
+			Printf("\n");
 		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_BCLASS)
 		{
@@ -931,7 +941,7 @@ static void DisplayEnumerates(const PDB::CodeView::TPI::Record* record, uint8_t 
 			break;
 		}
 
-		printf("%s = %" PRIu64 "\n", leafName, value);
+		Printf("%s = %" PRIu64 "\n", leafName, value);
 
 		i += static_cast<size_t>(leafName - reinterpret_cast<const char*>(fieldRecord));
 		i += strnlen(leafName, maximumSize - i - 1) + 1;
@@ -964,11 +974,11 @@ void ExampleTypes(const PDB::TPIStream& tpiStream)
 
 			auto leafName = GetLeafName(record->data.LF_CLASS.data, record->data.LF_CLASS.lfEasy.kind);
 
-			printf("struct %s\n{\n", leafName);
+			Printf("struct %s\n{\n", leafName);
 			
 			DisplayFields(typeTable, typeRecord);
 
-			printf("}\n");
+			Printf("}\n");
 		}
 		else if (record->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_UNION)
 		{
@@ -981,11 +991,11 @@ void ExampleTypes(const PDB::TPIStream& tpiStream)
 
 			auto leafName = GetLeafName(record->data.LF_UNION.data, static_cast<PDB::CodeView::TPI::TypeRecordKind>(0));
 
-			printf("union %s\n{\n", leafName);
+			Printf("union %s\n{\n", leafName);
 
 			DisplayFields(typeTable, typeRecord);
 
-			printf("}\n");
+			Printf("}\n");
 		}
 		else if (record->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUM)
 		{
@@ -996,11 +1006,11 @@ void ExampleTypes(const PDB::TPIStream& tpiStream)
 			if (!typeRecord)
 				continue;
 
-			printf("enum %s\n{\n", record->data.LF_ENUM.name);
+			Printf("enum %s\n{\n", record->data.LF_ENUM.name);
 
 			DisplayEnumerates(typeRecord, GetLeafSize(static_cast<PDB::CodeView::TPI::TypeRecordKind>(record->data.LF_ENUM.utype)));
 
-			printf("}\n");
+			Printf("}\n");
 		}
 	}
 
