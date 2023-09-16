@@ -121,7 +121,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				else if(kind == SymbolRecordKind::S_LOCAL)
 				{
 					const std::string typeName = GetVariableTypeName(typeTable, data.S_LOCAL.typeIndex);
-					Printf(blockLevel, "S_LOCAL: '%s' -> '%s'\n", typeName.c_str(), data.S_LOCAL.name);
+					Printf(blockLevel, "S_LOCAL: '%s' -> '%s' | Param: %s | Optimized Out: %s\n", typeName.c_str(), data.S_LOCAL.name, data.S_LOCAL.flags.fIsParam ? "True" : "False", data.S_LOCAL.flags.fIsOptimizedOut ? "True" : "False");
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER)
 				{
