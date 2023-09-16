@@ -161,7 +161,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if (kind == SymbolRecordKind::S_INLINESITE)
 				{
-					Printf(blockLevel, "S_INLINESITE: Parent 0x % X\n", data.S_INLINESITE.parent);
+					Printf(blockLevel, "S_INLINESITE: Parent 0x%X\n", data.S_INLINESITE.parent);
 					blockLevel++;
 				}
 				else if (kind == SymbolRecordKind::S_INLINESITE_END)
