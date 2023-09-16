@@ -120,6 +120,7 @@ namespace PDB
 			enum class PDB_NO_DISCARD SymbolRecordKind : uint16_t
 			{
 				S_END =										0x0006u,		// block, procedure, "with" or thunk end
+				S_SKIP =                                    0x0007u,        // Reserve symbol space in $$Symbols table
 				S_FRAMEPROC =								0x1012u,		// extra frame and proc information
 				S_OBJNAME =									0x1101u,		// full path to the original compiled .obj. can point to remote locations and temporary files, not necessarily the file that was linked into the executable
 				S_THUNK32 =									0x1102u,		// thunk start

@@ -97,6 +97,10 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						Printf(0, "\n");
 					}
 				}
+				else if(kind == SymbolRecordKind::S_SKIP)
+				{
+					Printf(blockLevel, "S_SKIP\n");
+				}
 				else if (kind == SymbolRecordKind::S_BLOCK32)
 				{
 					const uint32_t offset = imageSectionStream.ConvertSectionOffsetToRVA(data.S_BLOCK32.section, data.S_BLOCK32.offset);
