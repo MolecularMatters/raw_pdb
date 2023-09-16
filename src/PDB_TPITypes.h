@@ -600,8 +600,16 @@ namespace PDB
 						};
 					}LF_BCLASS;
 
-					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2483
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2521
+					struct
+					{
+						MemberAttributes	attributes;	// attribute
+						uint32_t			index;		// type index of direct virtual base class
+						uint32_t			vbpIndex;   // type index of virtual base pointer
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, vbpOffset); // virtual base pointer offset from address point
+					} LF_VBCLASS, LF_IVBCLASS;
 
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2483
 					// index leaf - contains type index of another leaf
 					// a major use of this leaf is to allow the compilers to emit a
 					// long complex list (LF_FIELD) in smaller pieces.
