@@ -315,7 +315,7 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 				}
 			}
 
-			return GetTypeName(typeTable, typeRecord->data.LF_POINTER.utype, pointerLevel, &typeRecord, modifierRecord);		
+			return GetTypeName(typeTable, typeRecord->data.LF_POINTER.utype, pointerLevel, &typeRecord, modifierRecord);
 		case PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE:
 			if (referencedType)
 				*referencedType = typeRecord;
