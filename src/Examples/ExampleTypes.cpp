@@ -304,6 +304,15 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 
 				if(underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_POINTER)
 					return GetTypeName(typeTable, typeRecord->data.LF_POINTER.utype, pointerLevel, referencedType, modifierRecord);
+
+				// Type record order can be LF_POINTER -> LF_MODIFIER -> LF_POINTER -> ...
+				if (underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_MODIFIER)
+				{
+					if (modifierRecord)
+						*modifierRecord = underlyingType;
+
+					return GetTypeName(typeTable, underlyingType->data.LF_MODIFIER.type, pointerLevel, referencedType, nullptr);
+				}
 			}
 
 			return GetTypeName(typeTable, typeRecord->data.LF_POINTER.utype, pointerLevel, &typeRecord, modifierRecord);		
