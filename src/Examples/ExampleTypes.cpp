@@ -91,6 +91,10 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PHRESULT:
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PHRESULT:
 			return "PHRESULT";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_UNKNOWN_0600:
+			return "UNKNOWN_0x0600";
+
 		case PDB::CodeView::TPI::TypeIndexKind::T_VOID:
 			return "void";
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PVOID:

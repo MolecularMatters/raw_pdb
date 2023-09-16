@@ -147,6 +147,11 @@ namespace PDB
 				T_32PHRESULT = 0x0408u,			// OLE/COM HRESULT __ptr32 *
 				T_64PHRESULT = 0x0608u,			// OLE/COM HRESULT __ptr64 *
 
+				// Emitted due to a compiler bug? 
+				// 0x0600 bit appears to indicate a 64-bit pointer, but it has not type?
+				// Seen as type index for C11 "_Atomic uint32_t*" variable and constant.
+				T_UNKNOWN_0600 = 0x0600u,
+
 				T_PVOID = 0x0103u,				// near pointer to void
 				T_PFVOID = 0x0203u,				// far pointer to void
 				T_PHVOID = 0x0303u,				// huge pointer to void
