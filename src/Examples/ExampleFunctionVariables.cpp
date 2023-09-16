@@ -27,7 +27,7 @@ static std::string GetVariableTypeName(const TypeTable& typeTable, uint32_t type
 	return typeName;
 }
 
-void Printf(uint32_t indent, const char* format, ...) 
+static void Printf(uint32_t indent, const char* format, ...) 
 {
 	va_list args;
 	va_start(args, format);
