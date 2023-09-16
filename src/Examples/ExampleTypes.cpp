@@ -287,7 +287,7 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 		case PDB::CodeView::TPI::TypeRecordKind::LF_MODIFIER:
 			if(modifierRecord)
 				*modifierRecord = typeRecord;
-			return GetTypeName(typeTable, typeRecord->data.LF_MODIFIER.type, pointerLevel, nullptr, nullptr);
+			return GetTypeName(typeTable, typeRecord->data.LF_MODIFIER.type, pointerLevel, referencedType, nullptr);
 		case PDB::CodeView::TPI::TypeRecordKind::LF_POINTER:
 			++pointerLevel;
 			if(referencedType)
@@ -302,7 +302,10 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 					return GetTypeName(typeTable, typeRecord->data.LF_POINTER.utype, pointerLevel, referencedType, modifierRecord);
 			}
 
-			return GetTypeName(typeTable, typeRecord->data.LF_POINTER.utype, pointerLevel, &typeRecord, modifierRecord);
+			if (referencedType)
+				*referencedType = typeRecord;
+
+			return GetTypeName(typeTable, typeRecord->data.LF_POINTER.utype, pointerLevel, &typeRecord, modifierRecord);		
 		case PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE:
 			if (referencedType)
 				*referencedType = typeRecord;
@@ -396,6 +399,8 @@ static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView
 	}
 	else
 	{
+		PDB_ASSERT(referencedType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_POINTER, "Referenced type kind 0x%X != LF_POINTER (0x%X)", (uint32_t)referencedType->header.kind, (uint32_t)PDB::CodeView::TPI::TypeRecordKind::LF_POINTER);
+
 		underlyingType = typeTable.GetTypeRecord(referencedType->data.LF_POINTER.utype);
 		if (!underlyingType)
 			return false;
