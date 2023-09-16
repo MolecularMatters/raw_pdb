@@ -845,6 +845,22 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
 			continue;
 		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VBCLASS || fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_IVBCLASS)
+		{
+			// virtual base pointer offset from address point
+			// followed by virtual base offset from vbtable
+
+			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetAddressPointKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset);
+			const uint8_t vbpOffsetAddressPointSize = GetLeafSize(vbpOffsetAddressPointKind);
+
+			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetVBTableKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset + vbpOffsetAddressPointSize);
+			const uint8_t vbpOffsetVBTableSize = GetLeafSize(vbpOffsetVBTableKind);
+
+			i += sizeof(PDB::CodeView::TPI::FieldList::Data::LF_VBCLASS);
+			i += vbpOffsetAddressPointSize + vbpOffsetVBTableSize;
+			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
+			continue;
+		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_INDEX)
 		{
 			i += sizeof(PDB::CodeView::TPI::FieldList::Data::LF_INDEX);
