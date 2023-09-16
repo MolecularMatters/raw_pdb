@@ -272,8 +272,8 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 			return "PUOCTAL";
 
 		default:
-			PDB_ASSERT(false, "Unhandled special type %u", typeIndex);
-			break;
+			PDB_ASSERT(false, "Unhandled special type 0x%X", typeIndex);
+			return "unhandled_special_type";
 		}
 	}
 	else
