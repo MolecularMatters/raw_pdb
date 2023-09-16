@@ -249,6 +249,28 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PINT8:
 			return "PINT8";
 
+		case PDB::CodeView::TPI::TypeIndexKind::T_OCT:
+			return "OCTAL";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_POCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PFOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PHOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32POCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PFOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64POCT:
+			return "POCTAL";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_UOCT:
+			return "UOCTAL";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_PUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PFUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PHUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PFUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PUOCT:
+			return "PUOCTAL";
+
 		default:
 			PDB_ASSERT(false, "Unhandled special type %u", typeIndex);
 			break;
