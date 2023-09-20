@@ -92,6 +92,11 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 					moduleLineStream.ForEachLinesBlock(lineSection, 
 					[&lineSection, &sections, &filenames, &lines](const PDB::CodeView::DBI::LinesFileBlockHeader* linesBlockHeader, const PDB::CodeView::DBI::Line* blocklines, const PDB::CodeView::DBI::Column* blockColumns)
 					{
+						if (linesBlockHeader->numLines == 0)
+						{
+							return;
+						}
+
 						const PDB::CodeView::DBI::Line& firstLine = blocklines[0];
 
 						const uint16_t sectionIndex  = lineSection->linesHeader.sectionIndex;
