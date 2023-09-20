@@ -120,7 +120,7 @@ namespace PDB
 			enum class PDB_NO_DISCARD SymbolRecordKind : uint16_t
 			{
 				S_END =										0x0006u,		// block, procedure, "with" or thunk end
-				S_SKIP =                                    0x0007u,        // Reserve symbol space in $$Symbols table
+				S_SKIP =									0x0007u,        // Reserve symbol space in $$Symbols table
 				S_FRAMEPROC =								0x1012u,		// extra frame and proc information
 				S_OBJNAME =									0x1101u,		// full path to the original compiled .obj. can point to remote locations and temporary files, not necessarily the file that was linked into the executable
 				S_THUNK32 =									0x1102u,		// thunk start
@@ -166,7 +166,7 @@ namespace PDB
 				S_HEAPALLOCSITE = 							0x115Eu,		// heap allocation site
 				S_INLINEES =			 					0x1168u,		// https://llvm.org/docs/PDB/CodeViewSymbols.html#s-inlinees-0x1168
 				S_REGREL32_INDIR =							0x1171u,
-				S_REGREL32_ENCTMP =                         0x1179u,
+				S_REGREL32_ENCTMP =							0x1179u,
 				S_UDT =										0x1108u,		// user-defined type
 				S_UDT_ST =									0x1003u,		// user-defined structured types
 			};
