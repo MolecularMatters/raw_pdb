@@ -27,7 +27,7 @@ static std::string GetVariableTypeName(const TypeTable& typeTable, uint32_t type
 	return typeName;
 }
 
-void Printf(uint32_t indent, const char* format, ...) 
+static void Printf(uint32_t indent, const char* format, ...) 
 {
 	va_list args;
 	va_start(args, format);
@@ -97,6 +97,10 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						Printf(0, "\n");
 					}
 				}
+				else if(kind == SymbolRecordKind::S_SKIP)
+				{
+					Printf(blockLevel, "S_SKIP\n");
+				}
 				else if (kind == SymbolRecordKind::S_BLOCK32)
 				{
 					const uint32_t offset = imageSectionStream.ConvertSectionOffsetToRVA(data.S_BLOCK32.section, data.S_BLOCK32.offset);
@@ -117,7 +121,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				else if(kind == SymbolRecordKind::S_LOCAL)
 				{
 					const std::string typeName = GetVariableTypeName(typeTable, data.S_LOCAL.typeIndex);
-					Printf(blockLevel, "S_LOCAL: '%s' -> '%s'\n", typeName.c_str(), data.S_LOCAL.name);
+					Printf(blockLevel, "S_LOCAL: '%s' -> '%s' | Param: %s | Optimized Out: %s\n", typeName.c_str(), data.S_LOCAL.name, data.S_LOCAL.flags.fIsParam ? "True" : "False", data.S_LOCAL.flags.fIsOptimizedOut ? "True" : "False");
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER)
 				{
@@ -161,7 +165,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if (kind == SymbolRecordKind::S_INLINESITE)
 				{
-					Printf(blockLevel, "S_INLINESITE: Parent 0x % X\n", data.S_INLINESITE.parent);
+					Printf(blockLevel, "S_INLINESITE: Parent 0x%X\n", data.S_INLINESITE.parent);
 					blockLevel++;
 				}
 				else if (kind == SymbolRecordKind::S_INLINESITE_END)

@@ -81,6 +81,10 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PHRESULT:
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PHRESULT:
 			return "PHRESULT";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_UNKNOWN_0600:
+			return "UNKNOWN_0x0600";
+
 		case PDB::CodeView::TPI::TypeIndexKind::T_VOID:
 			return "void";
 		case PDB::CodeView::TPI::TypeIndexKind::T_32PVOID:
@@ -239,9 +243,31 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 		case PDB::CodeView::TPI::TypeIndexKind::T_64PINT8:
 			return "PINT8";
 
+		case PDB::CodeView::TPI::TypeIndexKind::T_OCT:
+			return "OCTAL";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_POCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PFOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PHOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32POCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PFOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64POCT:
+			return "POCTAL";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_UOCT:
+			return "UOCTAL";
+
+		case PDB::CodeView::TPI::TypeIndexKind::T_PUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PFUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_PHUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_32PFUOCT:
+		case PDB::CodeView::TPI::TypeIndexKind::T_64PUOCT:
+			return "PUOCTAL";
+
 		default:
-			PDB_ASSERT(false, "Unhandled special type %u", typeIndex);
-			break;
+			PDB_ASSERT(false, "Unhandled special type 0x%X", typeIndex);
+			return "unhandled_special_type";
 		}
 	}
 	else
@@ -255,7 +281,7 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 		case PDB::CodeView::TPI::TypeRecordKind::LF_MODIFIER:
 			if(modifierRecord)
 				*modifierRecord = typeRecord;
-			return GetTypeName(typeTable, typeRecord->data.LF_MODIFIER.type, pointerLevel, nullptr, nullptr);
+			return GetTypeName(typeTable, typeRecord->data.LF_MODIFIER.type, pointerLevel, referencedType, nullptr);
 		case PDB::CodeView::TPI::TypeRecordKind::LF_POINTER:
 			++pointerLevel;
 			if(referencedType)
@@ -268,6 +294,15 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 
 				if(underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_POINTER)
 					return GetTypeName(typeTable, typeRecord->data.LF_POINTER.utype, pointerLevel, referencedType, modifierRecord);
+
+				// Type record order can be LF_POINTER -> LF_MODIFIER -> LF_POINTER -> ...
+				if (underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_MODIFIER)
+				{
+					if (modifierRecord)
+						*modifierRecord = underlyingType;
+
+					return GetTypeName(typeTable, underlyingType->data.LF_MODIFIER.type, pointerLevel, referencedType, nullptr);
+				}
 			}
 
 			return GetTypeName(typeTable, typeRecord->data.LF_POINTER.utype, pointerLevel, &typeRecord, modifierRecord);
@@ -364,6 +399,8 @@ static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView
 	}
 	else
 	{
+		PDB_ASSERT(referencedType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_POINTER, "Referenced type kind 0x%X != LF_POINTER (0x%X)", (uint32_t)referencedType->header.kind, (uint32_t)PDB::CodeView::TPI::TypeRecordKind::LF_POINTER);
+
 		underlyingType = typeTable.GetTypeRecord(referencedType->data.LF_POINTER.utype);
 		if (!underlyingType)
 			return false;
@@ -616,6 +653,8 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 		// Other kinds of records are not implemented
 		PDB_ASSERT(
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_BCLASS ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VBCLASS ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_IVBCLASS ||
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_INDEX ||
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VFUNCTAB ||
 			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_NESTTYPE ||
@@ -795,6 +834,22 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 			leafName = GetLeafName(fieldRecord->data.LF_BCLASS.offset, fieldRecord->data.LF_BCLASS.lfEasy.kind);
 
 			i += static_cast<size_t>(leafName - reinterpret_cast<const char*>(fieldRecord));
+			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
+			continue;
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VBCLASS || fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_IVBCLASS)
+		{
+			// virtual base pointer offset from address point
+			// followed by virtual base offset from vbtable
+
+			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetAddressPointKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset);
+			const uint8_t vbpOffsetAddressPointSize = GetLeafSize(vbpOffsetAddressPointKind);
+
+			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetVBTableKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset + vbpOffsetAddressPointSize);
+			const uint8_t vbpOffsetVBTableSize = GetLeafSize(vbpOffsetVBTableKind);
+
+			i += sizeof(PDB::CodeView::TPI::FieldList::Data::LF_VBCLASS);
+			i += vbpOffsetAddressPointSize + vbpOffsetVBTableSize;
 			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
 			continue;
 		}

@@ -147,6 +147,11 @@ namespace PDB
 				T_32PHRESULT = 0x0408u,			// OLE/COM HRESULT __ptr32 *
 				T_64PHRESULT = 0x0608u,			// OLE/COM HRESULT __ptr64 *
 
+				// Emitted due to a compiler bug? 
+				// 0x0600 bits appears to indicate a 64-bit pointer, but it has no type?
+				// Seen as type index for C11 "_Atomic uint32_t*" variable and constant.
+				T_UNKNOWN_0600 = 0x0600u,
+
 				T_PVOID = 0x0103u,				// near pointer to void
 				T_PFVOID = 0x0203u,				// far pointer to void
 				T_PHVOID = 0x0303u,				// huge pointer to void
@@ -595,8 +600,16 @@ namespace PDB
 						};
 					}LF_BCLASS;
 
-					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2483
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2521
+					struct
+					{
+						MemberAttributes	attributes;	// attribute
+						uint32_t			index;		// type index of direct virtual base class
+						uint32_t			vbpIndex;   // type index of virtual base pointer
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, vbpOffset); // virtual base pointer offset from address point
+					} LF_VBCLASS, LF_IVBCLASS;
 
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2483
 					// index leaf - contains type index of another leaf
 					// a major use of this leaf is to allow the compilers to emit a
 					// long complex list (LF_FIELD) in smaller pieces.
