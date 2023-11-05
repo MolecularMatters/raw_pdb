@@ -29,4 +29,5 @@
 #	include <chrono>
 #	include <string>
 #	include <algorithm>
+#	include <cstdarg>
 #	include "Foundation/PDB_DisableWarningsPop.h"
