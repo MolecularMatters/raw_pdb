@@ -961,7 +961,7 @@ static void DisplayEnumerates(const PDB::CodeView::TPI::Record* record, uint8_t 
 	{
 		auto fieldRecord = reinterpret_cast<const PDB::CodeView::TPI::FieldList*>(reinterpret_cast<const uint8_t*>(&record->data.LF_FIELD.list) + i);
 
-		leafName = GetLeafName(fieldRecord->data.LF_ENUMERATE.value, static_cast<PDB::CodeView::TPI::TypeRecordKind>(0u));
+		leafName = GetLeafName(fieldRecord->data.LF_ENUMERATE.value, fieldRecord->data.LF_ENUMERATE.lfEasy.kind);
 		
 		if (fieldRecord->data.LF_ENUMERATE.lfEasy.kind < PDB::CodeView::TPI::TypeRecordKind::LF_NUMERIC)
 			valuePtr = &fieldRecord->data.LF_ENUMERATE.value[0];
