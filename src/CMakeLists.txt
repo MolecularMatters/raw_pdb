@@ -78,7 +78,11 @@ target_precompile_headers(raw_pdb
     PDB_PCH.h
 )
 
-add_subdirectory(Examples)
+option(RAWPDB_BUILD_EXAMPLES "Build Examples" ON)
+
+if (RAWPDB_BUILD_EXAMPLES)
+	add_subdirectory(Examples)
+endif()
 
 if (UNIX)
 	include(GNUInstallDirs)
