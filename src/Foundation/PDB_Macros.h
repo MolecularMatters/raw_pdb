@@ -10,13 +10,6 @@
 // ATTRIBUTES
 // ------------------------------------------------------------------------------------------------
 
-// Indicates to the compiler that the function returns an object that is not aliased by any other pointers.
-#if PDB_COMPILER_MSVC || PDB_COMPILER_CLANG
-#	define PDB_NO_ALIAS								__declspec(restrict)
-#else
-#	define PDB_NO_ALIAS								__restrict
-#endif
-
 // Indicates to the compiler that the return value of a function or class should not be ignored.
 #if PDB_CPP_17
 #	define PDB_NO_DISCARD							[[nodiscard]]
