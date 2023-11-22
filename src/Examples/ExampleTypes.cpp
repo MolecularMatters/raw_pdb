@@ -797,22 +797,26 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_METHOD)
 		{
-			leafName = GetMethodName(fieldRecord);
+			leafName = fieldRecord->data.LF_METHOD.name;
 
 			auto methodList = typeTable.GetTypeRecord(fieldRecord->data.LF_METHOD.mList);
 			if (!methodList)
 				break;
 
+			// https://github.com/microsoft/microsoft-pdb/blob/master/PDB/include/symtypeutils.h#L220
+			size_t offsetInMethodList = 0;
 			for (size_t j = 0; j < fieldRecord->data.LF_METHOD.count; j++)
 			{
-				if (methodList->data.LF_METHODLIST.mList[j] < typeTable.GetFirstTypeIndex())
-					continue;
-
-				if (!GetMethodPrototype(typeTable, typeTable.GetTypeRecord(methodList->data.LF_METHODLIST.mList[j]), functionPrototype))
+				size_t entrySize = 2 * sizeof(uint32_t);
+				PDB::CodeView::TPI::MethodListEntry* entry = (PDB::CodeView::TPI::MethodListEntry*)(methodList->data.LF_METHODLIST.mList + offsetInMethodList);
+				if (!GetMethodPrototype(typeTable, typeTable.GetTypeRecord(entry->index), functionPrototype))
 					break;
-
 				printf(functionPrototype.c_str(), leafName);
 				printf("\n");
+				PDB::CodeView::TPI::MethodProperty methodProp = (PDB::CodeView::TPI::MethodProperty)entry->attributes.mprop;
+				if (methodProp == PDB::CodeView::TPI::MethodProperty::Intro || methodProp == PDB::CodeView::TPI::MethodProperty::PureIntro)
+					entrySize += sizeof(uint32_t);
+				offsetInMethodList += entrySize;
 			}
 		}
 		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_ONEMETHOD)

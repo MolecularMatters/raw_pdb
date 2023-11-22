@@ -684,6 +684,15 @@ namespace PDB
 				} data;
 			};
 
+			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2131
+			struct MethodListEntry
+			{
+				MemberAttributes attributes;					// method attribute
+				uint16_t		pad0;							// internal padding, must be 0
+				uint32_t		index;							// index to type record for procedure
+				PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, vbaseoff);	// offset in vfunctable if virtual, empty otherwise.
+			};
+
 			// all CodeView records are stored as a header, followed by variable-length data.
 			// internal Record structs such as S_PUB32, S_GDATA32, etc. correspond to the data layout of a CodeView record of that kind.
 			struct Record
@@ -695,17 +704,10 @@ namespace PDB
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2144
 					struct
 					{
-						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, mList);
+						// This is actually a list of the MethodListEntry type above, but it has flexible
+						// size, so you need to manually iterate.
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, mList);
 					} LF_METHODLIST;
-
-					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L2131
-					struct
-					{
-						MemberAttributes attributes;					// method attribute
-						uint16_t		pad0;							// internal padding, must be 0
-						uint32_t		index;							// index to type record for procedure
-						PDB_FLEXIBLE_ARRAY_MEMBER(uint32_t, vbaseoff);	// offset in vfunctable if
-					} METHOD;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1801
 					struct
