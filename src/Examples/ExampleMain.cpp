@@ -78,6 +78,7 @@ namespace
 
 // declare all examples
 extern void ExamplePDBSize(const PDB::RawFile&, const PDB::DBIStream&);
+extern void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath);
 extern void ExampleContributions(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleSymbols(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleFunctionSymbols(const PDB::RawFile&, const PDB::DBIStream&);
@@ -160,6 +161,8 @@ int main(int argc, char** argv)
 	ExampleFunctionVariables(rawPdbFile, dbiStream, tpiStream);
 	ExampleLines(rawPdbFile, dbiStream, infoStream);
 	ExampleTypes(tpiStream);
+	// uncomment to dump type sizes to a CSV
+	// ExampleTPISize(tpiStream, "output.csv");
 
 	MemoryMappedFile::Close(pdbFile);
 

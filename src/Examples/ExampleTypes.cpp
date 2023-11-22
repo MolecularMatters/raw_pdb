@@ -1065,3 +1065,370 @@ void ExampleTypes(const PDB::TPIStream& tpiStream)
 
 	total.Done(tpiStream.GetTypeRecordCount());
 }
+
+template<typename T>
+static void TagRecursively(const TypeTable& typeTable, uint32_t typeIndex, T setName);
+
+#define TAG_AND_CHECK(typeIndex) if (setName(typeIndex)) TagRecursively(typeTable, typeIndex, setName);
+
+template<typename T>
+static void TagChildren(const TypeTable& typeTable, const PDB::CodeView::TPI::Record* record, T setName)
+{
+	const char* leafName = nullptr;
+	uint16_t offset = 0;
+
+	auto maximumSize = record->header.size - sizeof(uint16_t);
+
+	for (size_t i = 0; i < maximumSize;)
+	{
+		auto fieldRecord = reinterpret_cast<const PDB::CodeView::TPI::FieldList*>(reinterpret_cast<const uint8_t*>(&record->data.LF_FIELD.list) + i);
+
+		// these are all the record kinds I have observed
+		PDB_ASSERT(
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_BCLASS ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VBCLASS ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_IVBCLASS ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_INDEX ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VFUNCTAB ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_NESTTYPE ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUM ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_MEMBER ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_STMEMBER ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_METHOD ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_ONEMETHOD ||
+			fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUMERATE,
+			"Unknown record kind %X",
+			static_cast<unsigned int>(fieldRecord->kind));
+
+		if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_MEMBER)
+		{
+			if (fieldRecord->data.LF_MEMBER.lfEasy.kind < PDB::CodeView::TPI::TypeRecordKind::LF_NUMERIC)
+				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[0]);
+			else
+				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[sizeof(PDB::CodeView::TPI::TypeRecordKind)]);
+
+			leafName = GetLeafName(fieldRecord->data.LF_MEMBER.offset, fieldRecord->data.LF_MEMBER.lfEasy.kind);
+			TAG_AND_CHECK(fieldRecord->data.LF_MEMBER.index);
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_NESTTYPE)
+		{
+			leafName = &fieldRecord->data.LF_NESTTYPE.name[0];
+			TAG_AND_CHECK(fieldRecord->data.LF_NESTTYPE.index);
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_STMEMBER)
+		{
+			leafName = &fieldRecord->data.LF_STMEMBER.name[0];
+			TAG_AND_CHECK(fieldRecord->data.LF_STMEMBER.index);
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_METHOD)
+		{
+			leafName = fieldRecord->data.LF_METHOD.name;
+			setName(fieldRecord->data.LF_METHOD.mList);
+
+			auto methodList = typeTable.GetTypeRecord(fieldRecord->data.LF_METHOD.mList);
+			if (!methodList)
+				break;
+
+			// https://github.com/microsoft/microsoft-pdb/blob/master/PDB/include/symtypeutils.h#L220
+			size_t offsetInMethodList = 0;
+			for (size_t j = 0; j < fieldRecord->data.LF_METHOD.count; j++)
+			{
+				size_t entrySize = sizeof(PDB::CodeView::TPI::MethodListEntry);
+				PDB::CodeView::TPI::MethodListEntry* entry = (PDB::CodeView::TPI::MethodListEntry*)(methodList->data.LF_METHODLIST.mList + offsetInMethodList);
+				TAG_AND_CHECK(entry->index);
+				PDB::CodeView::TPI::MethodProperty methodProp = (PDB::CodeView::TPI::MethodProperty)entry->attributes.mprop;
+				if (methodProp == PDB::CodeView::TPI::MethodProperty::Intro || methodProp == PDB::CodeView::TPI::MethodProperty::PureIntro)
+					entrySize += sizeof(uint32_t);
+				offsetInMethodList += entrySize;
+			}
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_ONEMETHOD)
+		{
+			leafName = GetMethodName(fieldRecord);
+			TAG_AND_CHECK(fieldRecord->data.LF_ONEMETHOD.index);
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_BCLASS)
+		{
+			leafName = GetLeafName(fieldRecord->data.LF_BCLASS.offset, fieldRecord->data.LF_BCLASS.lfEasy.kind);
+
+			i += static_cast<size_t>(leafName - reinterpret_cast<const char*>(fieldRecord));
+			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
+			continue;
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VBCLASS || fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_IVBCLASS)
+		{
+			// virtual base pointer offset from address point
+			// followed by virtual base offset from vbtable
+
+			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetAddressPointKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset);
+			const uint8_t vbpOffsetAddressPointSize = GetLeafSize(vbpOffsetAddressPointKind);
+
+			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetVBTableKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset + vbpOffsetAddressPointSize);
+			const uint8_t vbpOffsetVBTableSize = GetLeafSize(vbpOffsetVBTableKind);
+
+			TAG_AND_CHECK(fieldRecord->data.LF_VBCLASS.vbpIndex);
+
+			i += sizeof(PDB::CodeView::TPI::FieldList::Data::LF_VBCLASS);
+			i += vbpOffsetAddressPointSize + vbpOffsetVBTableSize;
+			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
+			continue;
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_INDEX)
+		{
+			// this is continued elsewhere
+			setName(fieldRecord->data.LF_INDEX.type);
+			auto continued = typeTable.GetTypeRecord(fieldRecord->data.LF_INDEX.type);
+			if (continued)
+				TagChildren(typeTable, continued, setName);
+
+			i += sizeof(PDB::CodeView::TPI::FieldList::Data::LF_INDEX);
+			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
+			continue;
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_VFUNCTAB)
+		{
+			TAG_AND_CHECK(fieldRecord->data.LF_VFUNCTAB.type);
+			i += sizeof(PDB::CodeView::TPI::FieldList::Data::LF_VFUNCTAB);
+			i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
+			continue;
+		}
+		else if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUMERATE)
+		{
+			leafName = GetLeafName(fieldRecord->data.LF_ENUMERATE.value, fieldRecord->data.LF_ENUMERATE.lfEasy.kind);
+		}
+		else
+		{
+			break;
+		}
+
+		i += static_cast<size_t>(leafName - reinterpret_cast<const char*>(fieldRecord));
+		i += strnlen(leafName, maximumSize - i - 1) + 1;
+		i = (i + (sizeof(uint32_t) - 1)) & (0 - sizeof(uint32_t));
+	}
+}
+
+template<typename T>
+static void TagRecursively(const TypeTable& typeTable, uint32_t typeIndex, T setName)
+{
+	const PDB::CodeView::TPI::Record* record = typeTable.GetTypeRecord(typeIndex);
+	if (!record)
+		return;
+	switch (record->header.kind)
+	{
+		case PDB::CodeView::TPI::TypeRecordKind::LF_ARRAY:
+			TAG_AND_CHECK(record->data.LF_ARRAY.elemtype);
+			TAG_AND_CHECK(record->data.LF_ARRAY.idxtype);
+			break;
+		case PDB::CodeView::TPI::TypeRecordKind::LF_POINTER:
+			TAG_AND_CHECK(record->data.LF_POINTER.utype);
+			break;
+		case PDB::CodeView::TPI::TypeRecordKind::LF_MODIFIER:
+			TAG_AND_CHECK(record->data.LF_MODIFIER.type);
+			break;
+		case PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE:
+			TAG_AND_CHECK(record->data.LF_PROCEDURE.rvtype);
+			TAG_AND_CHECK(record->data.LF_PROCEDURE.arglist);
+			break;
+		case PDB::CodeView::TPI::TypeRecordKind::LF_ARGLIST:
+		{
+			size_t count = record->data.LF_ARGLIST.count;
+			for (size_t i = 0; i < count; i++)
+			{
+				uint32_t type = record->data.LF_ARGLIST.arg[i];
+				TAG_AND_CHECK(type);
+			}
+			break;
+		}
+		case PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION:
+			TAG_AND_CHECK(record->data.LF_MFUNCTION.rvtype);
+			TAG_AND_CHECK(record->data.LF_MFUNCTION.arglist);
+			TAG_AND_CHECK(record->data.LF_MFUNCTION.thistype);
+			break;
+		case PDB::CodeView::TPI::TypeRecordKind::LF_FIELDLIST:
+			TagChildren(typeTable, record, setName);
+		default:
+			break;
+	}
+}
+
+// This example takes a PDB's TPI stream and prints out a CSV file that contains all records in the TPI stream.
+// You can use it to figure out what's taking up space in the stream.
+//
+// The format of the CSV is Size; Kind; Name. "Size" is the size of the record in bytes, "Kind" is the kind of
+// the entry, and "Name" is a name associated with this entry.Type - definitions, member functions, and member
+// lists use their type as the name. The idea is that you can bucket by "Name" to get actionable information
+//and insight.
+//
+// The Name is set to "???" if no name was found, and it is set to "!!!" if multiple names reference the entry.
+//
+// Note, type records are not written out in order, so you cannot rely on their indices.
+void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath);
+void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
+{
+	TimedScope total("\nRunning example \"TPI Size\"");
+
+	FILE* f;
+	fopen_s(&f, outPath, "w");
+	PDB_ASSERT(f, "Failed to open %s for writing", outPath);
+
+	fprintf(f, "Size;Kind;Name\n");
+
+	TimedScope typeTableScope("Create TypeTable");
+	TypeTable typeTable(tpiStream);
+	typeTableScope.Done();
+
+	std::vector<const char*> names;
+	names.resize(typeTable.GetTypeRecords().GetLength());
+
+	const size_t minIndex = typeTable.GetFirstTypeIndex();
+	// sets the name of an entry and returns whether the name changed (because it wasn't set, or because we've found
+	// conflicting information).
+	auto setNameGlobal = [&names, minIndex](uint32_t typeIndex, const char* name) -> bool {
+		if (!name || typeIndex < minIndex)
+			return false;
+		size_t idx = typeIndex - minIndex;
+		const char* prev = names[idx];
+		if (names[idx] == nullptr)
+		{
+			names[idx] = name;
+			return true;
+		}
+		else
+		{
+			names[idx] = "!!!"; // multiple references
+			return names[idx] != prev;
+		}
+	};
+	auto getName = [&names, minIndex](uint32_t typeIndex) -> const char* {
+		if (typeIndex < minIndex)
+			return nullptr;
+		size_t idx = typeIndex - minIndex;
+		return names[idx];
+	};
+
+	// collect base types and propagate their name
+	auto typeRecords = typeTable.GetTypeRecords();
+	for (size_t i = 0, n = typeRecords.GetLength(); i < n; i++)
+	{
+		const PDB::CodeView::TPI::Record* record = typeRecords[i];
+		PDB::CodeView::TPI::TypeRecordKind kind = record->header.kind;
+		if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE)
+		{
+			fprintf(f, "%hu;", 2 + record->header.size);
+			fprintf(f, "LF_STRUCTURE;");
+			names[i] = GetLeafName(record->data.LF_CLASS.data, record->data.LF_CLASS.lfEasy.kind);
+			fprintf(f, names[i]);
+			fprintf(f, "\n");
+			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
+				return setNameGlobal(typeIndex, name);
+			};
+			TAG_AND_CHECK(record->data.LF_CLASS.field);
+		}
+		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_CLASS)
+		{
+			fprintf(f, "%hu;", 2 + record->header.size);
+			fprintf(f, "LF_CLASS;");
+			names[i] = GetLeafName(record->data.LF_CLASS.data, record->data.LF_CLASS.lfEasy.kind);
+			fprintf(f, names[i]);
+			fprintf(f, "\n");
+			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
+				return setNameGlobal(typeIndex, name);
+			};
+			TAG_AND_CHECK(record->data.LF_CLASS.field);
+		}
+		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_UNION)
+		{
+			fprintf(f, "%hu;", 2 + record->header.size);
+			fprintf(f, "LF_UNION;");
+			names[i] = GetLeafName(record->data.LF_UNION.data, static_cast<PDB::CodeView::TPI::TypeRecordKind>(0));
+			fprintf(f, names[i]);
+			fprintf(f, "\n");
+			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
+				return setNameGlobal(typeIndex, name);
+			};
+			TAG_AND_CHECK(record->data.LF_UNION.field);
+		}
+		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUM)
+		{
+			fprintf(f, "%hu;", 2 + record->header.size);
+			names[i] = record->data.LF_ENUM.name;
+			fprintf(f, "LF_ENUM;%s\n", names[i]);
+			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
+				return setNameGlobal(typeIndex, name);
+			};
+			TAG_AND_CHECK(record->data.LF_ENUM.field);
+		}
+		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
+		{
+			fprintf(f, "%hu;", 2 + record->header.size);
+			const char* name = names[i];
+			if (!name)
+			{
+				const PDB::CodeView::TPI::Record* containingRecord = typeTable.GetTypeRecord((record->data.LF_MFUNCTION.classtype));
+				if (containingRecord) {
+					if (containingRecord->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_CLASS ||
+						containingRecord->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE)
+						name = GetLeafName(containingRecord->data.LF_CLASS.data, containingRecord->data.LF_CLASS.lfEasy.kind);
+					else if (containingRecord->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_UNION)
+						name = GetLeafName(record->data.LF_UNION.data, static_cast<PDB::CodeView::TPI::TypeRecordKind>(0));
+					else
+						PDB_ASSERT(false, "unsupported");
+				}
+			}
+			fprintf(f, "LF_MFUNCTION;%s\n", name);
+			auto setName = [&setNameGlobal, name = name](uint32_t typeIndex) -> bool {
+				return setNameGlobal(typeIndex, name);
+			};
+			uint32_t typeIndex = (uint32_t)(minIndex + i);
+			TAG_AND_CHECK(typeIndex);
+		}
+	}
+
+	for (size_t i = 0, n = typeRecords.GetLength(); i < n; i++)
+	{
+		const PDB::CodeView::TPI::Record* record = typeRecords[i];
+		PDB::CodeView::TPI::TypeRecordKind kind = record->header.kind;
+		if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE ||
+			kind == PDB::CodeView::TPI::TypeRecordKind::LF_CLASS ||
+			kind == PDB::CodeView::TPI::TypeRecordKind::LF_UNION ||
+			kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUM ||
+			kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
+		{
+			// handled above;
+			continue;
+		}
+
+		fprintf(f, "%hu;", 2 + record->header.size);
+		const char* kindName = nullptr;
+		const char* typeName = i < names.size() ? names[i] : nullptr;
+		switch (record->header.kind)
+		{
+			case PDB::CodeView::TPI::TypeRecordKind::LF_VTSHAPE: kindName = "LF_VTSHAPE;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_POINTER: kindName = "LF_POINTER;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_MODIFIER: kindName = "LF_MODIFIER;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE: kindName = "LF_PROCEDURE;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_FIELDLIST: kindName = "LF_FIELDLIST;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_LABEL: kindName = "LF_LABEL;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_ARGLIST: kindName = "LF_ARGLIST;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_BITFIELD: kindName = "LF_BITFIELD;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_METHODLIST: kindName = "LF_METHODLIST;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_ARRAY: kindName = "LF_ARRAY;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_PRECOMP: kindName = "LF_PRECOMP;"; break;
+			default: break;
+		}
+
+		if (kindName)
+			fprintf(f, kindName);
+		else
+			fprintf(f, "0x%04X;", (int)record->header.kind);
+
+		if (typeName)
+			fprintf(f, "%s\n", typeName);
+		else
+			fprintf(f, "???\n");
+	}
+
+	fclose(f);
+	total.Done(tpiStream.GetTypeRecordCount());
+}
+#undef TAG_AND_CHECK
