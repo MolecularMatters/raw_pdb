@@ -1260,8 +1260,6 @@ static void TagRecursively(const TypeTable& typeTable, uint32_t typeIndex, T set
 //and insight.
 //
 // The Name is set to "???" if no name was found, and it is set to "!!!" if multiple names reference the entry.
-//
-// Note, type records are not written out in order, so you cannot rely on their indices.
 void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath);
 void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 {
@@ -1314,11 +1312,7 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 		PDB::CodeView::TPI::TypeRecordKind kind = record->header.kind;
 		if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE)
 		{
-			fprintf(f, "%hu;", 2 + record->header.size);
-			fprintf(f, "LF_STRUCTURE;");
 			names[i] = GetLeafName(record->data.LF_CLASS.data, record->data.LF_CLASS.lfEasy.kind);
-			fprintf(f, names[i]);
-			fprintf(f, "\n");
 			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
 				return setNameGlobal(typeIndex, name);
 			};
@@ -1326,11 +1320,7 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 		}
 		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_CLASS)
 		{
-			fprintf(f, "%hu;", 2 + record->header.size);
-			fprintf(f, "LF_CLASS;");
 			names[i] = GetLeafName(record->data.LF_CLASS.data, record->data.LF_CLASS.lfEasy.kind);
-			fprintf(f, names[i]);
-			fprintf(f, "\n");
 			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
 				return setNameGlobal(typeIndex, name);
 			};
@@ -1338,11 +1328,7 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 		}
 		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_UNION)
 		{
-			fprintf(f, "%hu;", 2 + record->header.size);
-			fprintf(f, "LF_UNION;");
 			names[i] = GetLeafName(record->data.LF_UNION.data, static_cast<PDB::CodeView::TPI::TypeRecordKind>(0));
-			fprintf(f, names[i]);
-			fprintf(f, "\n");
 			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
 				return setNameGlobal(typeIndex, name);
 			};
@@ -1350,9 +1336,7 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 		}
 		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUM)
 		{
-			fprintf(f, "%hu;", 2 + record->header.size);
 			names[i] = record->data.LF_ENUM.name;
-			fprintf(f, "LF_ENUM;%s\n", names[i]);
 			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
 				return setNameGlobal(typeIndex, name);
 			};
@@ -1360,7 +1344,6 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 		}
 		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
 		{
-			fprintf(f, "%hu;", 2 + record->header.size);
 			const char* name = names[i];
 			if (!name)
 			{
@@ -1375,7 +1358,6 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 						PDB_ASSERT(false, "unsupported");
 				}
 			}
-			fprintf(f, "LF_MFUNCTION;%s\n", name);
 			auto setName = [&setNameGlobal, name = name](uint32_t typeIndex) -> bool {
 				return setNameGlobal(typeIndex, name);
 			};
@@ -1387,18 +1369,6 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 	for (size_t i = 0, n = typeRecords.GetLength(); i < n; i++)
 	{
 		const PDB::CodeView::TPI::Record* record = typeRecords[i];
-		PDB::CodeView::TPI::TypeRecordKind kind = record->header.kind;
-		if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE ||
-			kind == PDB::CodeView::TPI::TypeRecordKind::LF_CLASS ||
-			kind == PDB::CodeView::TPI::TypeRecordKind::LF_UNION ||
-			kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUM ||
-			kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
-		{
-			// handled above;
-			continue;
-		}
-
-		fprintf(f, "%hu;", 2 + record->header.size);
 		const char* kindName = nullptr;
 		const char* typeName = i < names.size() ? names[i] : nullptr;
 		switch (record->header.kind)
@@ -1414,9 +1384,15 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 			case PDB::CodeView::TPI::TypeRecordKind::LF_METHODLIST: kindName = "LF_METHODLIST;"; break;
 			case PDB::CodeView::TPI::TypeRecordKind::LF_ARRAY: kindName = "LF_ARRAY;"; break;
 			case PDB::CodeView::TPI::TypeRecordKind::LF_PRECOMP: kindName = "LF_PRECOMP;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION: kindName = "LF_MFUNCTION;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE: kindName = "LF_STRUCTURE;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_CLASS: kindName = "LF_CLASS;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_UNION: kindName = "LF_UNION;"; break;
+			case PDB::CodeView::TPI::TypeRecordKind::LF_ENUM: kindName = "LF_ENUM;"; break;
 			default: break;
 		}
 
+		fprintf(f, "%hu;", 2 + record->header.size);
 		if (kindName)
 			fprintf(f, kindName);
 		else
