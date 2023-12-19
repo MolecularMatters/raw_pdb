@@ -531,7 +531,7 @@ namespace PDB
 			};
 
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1120
-			struct TypePropery
+			struct TypeProperty
 			{
 				uint16_t packed : 1;			// true if structure is packed
 				uint16_t ctor : 1;				// true if constructors or destructors present
@@ -813,7 +813,7 @@ namespace PDB
 					struct
 					{
 						uint16_t count;			// count of number of elements in class
-						TypePropery property;	// property attribute field
+						TypeProperty property;	// property attribute field
 						uint32_t field;			// type index of LF_FIELD descriptor list
 						uint32_t derived;		// type index of derived from list if not zero
 						uint32_t vshape;		// type index of vshape table for this class
@@ -842,7 +842,7 @@ namespace PDB
 					struct
 					{
 						uint16_t count;			// count of number of elements in class
-						TypePropery property;	// property attribute field
+						TypeProperty property;	// property attribute field
 						uint32_t field;			// type index of LF_FIELD descriptor list
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, data);
 					} LF_UNION;
@@ -851,7 +851,7 @@ namespace PDB
 					struct
 					{
 						uint16_t count;			// count of number of elements in class
-						TypePropery property;	// property attribute field
+						TypeProperty property;	// property attribute field
 						uint32_t utype;			// underlying type of the enum
 						uint32_t field;			// type index of LF_FIELD descriptor list
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
