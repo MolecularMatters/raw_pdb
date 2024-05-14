@@ -4,6 +4,7 @@
 #pragma once
 
 #include "PDB_Macros.h"
+#include "PDB_Assert.h"
 
 
 namespace PDB
