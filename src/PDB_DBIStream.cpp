@@ -24,6 +24,11 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetSectionContributionSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
+		if (dbiHeader.moduleInfoSize == 0u)
+		{
+			return 0u;
+		}
+
 		return GetModuleInfoSubstreamOffset(dbiHeader) + dbiHeader.moduleInfoSize;
 	}
 
@@ -32,6 +37,11 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetSectionMapSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
+		if (dbiHeader.sectionContributionSize == 0u)
+		{
+			return 0u;
+		}
+
 		return GetSectionContributionSubstreamOffset(dbiHeader) + dbiHeader.sectionContributionSize;
 	}
 
@@ -40,6 +50,11 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetSourceInfoSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
+		if (dbiHeader.sectionMapSize == 0u)
+		{
+			return 0u;
+		}
+
 		return GetSectionMapSubstreamOffset(dbiHeader) + dbiHeader.sectionMapSize;
 	}
 
@@ -48,6 +63,11 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetTypeServerMapSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
+		if (dbiHeader.sourceInfoSize == 0u)
+		{
+			return 0u;
+		}
+
 		return GetSourceInfoSubstreamOffset(dbiHeader) + dbiHeader.sourceInfoSize;
 	}
 
@@ -56,7 +76,25 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetECSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
+		if (dbiHeader.typeServerMapSize == 0u)
+		{
+			return 0u;
+		}
+
 		return GetTypeServerMapSubstreamOffset(dbiHeader) + dbiHeader.typeServerMapSize;
+	}
+
+
+	// ------------------------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------------------------
+	PDB_NO_DISCARD static inline uint32_t GetDebugHeaderSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
+	{
+		if (dbiHeader.ecSize == 0u)
+		{
+			return 0u;
+		}
+
+		return GetECSubstreamOffset(dbiHeader) + dbiHeader.ecSize;
 	}
 
 
@@ -65,14 +103,6 @@ namespace
 	PDB_NO_DISCARD static inline bool HasDebugHeaderSubstream(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
 		return dbiHeader.optionalDebugHeaderSize != 0u;
-	}
-
-
-	// ------------------------------------------------------------------------------------------------
-	// ------------------------------------------------------------------------------------------------
-	PDB_NO_DISCARD static inline uint32_t GetDebugHeaderSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
-	{
-		return GetECSubstreamOffset(dbiHeader) + dbiHeader.ecSize;
 	}
 }
 
@@ -132,6 +162,14 @@ PDB_NO_DISCARD PDB::DBIStream PDB::CreateDBIStream(const RawFile& file) PDB_NO_E
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidSymbolRecordStream(const RawFile& /* file */) const PDB_NO_EXCEPT
+{
+	return (m_header.symbolRecordStreamIndex != PDB::NilStreamIndex) ? ErrorCode::Success : ErrorCode::InvalidStreamIndex;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidImageSectionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
 {
 	// the debug header stream is optional. if it's not there, we can't get the image section stream either.
@@ -142,6 +180,11 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidImageSectionStream(const R
 
 	// find the debug header sub-stream
 	const uint32_t debugHeaderOffset = GetDebugHeaderSubstreamOffset(m_header);
+	if (debugHeaderOffset == 0u)
+	{
+		return ErrorCode::InvalidStream;
+	}
+
 	const DBI::DebugHeader& debugHeader = m_stream.ReadAtOffset<DBI::DebugHeader>(debugHeaderOffset);
 
 	if (debugHeader.sectionHeaderStreamIndex == DBI::DebugHeader::InvalidStreamIndex)
@@ -157,6 +200,11 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidImageSectionStream(const R
 // ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidPublicSymbolStream(const RawFile& file) const PDB_NO_EXCEPT
 {
+	if (m_header.publicStreamIndex == PDB::NilStreamIndex)
+	{
+		return ErrorCode::InvalidStreamIndex;
+	}
+
 	DirectMSFStream publicStream = file.CreateMSFStream<DirectMSFStream>(m_header.publicStreamIndex);
 
 	// the public symbol stream always begins with a header, we are not interested in that.
@@ -179,6 +227,11 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidPublicSymbolStream(const R
 // ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidGlobalSymbolStream(const RawFile& file) const PDB_NO_EXCEPT
 {
+	if (m_header.publicStreamIndex == PDB::NilStreamIndex)
+	{
+		return ErrorCode::InvalidStreamIndex;
+	}
+
 	DirectMSFStream globalStream = file.CreateMSFStream<DirectMSFStream>(m_header.globalStreamIndex);
 
 	// the global symbol stream starts with a hash table header
@@ -198,11 +251,31 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidGlobalSymbolStream(const R
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidSourceFileStream(const RawFile& /* file */) const PDB_NO_EXCEPT
+{
+	// find the source info sub-stream
+	// https://llvm.org/docs/PDB/DbiStream.html#file-info-substream
+	const uint32_t streamOffset = GetSourceInfoSubstreamOffset(m_header);
+	if (streamOffset == 0u)
+	{
+		return ErrorCode::InvalidStream;
+	}
+
+	return ErrorCode::Success;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidSectionContributionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
 {
 	// find the section contribution sub-stream
 	// https://llvm.org/docs/PDB/DbiStream.html#section-contribution-substream
 	const uint32_t streamOffset = GetSectionContributionSubstreamOffset(m_header);
+	if (streamOffset == 0u)
+	{
+		return ErrorCode::InvalidStream;
+	}
 
 	const DBI::SectionContribution::Version version = m_stream.ReadAtOffset<DBI::SectionContribution::Version>(streamOffset);
 	if (version != DBI::SectionContribution::Version::Ver60)

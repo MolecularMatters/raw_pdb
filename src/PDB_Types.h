@@ -18,6 +18,10 @@ namespace PDB
 	// https://github.com/microsoft/microsoft-pdb/blob/master/PDB/msf/msf.cpp#L177
 	const uint32_t NilPageSize = 0xffffffffu;
 
+	// PDB files have the notion of a "nil" stream index
+	// https://github.com/microsoft/microsoft-pdb/blob/master/PDB/include/msf.h#L45
+	const uint16_t NilStreamIndex = 0xffffu;
+
 	// this matches the definition in guiddef.h, but we don't want to pull that in
 	struct GUID
 	{

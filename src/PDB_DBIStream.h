@@ -31,9 +31,11 @@ namespace PDB
 
 		PDB_DEFAULT_MOVE(DBIStream);
 
+		PDB_NO_DISCARD ErrorCode HasValidSymbolRecordStream(const RawFile& file) const PDB_NO_EXCEPT;
 		PDB_NO_DISCARD ErrorCode HasValidImageSectionStream(const RawFile& file) const PDB_NO_EXCEPT;
 		PDB_NO_DISCARD ErrorCode HasValidPublicSymbolStream(const RawFile& file) const PDB_NO_EXCEPT;
 		PDB_NO_DISCARD ErrorCode HasValidGlobalSymbolStream(const RawFile& file) const PDB_NO_EXCEPT;
+		PDB_NO_DISCARD ErrorCode HasValidSourceFileStream(const RawFile& file) const PDB_NO_EXCEPT;
 		PDB_NO_DISCARD ErrorCode HasValidSectionContributionStream(const RawFile& file) const PDB_NO_EXCEPT;
 
 		PDB_NO_DISCARD CoalescedMSFStream CreateSymbolRecordStream(const RawFile& file) const PDB_NO_EXCEPT;

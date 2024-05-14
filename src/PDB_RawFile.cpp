@@ -119,6 +119,9 @@ PDB::RawFile::~RawFile(void) PDB_NO_EXCEPT
 template <typename T>
 PDB_NO_DISCARD T PDB::RawFile::CreateMSFStream(uint32_t streamIndex) const PDB_NO_EXCEPT
 {
+	PDB_ASSERT(streamIndex != PDB::NilStreamIndex, "Invalid stream index.");
+	PDB_ASSERT(streamIndex < m_streamCount, "Invalid stream index.");
+
 	return T(m_data, m_superBlock->blockSize, m_streamBlocks[streamIndex], GetStreamSize(streamIndex));
 }
 
@@ -128,6 +131,8 @@ PDB_NO_DISCARD T PDB::RawFile::CreateMSFStream(uint32_t streamIndex) const PDB_N
 template <typename T>
 PDB_NO_DISCARD T PDB::RawFile::CreateMSFStream(uint32_t streamIndex, uint32_t streamSize) const PDB_NO_EXCEPT
 {
+	PDB_ASSERT(streamIndex != PDB::NilStreamIndex, "Invalid stream index.");
+	PDB_ASSERT(streamIndex < m_streamCount, "Invalid stream index.");
 	PDB_ASSERT(streamSize <= GetStreamSize(streamIndex), "Invalid stream size.");
 
 	return T(m_data, m_superBlock->blockSize, m_streamBlocks[streamIndex], streamSize);
