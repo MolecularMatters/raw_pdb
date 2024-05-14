@@ -24,11 +24,6 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetSectionContributionSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
-		if (dbiHeader.moduleInfoSize == 0u)
-		{
-			return 0u;
-		}
-
 		return GetModuleInfoSubstreamOffset(dbiHeader) + dbiHeader.moduleInfoSize;
 	}
 
@@ -37,11 +32,6 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetSectionMapSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
-		if (dbiHeader.sectionContributionSize == 0u)
-		{
-			return 0u;
-		}
-
 		return GetSectionContributionSubstreamOffset(dbiHeader) + dbiHeader.sectionContributionSize;
 	}
 
@@ -50,11 +40,6 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetSourceInfoSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
-		if (dbiHeader.sectionMapSize == 0u)
-		{
-			return 0u;
-		}
-
 		return GetSectionMapSubstreamOffset(dbiHeader) + dbiHeader.sectionMapSize;
 	}
 
@@ -63,11 +48,6 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetTypeServerMapSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
-		if (dbiHeader.sourceInfoSize == 0u)
-		{
-			return 0u;
-		}
-
 		return GetSourceInfoSubstreamOffset(dbiHeader) + dbiHeader.sourceInfoSize;
 	}
 
@@ -76,11 +56,6 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetECSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
-		if (dbiHeader.typeServerMapSize == 0u)
-		{
-			return 0u;
-		}
-
 		return GetTypeServerMapSubstreamOffset(dbiHeader) + dbiHeader.typeServerMapSize;
 	}
 
@@ -89,11 +64,6 @@ namespace
 	// ------------------------------------------------------------------------------------------------
 	PDB_NO_DISCARD static inline uint32_t GetDebugHeaderSubstreamOffset(const PDB::DBI::StreamHeader& dbiHeader) PDB_NO_EXCEPT
 	{
-		if (dbiHeader.ecSize == 0u)
-		{
-			return 0u;
-		}
-
 		return GetECSubstreamOffset(dbiHeader) + dbiHeader.ecSize;
 	}
 
@@ -180,11 +150,6 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidImageSectionStream(const R
 
 	// find the debug header sub-stream
 	const uint32_t debugHeaderOffset = GetDebugHeaderSubstreamOffset(m_header);
-	if (debugHeaderOffset == 0u)
-	{
-		return ErrorCode::InvalidStream;
-	}
-
 	const DBI::DebugHeader& debugHeader = m_stream.ReadAtOffset<DBI::DebugHeader>(debugHeaderOffset);
 
 	if (debugHeader.sectionHeaderStreamIndex == DBI::DebugHeader::InvalidStreamIndex)
@@ -251,31 +216,11 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidGlobalSymbolStream(const R
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidSourceFileStream(const RawFile& /* file */) const PDB_NO_EXCEPT
-{
-	// find the source info sub-stream
-	// https://llvm.org/docs/PDB/DbiStream.html#file-info-substream
-	const uint32_t streamOffset = GetSourceInfoSubstreamOffset(m_header);
-	if (streamOffset == 0u)
-	{
-		return ErrorCode::InvalidStream;
-	}
-
-	return ErrorCode::Success;
-}
-
-
-// ------------------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidSectionContributionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
 {
 	// find the section contribution sub-stream
 	// https://llvm.org/docs/PDB/DbiStream.html#section-contribution-substream
 	const uint32_t streamOffset = GetSectionContributionSubstreamOffset(m_header);
-	if (streamOffset == 0u)
-	{
-		return ErrorCode::InvalidStream;
-	}
 
 	const DBI::SectionContribution::Version version = m_stream.ReadAtOffset<DBI::SectionContribution::Version>(streamOffset);
 	if (version != DBI::SectionContribution::Version::Ver60)
