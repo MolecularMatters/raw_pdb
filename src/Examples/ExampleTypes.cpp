@@ -1266,7 +1266,11 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 	TimedScope total("\nRunning example \"TPI Size\"");
 
 	FILE* f;
+#ifndef __unix
 	fopen_s(&f, outPath, "w");
+#else
+	f = fopen(outPath, "w");
+#endif
 	PDB_ASSERT(f, "Failed to open %s for writing", outPath);
 
 	fprintf(f, "Size;Kind;Name\n");
