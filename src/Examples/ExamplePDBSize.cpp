@@ -84,7 +84,7 @@ void ExamplePDBSize(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStr
 			const uint16_t streamIndex = module.HasSymbolStream() ? moduleInfo->moduleSymbolStreamIndex : 0u;
 			const uint32_t moduleStreamSize = (streamIndex != 0u) ? rawPdbFile.GetStreamSize(streamIndex) : 0u;
 
-			printf("Module %hs (%hs) stream size: %u KiB (%u MiB)\n", name, objectName, moduleStreamSize >> 10u, moduleStreamSize >> 20u);
+			printf("Module %s (%s) stream size: %u KiB (%u MiB)\n", name, objectName, moduleStreamSize >> 10u, moduleStreamSize >> 20u);
 
 			streams.push_back(Stream { name, moduleStreamSize });
 		}
