@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 {
 	if (argc != 2)
 	{
-		printf("Usage: Examples <PDB path>\nError: Incorrect usage");
+		printf("Usage: Examples <PDB path>\nError: Incorrect usage\n");
 
 		return 1;
 	}
