@@ -1394,7 +1394,7 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 
 		fprintf(f, "%hu;", 2 + record->header.size);
 		if (kindName)
-			fprintf(f, kindName);
+			fprintf(f, "%s;", kindName);
 		else
 			fprintf(f, "0x%04X;", (int)record->header.kind);
 
