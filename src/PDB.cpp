@@ -14,8 +14,13 @@
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-PDB_NO_DISCARD PDB::ErrorCode PDB::ValidateFile(const void* data) PDB_NO_EXCEPT
+PDB_NO_DISCARD PDB::ErrorCode PDB::ValidateFile(const void* data, size_t size) PDB_NO_EXCEPT
 {
+	// validate if there are enough bytes for the super block
+	if (size < sizeof(SuperBlock))
+	{
+		return ErrorCode::InvalidDataSize;
+	}
 	// validate the super block
 	const SuperBlock* superBlock = Pointer::Offset<const SuperBlock*>(data, 0u);
 	{
@@ -23,6 +28,13 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::ValidateFile(const void* data) PDB_NO_EXCEPT
 		if (std::memcmp(superBlock->fileMagic, SuperBlock::MAGIC, sizeof(SuperBlock::MAGIC)) != 0)
 		{
 			return ErrorCode::InvalidSuperBlock;
+		}
+
+		// validate if there are enough bytes are provided
+		// blockCount * blockSize should equal the size of the file on disk
+		if (size < superBlock->blockCount * superBlock->blockSize)
+		{
+			return ErrorCode::InvalidDataSize;
 		}
 
 		// validate free block map.

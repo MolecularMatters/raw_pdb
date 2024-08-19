@@ -13,6 +13,7 @@ namespace PDB
 		Success = 0u,
 
 		// main PDB validation
+		InvalidDataSize,
 		InvalidSuperBlock,
 		InvalidFreeBlockMap,
 
