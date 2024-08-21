@@ -16,7 +16,7 @@
 // ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::ValidateFile(const void* data, size_t size) PDB_NO_EXCEPT
 {
-	// validate if there are enough bytes for the super block
+	// validate whether there is enough size for the super block
 	if (size < sizeof(SuperBlock))
 	{
 		return ErrorCode::InvalidDataSize;
@@ -30,8 +30,8 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::ValidateFile(const void* data, size_t size) P
 			return ErrorCode::InvalidSuperBlock;
 		}
 
-		// validate if there are enough bytes are provided
-		// blockCount * blockSize should equal the size of the file on disk
+		// validate whether enough size is provided for the PDB file
+		// blockCount * blockSize is the size of the PDB file on disk
 		if (size < superBlock->blockCount * superBlock->blockSize)
 		{
 			return ErrorCode::InvalidDataSize;
