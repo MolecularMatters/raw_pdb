@@ -122,11 +122,14 @@ namespace PDB
 				S_END =										0x0006u,		// block, procedure, "with" or thunk end
 				S_SKIP =									0x0007u,        // Reserve symbol space in $$Symbols table
 				S_FRAMEPROC =								0x1012u,		// extra frame and proc information
+				S_ANNOTATION =								0x1019u,		// annotation string literals ("__annotation" intrinsic, e.g. via NT_ASSERT)
 				S_OBJNAME =									0x1101u,		// full path to the original compiled .obj. can point to remote locations and temporary files, not necessarily the file that was linked into the executable
 				S_THUNK32 =									0x1102u,		// thunk start
 				S_BLOCK32 =									0x1103u,		// block start
 				S_LABEL32 =									0x1105u,		// code label
-				S_CONSTANT =        						0x1107u,        // constant symbol
+				S_REGISTER =								0x1106u,		// register variable
+				S_CONSTANT =								0x1107u,		// constant symbol
+				S_BPREL32 =									0x110Bu,		// BP-relative address (almost like S_REGREL32)
 				S_LDATA32 =									0x110Cu,		// (static) local data
 				S_GDATA32 =									0x110Du,		// global data
 				S_PUB32 =									0x110Eu,		// public symbol
@@ -200,6 +203,15 @@ namespace PDB
 			// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvconst.h#L392
 			enum class PDB_NO_DISCARD Register : uint16_t
 			{
+				EAX = 17,
+				ECX = 18,
+				EDX = 19,
+				EBX = 20,
+				ESP = 21,
+				EBP = 22,
+				ESI = 23,
+				EDI = 24,
+
 				RAX = 328,
 				RBX = 329,
 				RCX = 330,
@@ -207,7 +219,18 @@ namespace PDB
 				RSI = 332,
 				RDI = 333,
 				RBP = 334,
-				RSP = 335
+				RSP = 335,
+				R8 = 336,
+				R9 = 337,
+				R10 = 338,
+				R11 = 339,
+				R12 = 340,
+				R13 = 341,
+				R14 = 342,
+				R15 = 343,
+
+				RIP = 33,		// also EIP for x32
+				EFLAGS = 34,	// same for x64 and x32
 			};
 
 
@@ -402,6 +425,14 @@ namespace PDB
 						} flags;
 					} S_FRAMEPROC;
 
+					struct
+					{
+						uint32_t offset;
+						uint16_t section;
+						uint16_t annotationsCount;						// number of zero-terminated annotation strings
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, annotations);	// sequence of zero-terminated annotation strings
+					} S_ANNOTATIONSYM;
+
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L3696
 					struct
 					{
@@ -501,9 +532,23 @@ namespace PDB
 					{
 						uint32_t offset;
 						uint32_t typeIndex;
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					} S_BPRELSYM32;
+
+					struct
+					{
+						uint32_t offset;
+						uint32_t typeIndex;
 						Register reg;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
 					} S_REGREL32, S_REGREL32_ENCTMP;
+
+					struct
+					{
+						uint32_t typeIndex;
+						Register reg;
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					} S_REGSYM;
 
 					struct
 					{
