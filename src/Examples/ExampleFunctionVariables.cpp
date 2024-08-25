@@ -125,7 +125,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				}
 				else if (kind == SymbolRecordKind::S_DEFRANGE_REGISTER)
 				{
-					Printf(blockLevel, "S_DEFRANGE_REGISTER: Register 0x % X\n", data.S_DEFRANGE_REGISTER.reg);
+					Printf(blockLevel, "S_DEFRANGE_REGISTER: Register 0x%X\n", data.S_DEFRANGE_REGISTER.reg);
 				}
 				else if(kind == SymbolRecordKind::S_DEFRANGE_FRAMEPOINTER_REL)
 				{
@@ -212,6 +212,22 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 
 					Printf(blockLevel, "S_UDT: '%s' -> '%s'\n", data.S_UDT.name, typeName.c_str());
 				}
+				else if (kind == PDB::CodeView::DBI::SymbolRecordKind::S_REGISTER)
+				{
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_REGSYM.typeIndex);
+
+					Printf(blockLevel, "S_REGSYM: '%s' -> '%s' | Register %i\n",
+						data.S_REGSYM.name, typeName.c_str(),
+						data.S_REGSYM.reg);
+				}
+				else if (kind == PDB::CodeView::DBI::SymbolRecordKind::S_BPREL32)
+				{
+					const std::string typeName = GetVariableTypeName(typeTable, data.S_BPRELSYM32.typeIndex);
+
+					Printf(blockLevel, "S_BPRELSYM32: '%s' -> '%s' | BP register Offset 0x%X\n",
+						data.S_BPRELSYM32.name, typeName.c_str(),
+						data.S_BPRELSYM32.offset);
+				}
 				else if (kind == PDB::CodeView::DBI::SymbolRecordKind::S_REGREL32)
 				{
 					const std::string typeName = GetVariableTypeName(typeTable, data.S_REGREL32.typeIndex);
@@ -248,6 +264,16 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						data.S_FRAMEPROC.cbPad, 
 						data.S_FRAMEPROC.offPad, 
 						data.S_FRAMEPROC.cbSaveRegs);
+				}
+				else if (kind == SymbolRecordKind::S_ANNOTATION)
+				{
+					Printf(blockLevel, "S_ANNOTATION: Offset 0x%X | Count %u\n", data.S_ANNOTATIONSYM.offset, data.S_ANNOTATIONSYM.annotationsCount);
+					// print N null-terminated annotation strings, skipping their null-terminators to get to the next string
+					const char* annotation = data.S_ANNOTATIONSYM.annotations;
+					for (int i = 0; i < data.S_ANNOTATIONSYM.annotationsCount; ++i, annotation += strlen(annotation) + 1)
+						Printf(blockLevel + 1, "S_ANNOTATION.%u: %s\n", i, annotation);
+					PDB_ASSERT(annotation <= (const char*)record + record->header.size + sizeof(record->header.size),
+						"Annotation strings end beyond the record size %X; annotaions count: %u", record->header.size, data.S_ANNOTATIONSYM.annotationsCount);
 				}
 				else if (kind == SymbolRecordKind::S_THUNK32)
 				{
