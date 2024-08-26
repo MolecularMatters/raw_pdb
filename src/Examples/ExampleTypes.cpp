@@ -1253,6 +1253,7 @@ static void TagRecursively(const TypeTable& typeTable, uint32_t typeIndex, T set
 			break;
 		case PDB::CodeView::TPI::TypeRecordKind::LF_FIELDLIST:
 			TagChildren(typeTable, record, setName);
+			break;
 		default:
 			break;
 	}
