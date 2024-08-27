@@ -34,9 +34,9 @@ MemoryMappedFile::Handle MemoryMappedFile::Open(const char* path)
 		return Handle { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, nullptr, 0 };
 	}
 
-	MEMORY_BASIC_INFORMATION memoryInfo;
-	const size_t queryResult = VirtualQuery(baseAddress, &memoryInfo, sizeof(memoryInfo));
-	if (queryResult == 0)
+	BY_HANDLE_FILE_INFORMATION fileInformation;
+	const bool getInformationResult = GetFileInformationByHandle(file, &fileInformation);
+	if (!getInformationResult)
 	{
 		UnmapViewOfFile(baseAddress);
 		CloseHandle(fileMapping);
@@ -45,7 +45,9 @@ MemoryMappedFile::Handle MemoryMappedFile::Open(const char* path)
 		return Handle { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, nullptr, 0 };
 	}
 
-	const size_t fileSize = memoryInfo.RegionSize;
+	const size_t fileSizeHighBytes = static_cast<size_t>(fileInformation.nFileSizeHigh) << 32;
+	const size_t fileSizeLowBytes = fileInformation.nFileSizeLow;
+	const size_t fileSize = fileSizeHighBytes | fileSizeLowBytes;
 	return Handle { file, fileMapping, baseAddress, fileSize };
 #else
 	struct stat fileSb;
