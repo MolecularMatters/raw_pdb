@@ -21,9 +21,7 @@ namespace MemoryMappedFile
 		int   file;
 #endif
 		void* baseAddress;
-#ifndef _WIN32
-		long len;
-#endif
+		size_t len;
 	};
 
 	Handle Open(const char* path);

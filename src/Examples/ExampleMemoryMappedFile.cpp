@@ -12,7 +12,7 @@ MemoryMappedFile::Handle MemoryMappedFile::Open(const char* path)
 
 	if (file == INVALID_HANDLE_VALUE)
 	{
-		return Handle { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, nullptr };
+		return Handle { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, nullptr, 0 };
 	}
 
 	void* fileMapping = CreateFileMappingW(file, nullptr, PAGE_READONLY, 0, 0, nullptr);
@@ -21,7 +21,7 @@ MemoryMappedFile::Handle MemoryMappedFile::Open(const char* path)
 	{
 		CloseHandle(file);
 
-		return Handle { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, nullptr };
+		return Handle { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, nullptr, 0 };
 	}
 
 	void* baseAddress = MapViewOfFile(fileMapping, FILE_MAP_READ, 0, 0, 0);
@@ -31,10 +31,24 @@ MemoryMappedFile::Handle MemoryMappedFile::Open(const char* path)
 		CloseHandle(fileMapping);
 		CloseHandle(file);
 
-		return Handle { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, nullptr };
+		return Handle { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, nullptr, 0 };
 	}
 
-	return Handle { file, fileMapping, baseAddress };
+	BY_HANDLE_FILE_INFORMATION fileInformation;
+	const bool getInformationResult = GetFileInformationByHandle(file, &fileInformation);
+	if (!getInformationResult)
+	{
+		UnmapViewOfFile(baseAddress);
+		CloseHandle(fileMapping);
+		CloseHandle(file);
+
+		return Handle { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, nullptr, 0 };
+	}
+
+	const size_t fileSizeHighBytes = static_cast<size_t>(fileInformation.nFileSizeHigh) << 32;
+	const size_t fileSizeLowBytes = fileInformation.nFileSizeLow;
+	const size_t fileSize = fileSizeHighBytes | fileSizeLowBytes;
+	return Handle { file, fileMapping, baseAddress, fileSize };
 #else
 	struct stat fileSb;
 
@@ -61,7 +75,7 @@ MemoryMappedFile::Handle MemoryMappedFile::Open(const char* path)
 		return Handle { INVALID_HANDLE_VALUE, nullptr, 0 };
 	}
 
-	return Handle { file, baseAddress, fileSb.st_size };
+	return Handle { file, baseAddress, static_cast<size_t>(fileSb.st_size) };
 #endif
 }
 
