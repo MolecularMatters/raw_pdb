@@ -138,6 +138,7 @@ namespace PDB
 				S_REGREL32 =								0x1111u,		// register relative address
 				S_LTHREAD32 =								0x1112u,		// (static) thread-local data
 				S_GTHREAD32 =								0x1113u,		// global thread-local data
+				S_UNAMESPACE =								0x1124u,		// using namespace
 				S_PROCREF =									0x1125u,		// reference to function in any compiland
 				S_LPROCREF =								0x1127u,		// local reference to function in any compiland
 				S_TRAMPOLINE =								0x112Cu,		// incremental linking trampoline
@@ -449,6 +450,11 @@ namespace PDB
 						uint16_t section;
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
 					} S_GDATA32, S_GTHREAD32, S_LDATA32, S_LTHREAD32;
+
+					struct
+					{
+						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
+					} S_UNAMESPACE;
 
 					struct
 					{
