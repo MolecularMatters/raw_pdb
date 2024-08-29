@@ -344,7 +344,11 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 						data.S_REGREL32.name, typeName.c_str(),
 						data.S_REGREL32.reg,
 						data.S_REGREL32.offset);
-						}
+				}
+				else if (kind == SymbolRecordKind::S_UNAMESPACE)
+				{
+					Printf(blockLevel, "S_UNAMESPACE: '%s'\n", data.S_UNAMESPACE.name);
+				}
 				else
 				{
 					// We only care about records inside functions.
