@@ -218,6 +218,11 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidGlobalSymbolStream(const R
 // ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidSectionContributionStream(const RawFile& /* file */) const PDB_NO_EXCEPT
 {
+	if (m_header.sectionContributionSize < sizeof(DBI::SectionContribution::Version))
+	{
+		return ErrorCode::InvalidStream;
+	}
+
 	// find the section contribution sub-stream
 	// https://llvm.org/docs/PDB/DbiStream.html#section-contribution-substream
 	const uint32_t streamOffset = GetSectionContributionSubstreamOffset(m_header);
