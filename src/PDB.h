@@ -14,7 +14,7 @@ namespace PDB
 
 
 	// Validates whether a PDB file is valid.
-	PDB_NO_DISCARD ErrorCode ValidateFile(const void* data) PDB_NO_EXCEPT;
+	PDB_NO_DISCARD ErrorCode ValidateFile(const void* data, size_t size) PDB_NO_EXCEPT;
 
 	// Creates a raw PDB file that must have been validated.
 	PDB_NO_DISCARD RawFile CreateRawFile(const void* data) PDB_NO_EXCEPT;

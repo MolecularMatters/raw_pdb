@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	if (IsError(PDB::ValidateFile(pdbFile.baseAddress)))
+	if (IsError(PDB::ValidateFile(pdbFile.baseAddress, pdbFile.len)))
 	{
 		MemoryMappedFile::Close(pdbFile);
 

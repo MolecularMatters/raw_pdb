@@ -891,7 +891,7 @@ std::string GetTypeName(const TypeTable& typeTable, uint32_t typeIndex)
 
 	if (typeName == nullptr)
 	{
-		if (referencedType == nullptr && (typeIndex & 0x8000'0000) != 0)
+		if (referencedType == nullptr && (typeIndex & 0x80000000) != 0)
 		{
 			// d3d12.pdb\1DEAE23C86E6462A86018FB180EB8E4A1, S_CALLSITE for `dynamic initializer for 'g_Telemetry'': typeIndex == 0x80900001
 			char typeIndexBuf[0x0C];
@@ -1325,32 +1325,32 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 		if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE)
 		{
 			names[i] = GetLeafName(record->data.LF_CLASS.data, record->data.LF_CLASS.lfEasy.kind);
-			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
-				return setNameGlobal(typeIndex, name);
+			auto setName = [&setNameGlobal, names, i](uint32_t typeIndex) -> bool {
+				return setNameGlobal(typeIndex, names[i]);
 			};
 			TAG_AND_CHECK(record->data.LF_CLASS.field);
 		}
 		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_CLASS)
 		{
 			names[i] = GetLeafName(record->data.LF_CLASS.data, record->data.LF_CLASS.lfEasy.kind);
-			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
-				return setNameGlobal(typeIndex, name);
+			auto setName = [&setNameGlobal, names, i](uint32_t typeIndex) -> bool {
+				return setNameGlobal(typeIndex, names[i]);
 			};
 			TAG_AND_CHECK(record->data.LF_CLASS.field);
 		}
 		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_UNION)
 		{
 			names[i] = GetLeafName(record->data.LF_UNION.data, static_cast<PDB::CodeView::TPI::TypeRecordKind>(0));
-			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
-				return setNameGlobal(typeIndex, name);
+			auto setName = [&setNameGlobal, names, i](uint32_t typeIndex) -> bool {
+				return setNameGlobal(typeIndex, names[i]);
 			};
 			TAG_AND_CHECK(record->data.LF_UNION.field);
 		}
 		else if (kind == PDB::CodeView::TPI::TypeRecordKind::LF_ENUM)
 		{
 			names[i] = record->data.LF_ENUM.name;
-			auto setName = [&setNameGlobal, name = names[i]](uint32_t typeIndex) -> bool {
-				return setNameGlobal(typeIndex, name);
+			auto setName = [&setNameGlobal, names, i](uint32_t typeIndex) -> bool {
+				return setNameGlobal(typeIndex, names[i]);
 			};
 			TAG_AND_CHECK(record->data.LF_ENUM.field);
 		}
@@ -1370,7 +1370,7 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 						PDB_ASSERT(false, "unsupported");
 				}
 			}
-			auto setName = [&setNameGlobal, name = name](uint32_t typeIndex) -> bool {
+			auto setName = [&setNameGlobal, name](uint32_t typeIndex) -> bool {
 				return setNameGlobal(typeIndex, name);
 			};
 			uint32_t typeIndex = (uint32_t)(minIndex + i);
