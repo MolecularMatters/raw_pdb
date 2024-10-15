@@ -192,7 +192,7 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidPublicSymbolStream(const R
 // ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidGlobalSymbolStream(const RawFile& file) const PDB_NO_EXCEPT
 {
-	if (m_header.publicStreamIndex == PDB::NilStreamIndex)
+	if (m_header.globalStreamIndex == PDB::NilStreamIndex)
 	{
 		return ErrorCode::InvalidStreamIndex;
 	}
