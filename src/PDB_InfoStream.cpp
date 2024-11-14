@@ -20,6 +20,7 @@ PDB::InfoStream::InfoStream(void) PDB_NO_EXCEPT
 	, m_header(nullptr)
 	, m_namesStreamIndex(0)
 	, m_usesDebugFastlink(false)
+	, m_hasIPIStream(false)
 {
 }
 
@@ -31,6 +32,7 @@ PDB::InfoStream::InfoStream(const RawFile& file) PDB_NO_EXCEPT
 	, m_header(m_stream.GetDataAtOffset<const Header>(0u))
 	, m_namesStreamIndex(0)
 	, m_usesDebugFastlink(false)
+	, m_hasIPIStream(false)
 {
 	// the info stream starts with the header, followed by the named stream map, followed by the feature codes
 	// https://llvm.org/docs/PDB/PdbStream.html#named-stream-map
