@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 		return 5;
 	}
 
-	if (PDB::HasValidTPIStream(rawPdbFile) != PDB::ErrorCode::Success)
+	if (IsError(PDB::HasValidTPIStream(rawPdbFile)))
 	{
 		MemoryMappedFile::Close(pdbFile);
 
