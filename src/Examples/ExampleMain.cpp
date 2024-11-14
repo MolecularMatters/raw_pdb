@@ -160,6 +160,9 @@ int main(int argc, char** argv)
 	}
 
 	{
+		// It's perfectly possible that an old PDB does not have an IPI stream.
+		// It's not necessarily an error. You can also check the InfoStream for whether
+		// the PDB should have an IPI stream at all.
 		PDB::ErrorCode error = PDB::HasValidIPIStream(rawPdbFile);
 		if (error != PDB::ErrorCode::InvalidStream && IsError(error))
 		{
