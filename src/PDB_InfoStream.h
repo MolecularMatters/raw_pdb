@@ -38,6 +38,11 @@ namespace PDB
 		// Returns whether the module has a names stream.
 		PDB_NO_DISCARD bool HasNamesStream(void) const PDB_NO_EXCEPT;
 
+		PDB_NO_DISCARD inline bool HasIPIStream(void) const PDB_NO_EXCEPT
+		{
+			return m_hasIPIStream;
+		}
+
 		// Create names stream
 		PDB_NO_DISCARD NamesStream CreateNamesStream(const RawFile& file) const PDB_NO_EXCEPT;
 
@@ -46,6 +51,7 @@ namespace PDB
 		const Header* m_header;
 		uint32_t m_namesStreamIndex;
 		bool m_usesDebugFastlink;
+		bool m_hasIPIStream;
 
 		PDB_DISABLE_COPY(InfoStream);
 	};
