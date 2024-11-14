@@ -150,13 +150,13 @@ int main(int argc, char** argv)
 		return 5;
 	}
 
-	const PDB::TPIStream tpiStream = PDB::CreateTPIStream(rawPdbFile);
 	if (PDB::HasValidTPIStream(rawPdbFile) != PDB::ErrorCode::Success)
 	{
 		MemoryMappedFile::Close(pdbFile);
 
 		return 5;
 	}
+	const PDB::TPIStream tpiStream = PDB::CreateTPIStream(rawPdbFile);
 
 	// run all examples
 	ExamplePDBSize(rawPdbFile, dbiStream);
