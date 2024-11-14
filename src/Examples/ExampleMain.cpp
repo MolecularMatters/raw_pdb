@@ -8,6 +8,7 @@
 #include "PDB_InfoStream.h"
 #include "PDB_DBIStream.h"
 #include "PDB_TPIStream.h"
+#include "PDB_IPIStream.h"
 #include "PDB_NamesStream.h"
 
 namespace
@@ -161,6 +162,19 @@ int main(int argc, char** argv)
 		return 5;
 	}
 	const PDB::TPIStream tpiStream = PDB::CreateTPIStream(rawPdbFile);
+
+	{
+		// It's perfectly possible that an old PDB does not have an IPI stream.
+		// It's not necessarily an error. You can also check the InfoStream for whether
+		// the PDB should have an IPI stream at all.
+		PDB::ErrorCode error = PDB::HasValidIPIStream(rawPdbFile);
+		if (error != PDB::ErrorCode::InvalidStream && IsError(error))
+		{
+			MemoryMappedFile::Close(pdbFile);
+
+			return 5;
+		}
+	}	
 
 	// run all examples
 	ExamplePDBSize(rawPdbFile, dbiStream);

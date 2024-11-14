@@ -79,9 +79,14 @@ PDB::InfoStream::InfoStream(const RawFile& file) PDB_NO_EXCEPT
 
 	for (size_t i=0u; i < count; ++i)
 	{
-		if (featureCodes[i] == PDB::FeatureCode::MinimalDebugInfo)
+		FeatureCode code = featureCodes[i];
+		if (code == PDB::FeatureCode::MinimalDebugInfo)
 		{
 			m_usesDebugFastlink = true;
+		}
+		else if (code == PDB::FeatureCode::VC110 || code == PDB::FeatureCode::VC140)
+		{
+			m_hasIPIStream = true;
 		}
 	}
 }
