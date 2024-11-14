@@ -6,6 +6,7 @@
 #include "PDB_RawFile.h"
 #include "PDB_Util.h"
 #include "PDB_DirectMSFStream.h"
+#include "PDB_InfoStream.h"
 #include "Foundation/PDB_Memory.h"
 
 namespace
@@ -106,6 +107,12 @@ PDB::IPIStream::~IPIStream(void) PDB_NO_EXCEPT
 // ------------------------------------------------------------------------------------------------
 PDB_NO_DISCARD PDB::ErrorCode PDB::HasValidIPIStream(const RawFile& file) PDB_NO_EXCEPT
 {
+	const PDB::InfoStream infoStream(file);
+	if (!infoStream.HasIPIStream())
+	{
+		return ErrorCode::InvalidStream;
+	}
+
 	DirectMSFStream stream = file.CreateMSFStream<DirectMSFStream>(IPIStreamIndex);
 	if (stream.GetSize() < sizeof(IPI::StreamHeader))
 	{

@@ -8,6 +8,7 @@
 #include "PDB_InfoStream.h"
 #include "PDB_DBIStream.h"
 #include "PDB_TPIStream.h"
+#include "PDB_IPIStream.h"
 #include "PDB_NamesStream.h"
 
 namespace
@@ -157,6 +158,16 @@ int main(int argc, char** argv)
 
 		return 5;
 	}
+
+	{
+		PDB::ErrorCode error = PDB::HasValidIPIStream(rawPdbFile);
+		if (error != PDB::ErrorCode::InvalidStream && IsError(error))
+		{
+			MemoryMappedFile::Close(pdbFile);
+
+			return 5;
+		}
+	}	
 
 	// run all examples
 	ExamplePDBSize(rawPdbFile, dbiStream);
