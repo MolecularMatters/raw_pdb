@@ -39,6 +39,10 @@ namespace
 				printf("Invalid stream index\n");
 				return true;
 
+			case PDB::ErrorCode::InvalidDataSize:
+				printf("Invalid data size\n");
+				return true;
+
 			case PDB::ErrorCode::UnknownVersion:
 				printf("Unknown version\n");
 				return true;
