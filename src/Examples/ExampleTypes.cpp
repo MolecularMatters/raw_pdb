@@ -1019,7 +1019,7 @@ void ExampleTypes(const PDB::TPIStream& tpiStream)
 
 	for (const auto& record : typeTable.GetTypeRecords())
 	{
-		if (record->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE)
+		if ((record->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_CLASS) || (record->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_STRUCTURE))
 		{
 			if (record->data.LF_CLASS.property.fwdref)
 				continue;
