@@ -94,6 +94,7 @@ namespace PDB
 						PDB_FLEXIBLE_ARRAY_MEMBER(char, name);
 					} LF_FUNC_ID;
 
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L1687
 					struct
 					{
 						uint32_t parentTypeIndex; // parent scope of the ID, 0 if global
