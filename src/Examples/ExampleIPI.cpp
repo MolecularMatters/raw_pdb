@@ -189,7 +189,7 @@ void ExampleIPI(const PDB::RawFile& rawPdbFile, const PDB::InfoStream& infoStrea
 		}
 		else
 		{
-			printf("Kind: 0x%X Size %i\n\n", header.kind, header.size);
+			printf("Kind: 0x%X Size: %i ID: %i\n\n", (uint32_t)header.kind, header.size, identifier);
 		}
 
 		identifier++;
