@@ -29,6 +29,11 @@ static std::string GetTypeNameIPI(const TypeTable& typeTable, uint32_t typeIndex
 
 void ExampleIPI(const PDB::RawFile& rawPdbFile, const PDB::InfoStream& infoStream, const PDB::TPIStream& tpiStream, const PDB::IPIStream& ipiStream)
 {
+	if (!infoStream.HasIPIStream())
+	{
+		return;
+	}
+
 	TimedScope total("\nRunning example \"IPI\"");
 
 	TimedScope typeTableScope("Create TypeTable");
