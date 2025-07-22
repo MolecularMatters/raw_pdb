@@ -367,6 +367,7 @@ static const char* GetModifierName(const PDB::CodeView::TPI::Record* modifierRec
 	return "";
 }
 
+static bool GetMethodPrototype(const TypeTable& typeTable, const PDB::CodeView::TPI::Record* methodRecord, std::string& methodPrototype);
 
 static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView::TPI::Record* functionRecord, std::string& functionPrototype)
 {
@@ -408,6 +409,11 @@ static bool GetFunctionPrototype(const TypeTable& typeTable, const PDB::CodeView
 		if (underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_PROCEDURE)
 		{
 			if (!GetFunctionPrototype(typeTable, underlyingType, underlyingTypePrototype))
+				return false;
+		}
+		else if (underlyingType->header.kind == PDB::CodeView::TPI::TypeRecordKind::LF_MFUNCTION)
+		{
+			if (!GetMethodPrototype(typeTable, underlyingType, underlyingTypePrototype))
 				return false;
 		}
 		else
@@ -575,7 +581,9 @@ static bool GetMethodPrototype(const TypeTable& typeTable, const PDB::CodeView::
 						methodPrototype += ' ';
 					}
 
-					methodPrototype += typeName;
+					if(typeName)
+						methodPrototype += typeName;
+	
 					methodPrototype += '*';
 
 					if (referencedType->data.LF_POINTER.attr.isvolatile)
