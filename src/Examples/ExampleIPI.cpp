@@ -164,15 +164,13 @@ void ExampleIPI(const PDB::RawFile& rawPdbFile, const PDB::InfoStream& infoStrea
 		{
 			typeName = GetTypeNameIPI(typeTable, record->data.LF_UDT_SRC_LINE.typeIndex);
 
-			const uint32_t stringIndex = record->data.LF_UDT_SRC_LINE.stringIndex - firstTypeIndex;
-
-			const char* string = strings[stringIndex] != nullptr ? strings[stringIndex] : "<null>";
+			const uint32_t stringIndex = record->data.LF_UDT_SRC_LINE.stringIndex;
 
 			printf("Kind: 'LF_UDT_SRC_LINE' Size: %i ID: %i\n", header.size, identifier);
 
 			printf(" Type: '%s'\n Source Path: %s\n Line: %u\n\n", 
 				typeName.c_str(),
-				string,
+				strings[stringIndex - firstTypeIndex],
 				record->data.LF_UDT_SRC_LINE.line);
 		}
 		else if (header.kind == PDB::CodeView::IPI::TypeRecordKind::LF_UDT_MOD_SRC_LINE)
