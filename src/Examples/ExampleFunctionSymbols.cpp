@@ -225,7 +225,7 @@ void ExampleFunctionSymbols(const PDB::RawFile& rawPdbFile, const PDB::DBIStream
 		// we know have the sizes of all symbols, except the last.
 		// this can be found by going through the contributions, if needed.
 		FunctionSymbol& lastSymbol = functionSymbols[symbolCount - 1u];
-		if (lastSymbol.size != 0u)
+		if (lastSymbol.size == 0u)
 		{
 			// bad luck, we can't deduce the last symbol's size, so have to consult the contributions instead.
 			// we do a linear search in this case to keep the code simple.
