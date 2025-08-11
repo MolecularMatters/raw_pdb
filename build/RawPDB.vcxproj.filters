@@ -155,12 +155,6 @@
     <ClInclude Include="..\src\Foundation\PDB_Macros.h">
       <Filter>Source Files\Foundation</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Foundation\PDB_DisableWarningsPop.h">
-      <Filter>Source Files\Foundation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Foundation\PDB_DisableWarningsPush.h">
-      <Filter>Source Files\Foundation</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Foundation\PDB_Warnings.h">
       <Filter>Source Files\Foundation</Filter>
     </ClInclude>
@@ -184,6 +178,12 @@
     </ClInclude>
     <ClInclude Include="..\src\PDB_NamesStream.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_TypeTraits.h">
+      <Filter>Source Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Foundation\PDB_CRT.h">
+      <Filter>Source Files\Foundation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

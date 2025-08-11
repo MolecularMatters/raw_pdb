@@ -3,11 +3,9 @@
 
 #pragma once
 
-#include "PDB_DisableWarningsPush.h"
-#include <type_traits>
-#include "PDB_DisableWarningsPop.h"
+#include "PDB_TypeTraits.h"
 
 
 // See Jonathan Mueller's blog for replacing std::move and std::forward:
 // https://foonathan.net/2020/09/move-forward/
-#define PDB_MOVE(...)		static_cast<std::remove_reference<decltype(__VA_ARGS__)>::type&&>(__VA_ARGS__)
+#define PDB_MOVE(...)		static_cast<PDB::remove_reference<decltype(__VA_ARGS__)>::type&&>(__VA_ARGS__)

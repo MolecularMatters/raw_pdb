@@ -40,4 +40,7 @@
 
 	// some structures will have to be padded
 #	pragma clang diagnostic ignored "-Wpadded"
+
+	// it's impossible to write C++ code using raw pointers without triggering this warning
+#	pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
 #endif

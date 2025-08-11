@@ -4,9 +4,7 @@
 #pragma once
 
 #include "PDB_Macros.h"
-#include "PDB_DisableWarningsPush.h"
-#include <cstdio>
-#include "PDB_DisableWarningsPop.h"
+#include "PDB_CRT.h"
 
 
 PDB_PUSH_WARNING_CLANG

@@ -8,14 +8,6 @@
 #include "Foundation/PDB_Macros.h"
 #include "Foundation/PDB_Warnings.h"
 
-// third-party includes
-#include "Foundation/PDB_DisableWarningsPush.h"
-#include <cstdint>
-#include <cstdio>
-#include <cstring>
-#include <type_traits>
-#include "Foundation/PDB_DisableWarningsPop.h"
-
 // library includes
 #include "Foundation/PDB_Log.h"
 #include "Foundation/PDB_Assert.h"

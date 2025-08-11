@@ -6,7 +6,6 @@
 #include "Foundation/PDB_Assert.h"
 #include "Foundation/PDB_Macros.h"
 #include "PDB_Types.h"
-#include <cinttypes>
 
 // https://llvm.org/docs/PDB/index.html#the-msf-container
 // https://llvm.org/docs/PDB/MsfFile.html
@@ -52,10 +51,9 @@ namespace PDB
 			const Byte* bytePointer = reinterpret_cast<const Byte*>(pointer);
 			const Byte* dataEnd = m_data + m_size;
 
-			 PDB_ASSERT(bytePointer >= m_data && bytePointer <= dataEnd,
-				"Pointer 0x%016" PRIXPTR " not within stream range [0x%016" PRIXPTR ":0x%016" PRIXPTR "]", 
-				reinterpret_cast<uintptr_t>(bytePointer), reinterpret_cast<uintptr_t>(m_data), reinterpret_cast<uintptr_t>(dataEnd));
-			 
+			PDB_ASSERT(bytePointer >= m_data && bytePointer <= dataEnd, "Pointer 0x%p not within stream range [0x%p:0x%p]",
+				static_cast<const void*>(bytePointer), static_cast<const void*>(m_data), static_cast<const void*>(dataEnd));
+
 			return static_cast<size_t>(bytePointer - m_data);
 		}
 

@@ -4,9 +4,7 @@
 #pragma once
 
 #include "PDB_Macros.h"
-#include "PDB_DisableWarningsPush.h"
-#include <type_traits>
-#include "PDB_DisableWarningsPop.h"
+#include "PDB_TypeTraits.h"
 
 
 namespace PDB
@@ -17,8 +15,7 @@ namespace PDB
 		template <typename T, typename U, typename V>
 		PDB_NO_DISCARD inline T Offset(U* anyPointer, V howManyBytes) PDB_NO_EXCEPT
 		{
-			static_assert(std::is_pointer<T>::value == true, "Type T must be a pointer type.");
-			static_assert(std::is_const<typename std::remove_pointer<T>::type>::value == std::is_const<U>::value, "Wrong constness.");
+			static_assert(PDB::is_pointer<T>::value == true, "Type T must be a pointer type.");
 
 			union
 			{

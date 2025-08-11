@@ -6,9 +6,7 @@
 #include "Foundation/PDB_PointerUtil.h"
 #include "Foundation/PDB_BitUtil.h"
 #include "Foundation/PDB_Assert.h"
-#include "Foundation/PDB_DisableWarningsPush.h"
-#include <cstring>
-#include "Foundation/PDB_DisableWarningsPop.h"
+#include "Foundation/PDB_CRT.h"
 
 
 // ------------------------------------------------------------------------------------------------
@@ -55,7 +53,7 @@ void PDB::DirectMSFStream::ReadAtOffset(void* destination, size_t size, size_t o
 	{
 		// fast path, all the data can be read in one go
 		const void* const sourceData = Pointer::Offset<const void*>(m_data, offsetWithinData);
-		std::memcpy(destination, sourceData, size);
+		memcpy(destination, sourceData, size);
 	}
 	else
 	{
@@ -63,7 +61,7 @@ void PDB::DirectMSFStream::ReadAtOffset(void* destination, size_t size, size_t o
 		// read remaining bytes in current block first.
 		{
 			const void* const sourceData = Pointer::Offset<const void*>(m_data, offsetWithinData);
-			std::memcpy(destination, sourceData, bytesLeftInBlock);
+			memcpy(destination, sourceData, bytesLeftInBlock);
 		}
 
 		// read remaining bytes from blocks
@@ -80,13 +78,13 @@ void PDB::DirectMSFStream::ReadAtOffset(void* destination, size_t size, size_t o
 			if (bytesLeftToRead > m_blockSize)
 			{
 				// copy a whole block at once
-				std::memcpy(destinationData, sourceData, m_blockSize);
+				memcpy(destinationData, sourceData, m_blockSize);
 				bytesLeftToRead -= m_blockSize;
 			}
 			else
 			{
 				// copy remaining bytes
-				std::memcpy(destinationData, sourceData, bytesLeftToRead);
+				memcpy(destinationData, sourceData, bytesLeftToRead);
 				bytesLeftToRead -= bytesLeftToRead;
 			}
 		}

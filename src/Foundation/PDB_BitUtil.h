@@ -4,13 +4,18 @@
 #pragma once
 
 #include "PDB_Assert.h"
-#include "PDB_DisableWarningsPush.h"
-#include <type_traits>
-#include "PDB_DisableWarningsPop.h"
 
 #ifdef _WIN32
-#include <intrin.h>
-#	pragma intrinsic(_BitScanForward)
+	PDB_PUSH_WARNING_CLANG
+	PDB_DISABLE_WARNING_CLANG("-Wreserved-identifier")
+
+	extern "C" unsigned char _BitScanForward(unsigned long* _Index, unsigned long _Mask);
+
+	PDB_POP_WARNING_CLANG
+
+#	if PDB_COMPILER_MSVC
+#		pragma intrinsic(_BitScanForward)
+#	endif
 #endif
 
 
@@ -18,22 +23,20 @@ namespace PDB
 {
 	namespace BitUtil
 	{
+		// Returns whether the given unsigned value is a power of two.
 		template <typename T>
 		PDB_NO_DISCARD inline constexpr bool IsPowerOfTwo(T value) PDB_NO_EXCEPT
 		{
-			static_assert(std::is_unsigned<T>::value == true, "T must be an unsigned type.");
-
 			PDB_ASSERT(value != 0u, "Invalid value.");
 
 			return (value & (value - 1u)) == 0u;
 		}
 
 
+		// Rounds the given unsigned value up to the next multiple.
 		template <typename T>
 		PDB_NO_DISCARD inline constexpr T RoundUpToMultiple(T numToRound, T multipleOf) PDB_NO_EXCEPT
 		{
-			static_assert(std::is_unsigned<T>::value == true, "T must be an unsigned type.");
-
 			PDB_ASSERT(IsPowerOfTwo(multipleOf), "Multiple must be a power-of-two.");
 
 			return (numToRound + (multipleOf - 1u)) & ~(multipleOf - 1u);
@@ -59,7 +62,9 @@ namespace PDB
 
 			result = static_cast<unsigned int>(__builtin_ffs(static_cast<int>(value)));
 			if (result)
+			{
 				--result;
+			}
 #endif
 
 			return result;

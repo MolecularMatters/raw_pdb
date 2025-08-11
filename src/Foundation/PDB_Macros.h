@@ -4,6 +4,7 @@
 #pragma once
 
 #include "PDB_Platform.h"
+#include "PDB_TypeTraits.h"
 
 
 // ------------------------------------------------------------------------------------------------
@@ -12,13 +13,13 @@
 
 // Indicates to the compiler that the return value of a function or class should not be ignored.
 #if PDB_CPP_17
-#	define PDB_NO_DISCARD							[[nodiscard]]
+#	define PDB_NO_DISCARD									[[nodiscard]]
 #else
 #	define PDB_NO_DISCARD
 #endif
 
 // Indicates to the compiler that a function does not throw an exception.
-#define PDB_NO_EXCEPT								noexcept
+#define PDB_NO_EXCEPT										noexcept
 
 
 // ------------------------------------------------------------------------------------------------
@@ -26,34 +27,34 @@
 // ------------------------------------------------------------------------------------------------
 
 // Default special member functions.
-#define PDB_DEFAULT_COPY_CONSTRUCTOR(_name)			_name(const _name&) PDB_NO_EXCEPT = default
-#define PDB_DEFAULT_COPY_ASSIGNMENT(_name)			_name& operator=(const _name&) PDB_NO_EXCEPT = default
-#define PDB_DEFAULT_MOVE_CONSTRUCTOR(_name)			_name(_name&&) PDB_NO_EXCEPT = default
-#define PDB_DEFAULT_MOVE_ASSIGNMENT(_name)			_name& operator=(_name&&) PDB_NO_EXCEPT = default
+#define PDB_DEFAULT_COPY_CONSTRUCTOR(_name)					_name(const _name&) PDB_NO_EXCEPT = default
+#define PDB_DEFAULT_COPY_ASSIGNMENT(_name)					_name& operator=(const _name&) PDB_NO_EXCEPT = default
+#define PDB_DEFAULT_MOVE_CONSTRUCTOR(_name)					_name(_name&&) PDB_NO_EXCEPT = default
+#define PDB_DEFAULT_MOVE_ASSIGNMENT(_name)					_name& operator=(_name&&) PDB_NO_EXCEPT = default
 
 // Default copy member functions.
-#define PDB_DEFAULT_COPY(_name)						PDB_DEFAULT_COPY_CONSTRUCTOR(_name); PDB_DEFAULT_COPY_ASSIGNMENT(_name)
+#define PDB_DEFAULT_COPY(_name)								PDB_DEFAULT_COPY_CONSTRUCTOR(_name); PDB_DEFAULT_COPY_ASSIGNMENT(_name)
 
 // Default move member functions.
-#define PDB_DEFAULT_MOVE(_name)						PDB_DEFAULT_MOVE_CONSTRUCTOR(_name); PDB_DEFAULT_MOVE_ASSIGNMENT(_name)
+#define PDB_DEFAULT_MOVE(_name)								PDB_DEFAULT_MOVE_CONSTRUCTOR(_name); PDB_DEFAULT_MOVE_ASSIGNMENT(_name)
 
 // Single macro to default all copy and move member functions.
-#define PDB_DEFAULT_COPY_MOVE(_name)				PDB_DEFAULT_COPY(_name); PDB_DEFAULT_MOVE(_name)
+#define PDB_DEFAULT_COPY_MOVE(_name)						PDB_DEFAULT_COPY(_name); PDB_DEFAULT_MOVE(_name)
 
 // Disable special member functions.
-#define PDB_DISABLE_COPY_CONSTRUCTOR(_name)			_name(const _name&) PDB_NO_EXCEPT = delete
-#define PDB_DISABLE_COPY_ASSIGNMENT(_name)			_name& operator=(const _name&) PDB_NO_EXCEPT = delete
-#define PDB_DISABLE_MOVE_CONSTRUCTOR(_name)			_name(_name&&) PDB_NO_EXCEPT = delete
-#define PDB_DISABLE_MOVE_ASSIGNMENT(_name)			_name& operator=(_name&&) PDB_NO_EXCEPT = delete
+#define PDB_DISABLE_COPY_CONSTRUCTOR(_name)					_name(const _name&) PDB_NO_EXCEPT = delete
+#define PDB_DISABLE_COPY_ASSIGNMENT(_name)					_name& operator=(const _name&) PDB_NO_EXCEPT = delete
+#define PDB_DISABLE_MOVE_CONSTRUCTOR(_name)					_name(_name&&) PDB_NO_EXCEPT = delete
+#define PDB_DISABLE_MOVE_ASSIGNMENT(_name)					_name& operator=(_name&&) PDB_NO_EXCEPT = delete
 
 // Disable copy member functions.
-#define PDB_DISABLE_COPY(_name)						PDB_DISABLE_COPY_CONSTRUCTOR(_name); PDB_DISABLE_COPY_ASSIGNMENT(_name)
+#define PDB_DISABLE_COPY(_name)								PDB_DISABLE_COPY_CONSTRUCTOR(_name); PDB_DISABLE_COPY_ASSIGNMENT(_name)
 
 // Disable move member functions.
-#define PDB_DISABLE_MOVE(_name)						PDB_DISABLE_MOVE_CONSTRUCTOR(_name); PDB_DISABLE_MOVE_ASSIGNMENT(_name)
+#define PDB_DISABLE_MOVE(_name)								PDB_DISABLE_MOVE_CONSTRUCTOR(_name); PDB_DISABLE_MOVE_ASSIGNMENT(_name)
 
 // Single macro to disable all copy and move member functions.
-#define PDB_DISABLE_COPY_MOVE(_name)				PDB_DISABLE_COPY(_name); PDB_DISABLE_MOVE(_name)
+#define PDB_DISABLE_COPY_MOVE(_name)						PDB_DISABLE_COPY(_name); PDB_DISABLE_MOVE(_name)
 
 
 // ------------------------------------------------------------------------------------------------
@@ -121,4 +122,11 @@
 	PDB_REQUIRE_SEMICOLON
 
 // Casts any value to the value of the underlying type.
-#define PDB_AS_UNDERLYING(_value)							static_cast<typename std::underlying_type<decltype(_value)>::type>(_value)
+#define PDB_AS_UNDERLYING(_value)							static_cast<typename PDB::underlying_type<decltype(_value)>::type>(_value)
+
+// Signals to the compiler that a function should be ignored, but have its argument list parsed (and "used", so as to not generate "unused variable" warnings).
+#if PDB_COMPILER_MSVC
+#	define PDB_NOOP											__noop
+#else
+#	define PDB_NOOP(...)									(void)sizeof(__VA_ARGS__)
+#endif

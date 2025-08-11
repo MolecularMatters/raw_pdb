@@ -4,7 +4,13 @@
 #pragma once
 
 #include "Foundation/PDB_Warnings.h"
-#include "Foundation/PDB_DisableWarningsPush.h"
+
+#if PDB_COMPILER_MSVC
+#	pragma warning(push, 0)
+#elif PDB_COMPILER_CLANG
+#	pragma clang diagnostic push
+#	pragma clang diagnostic ignored "-Weverything"
+#endif
 
 	// we compile without exceptions
 #	define _ALLOW_RTCc_IN_STL
@@ -30,4 +36,9 @@
 #	include <string>
 #	include <algorithm>
 #	include <cstdarg>
-#	include "Foundation/PDB_DisableWarningsPop.h"
+
+#if PDB_COMPILER_MSVC
+#	pragma warning(pop)
+#elif PDB_COMPILER_CLANG
+#	pragma clang diagnostic pop
+#endif

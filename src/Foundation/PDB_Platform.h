@@ -27,3 +27,19 @@
 #else
 #	define PDB_CPP_17						0
 #endif
+
+// define used standard types
+typedef decltype(sizeof(0)) size_t;
+static_assert(sizeof(sizeof(0)) == sizeof(size_t), "Wrong size.");
+
+typedef int int32_t;
+static_assert(sizeof(int32_t) == 4u, "Wrong size.");
+
+typedef unsigned char uint8_t;
+static_assert(sizeof(uint8_t) == 1u, "Wrong size.");
+
+typedef unsigned short uint16_t;
+static_assert(sizeof(uint16_t) == 2u, "Wrong size.");
+
+typedef unsigned int uint32_t;
+static_assert(sizeof(uint32_t) == 4u, "Wrong size.");

@@ -4,7 +4,7 @@
 #include "PDB_PCH.h"
 #include "PDB_InfoStream.h"
 #include "PDB_RawFile.h"
-
+#include "Foundation/PDB_CRT.h"
 
 namespace
 {
@@ -65,7 +65,7 @@ PDB::InfoStream::InfoStream(const RawFile& file) PDB_NO_EXCEPT
 		const NamedStreamMap::HashTableEntry& entry = namedStreamMapHashEntries[i];
 		const char* streamName = &namedStreamMap->stringTable[entry.stringTableOffset];
 
-		if (std::strcmp("/names", streamName) == 0)
+		if (strcmp("/names", streamName) == 0)
 		{
 			m_namesStreamIndex = entry.streamIndex;
 		}

@@ -7,9 +7,7 @@
 #include "PDB_Util.h"
 #include "PDB_RawFile.h"
 #include "Foundation/PDB_PointerUtil.h"
-#include "Foundation/PDB_DisableWarningsPush.h"
-#include <cstring>
-#include "Foundation/PDB_DisableWarningsPop.h"
+#include "Foundation/PDB_CRT.h"
 
 
 // ------------------------------------------------------------------------------------------------
@@ -25,7 +23,7 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::ValidateFile(const void* data, size_t size) P
 	const SuperBlock* superBlock = Pointer::Offset<const SuperBlock*>(data, 0u);
 	{
 		// validate header magic
-		if (std::memcmp(superBlock->fileMagic, SuperBlock::MAGIC, sizeof(SuperBlock::MAGIC)) != 0)
+		if (memcmp(superBlock->fileMagic, SuperBlock::MAGIC, sizeof(SuperBlock::MAGIC)) != 0)
 		{
 			return ErrorCode::InvalidSuperBlock;
 		}
