@@ -95,6 +95,7 @@ extern void ExampleFunctionSymbols(const PDB::RawFile&, const PDB::DBIStream&);
 extern void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::TPIStream&);
 extern void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStream, const PDB::InfoStream& infoStream);
 extern void ExampleTypes(const PDB::TPIStream&);
+extern void ExampleIPI(const PDB::RawFile& rawPdbFile, const PDB::InfoStream& infoStream, const PDB::TPIStream& tpiStream, const PDB::IPIStream& ipiStream);
 
 int main(int argc, char** argv)
 {
@@ -163,18 +164,23 @@ int main(int argc, char** argv)
 	}
 	const PDB::TPIStream tpiStream = PDB::CreateTPIStream(rawPdbFile);
 
+	PDB::IPIStream ipiStream;
+
+	// It's perfectly possible that an old PDB does not have an IPI stream.
+	if(infoStream.HasIPIStream())
 	{
-		// It's perfectly possible that an old PDB does not have an IPI stream.
-		// It's not necessarily an error. You can also check the InfoStream for whether
-		// the PDB should have an IPI stream at all.
 		PDB::ErrorCode error = PDB::HasValidIPIStream(rawPdbFile);
+
 		if (error != PDB::ErrorCode::InvalidStream && IsError(error))
 		{
 			MemoryMappedFile::Close(pdbFile);
 
 			return 5;
 		}
+
+		ipiStream = PDB::CreateIPIStream(rawPdbFile);
 	}	
+
 
 	// run all examples
 	ExamplePDBSize(rawPdbFile, dbiStream);
@@ -184,6 +190,7 @@ int main(int argc, char** argv)
 	ExampleFunctionVariables(rawPdbFile, dbiStream, tpiStream);
 	ExampleLines(rawPdbFile, dbiStream, infoStream);
 	ExampleTypes(tpiStream);
+	ExampleIPI(rawPdbFile, infoStream, tpiStream, ipiStream);
 	// uncomment to dump type sizes to a CSV
 	// ExampleTPISize(tpiStream, "output.csv");
 

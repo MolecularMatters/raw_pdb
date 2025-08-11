@@ -42,6 +42,9 @@
     <ClCompile Include="..\src\Examples\ExamplePDBSize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Examples\ExampleIPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Examples\ExampleMemoryMappedFile.h">
