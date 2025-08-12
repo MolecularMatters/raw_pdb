@@ -3,8 +3,7 @@ set(SOURCES
 	Foundation/PDB_Assert.h
 	Foundation/PDB_BitOperators.h
 	Foundation/PDB_BitUtil.h
-	Foundation/PDB_DisableWarningsPop.h
-	Foundation/PDB_DisableWarningsPush.h
+	Foundation/PDB_CRT.h
 	Foundation/PDB_Forward.h
 	Foundation/PDB_Log.h
 	Foundation/PDB_Macros.h
@@ -12,6 +11,7 @@ set(SOURCES
 	Foundation/PDB_Move.h
 	Foundation/PDB_Platform.h
 	Foundation/PDB_PointerUtil.h
+	Foundation/PDB_TypeTraits.h
 	Foundation/PDB_Warnings.h
 	
 	PDB.cpp

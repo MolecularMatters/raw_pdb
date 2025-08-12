@@ -83,10 +83,6 @@
 #	define PDB_PUSH_WARNING_CLANG							PDB_PRAGMA(clang diagnostic push)
 #	define PDB_DISABLE_WARNING_CLANG(_diagnostic)			PDB_PRAGMA(clang diagnostic ignored _diagnostic)
 #	define PDB_POP_WARNING_CLANG							PDB_PRAGMA(clang diagnostic pop)
-
-#	define PDB_PUSH_WARNING_CLANG							PDB_PRAGMA(clang diagnostic push)
-#	define PDB_DISABLE_WARNING_CLANG(_diagnostic)			PDB_PRAGMA(clang diagnostic ignored _diagnostic)
-#	define PDB_POP_WARNING_CLANG							PDB_PRAGMA(clang diagnostic pop)
 #elif PDB_COMPILER_GCC
 #	define PDB_PRAGMA(_x)									_Pragma(#_x)
 
@@ -95,11 +91,9 @@
 #	define PDB_DISABLE_WARNING_MSVC(_number)
 #	define PDB_POP_WARNING_MSVC
 
-#	define PDB_PUSH_WARNING_CLANG							
-#	define PDB_DISABLE_WARNING_CLANG(_diagnostic)			
-#	define PDB_POP_WARNING_CLANG							
-
-#	define __noop(...)
+#	define PDB_PUSH_WARNING_CLANG
+#	define PDB_DISABLE_WARNING_CLANG(_diagnostic)
+#	define PDB_POP_WARNING_CLANG
 #endif
 
 
