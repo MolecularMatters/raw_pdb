@@ -3,14 +3,15 @@
 
 #pragma once
 
-#include "Foundation/PDB_Warnings.h"
+#include "Foundation/PDB_Platform.h"
 
 #if PDB_COMPILER_MSVC
 #	pragma warning(push, 0)
 #elif PDB_COMPILER_CLANG
 #	pragma clang diagnostic push
-#	pragma clang diagnostic ignored "-Weverything"
 #endif
+
+#include "Foundation/PDB_Warnings.h"
 
 	// we compile without exceptions
 #	define _ALLOW_RTCc_IN_STL

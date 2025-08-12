@@ -13,9 +13,9 @@ set(SOURCES
 	Examples_PCH.cpp
 	Examples_PCH.h
 	ExampleSymbols.cpp
-	ExampleTypes.cpp
 	ExampleTimedScope.cpp
 	ExampleTimedScope.h
+	ExampleTypes.cpp
 	ExampleTypeTable.cpp
 	ExampleTypeTable.h
 )
