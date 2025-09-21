@@ -1090,7 +1090,6 @@ template<typename T>
 static void TagChildren(const TypeTable& typeTable, const PDB::CodeView::TPI::Record* record, T setName)
 {
 	const char* leafName = nullptr;
-	uint16_t offset = 0;
 
 	auto maximumSize = record->header.size - sizeof(uint16_t);
 
@@ -1117,11 +1116,6 @@ static void TagChildren(const TypeTable& typeTable, const PDB::CodeView::TPI::Re
 
 		if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_MEMBER)
 		{
-			if (fieldRecord->data.LF_MEMBER.lfEasy.kind < PDB::CodeView::TPI::TypeRecordKind::LF_NUMERIC)
-				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[0]);
-			else
-				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[sizeof(PDB::CodeView::TPI::TypeRecordKind)]);
-
 			leafName = GetLeafName(fieldRecord->data.LF_MEMBER.offset, fieldRecord->data.LF_MEMBER.lfEasy.kind);
 			TAG_AND_CHECK(fieldRecord->data.LF_MEMBER.index);
 		}
