@@ -1311,12 +1311,6 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 			return names[idx] != prev;
 		}
 	};
-	auto getName = [&names, minIndex](uint32_t typeIndex) -> const char* {
-		if (typeIndex < minIndex)
-			return nullptr;
-		size_t idx = typeIndex - minIndex;
-		return names[idx];
-	};
 
 	// collect base types and propagate their name
 	auto typeRecords = typeTable.GetTypeRecords();
