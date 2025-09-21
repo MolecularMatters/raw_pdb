@@ -349,12 +349,26 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 				{
 					Printf(blockLevel, "S_UNAMESPACE: '%s'\n", data.S_UNAMESPACE.name);
 				}
+				else if (kind == SymbolRecordKind::S_ARMSWITCHTABLE)
+				{
+					Printf(blockLevel, "S_ARMSWITCHTABLE: "
+						"Switch Type: %u | Num Entries: %u | Base Section: %u | Base Offset: 0x%X | "
+						"Branch Section: %u | Branch Offset: 0x%X | Table Section: %u | Table Offset: 0x%X\n",
+							data.S_ARMSWITCHTABLE.switchType,
+							data.S_ARMSWITCHTABLE.numEntries,
+							data.S_ARMSWITCHTABLE.sectionBase,
+							data.S_ARMSWITCHTABLE.offsetBase,
+							data.S_ARMSWITCHTABLE.sectionBranch,
+							data.S_ARMSWITCHTABLE.offsetBranch,
+							data.S_ARMSWITCHTABLE.sectionTable,
+							data.S_ARMSWITCHTABLE.offsetTable);
+				}
 				else
 				{
 					// We only care about records inside functions.
 					if (blockLevel > 0)
 					{
-						PDB_ASSERT(false, "Unhandled record kind 0x%X with block level %u\n", record->header.kind, blockLevel);
+						PDB_ASSERT(false, "Unhandled record kind 0x%X with block level %u\n", kind, blockLevel);
 					}
 				}
 

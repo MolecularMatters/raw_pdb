@@ -161,6 +161,7 @@ namespace PDB
 				S_FILESTATIC =								0x1153u,
 				S_LPROC32_DPC =								0x1155u,
 				S_LPROC32_DPC_ID =							0x1156u,
+				S_ARMSWITCHTABLE = 							0x1159u,
 				S_CALLEES =									0x115Au,
 				S_CALLERS =									0x115Bu,
 				S_INLINESITE2 =								0x115Du,		// extended inline site information
@@ -369,6 +370,25 @@ namespace PDB
 			{
 				uint16_t offset; // relative offset from the beginning of the live range.
 				uint16_t length; // length of this gap.
+			};
+
+			// https://github.com/microsoft/microsoft-pdb/blob/0fe89a942f9a0f8e061213313e438884f4c9b876/include/cvinfo.h#L4366
+			// https://github.com/microsoft/microsoft-pdb/blob/0fe89a942f9a0f8e061213313e438884f4c9b876/cvdump/dumpsym7.cpp#L5518
+			enum class ARMSwitchType : uint16_t
+			{
+				INT1 = 0, 			// signed byte
+				UINT1 = 1, 			// unsigned byte
+				INT2 = 2, 			// signed two byte
+				UINT2 = 3, 			// unsigned two byte
+				INT4 = 4,			// signed four byte
+				UINT4 = 5,			// unsigned four byte
+				POINTER = 6,
+				UINT1SHL1 = 7,		// unsigned byte scaled by two
+				UINT2SHL1 = 8,		// unsigned two byte scaled by two
+				INT1SHL1 = 9,		// signed byte scaled by two
+				INT2SHL1 = 10, 		// signed two byte scaled by two
+				TBB = UINT1SHL1,
+				TBH = UINT2SHL1, 
 			};
 
 			// https://llvm.org/docs/PDB/CodeViewTypes.html#leaf-types
@@ -734,6 +754,19 @@ namespace PDB
 						uint16_t instructionLength; // length of heap allocation call instruction
 						uint32_t typeIndex;			// type index describing function signature
 					} S_HEAPALLOCSITE;
+
+					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4402
+					struct
+					{
+						uint32_t offsetBase;		// Section-relative offset to the base for switch offsets
+						uint16_t sectionBase;		// Section index of the base for switch offsets
+						ARMSwitchType switchType;	// type of each entry
+						uint32_t offsetBranch;		// Section-relative offset to the table branch instruction
+						uint32_t offsetTable;		// Section-relative offset to the start of the table
+						uint16_t sectionBranch;		// Section index of the table branch instruction
+						uint16_t sectionTable;		// Section index of the table
+						uint32_t numEntries;	  	// number of switch table entries
+					} S_ARMSWITCHTABLE;
 
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4382
 					struct
