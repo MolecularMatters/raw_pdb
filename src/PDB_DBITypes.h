@@ -717,11 +717,11 @@ namespace PDB
 					// https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h#L4279
 					struct
 					{
-						uint16_t  baseRegister; // Register to hold the base pointer of the symbol
-						uint16_t  spilledUDTMember : 1; // Spilled member for s.i.
-						uint16_t  padding : 3; // Padding for future use.
-						uint16_t  offsetParent : 12; // Offset in parent variable.
-						uint32_t  offsetBasePointer; // offset to register
+						uint16_t baseRegister; // Register to hold the base pointer of the symbol
+						uint16_t spilledUDTMember : 1; // Spilled member for s.i.
+						uint16_t padding : 3; // Padding for future use.
+						uint16_t offsetParent : 12; // Offset in parent variable.
+						uint32_t offsetBasePointer; // offset to register
 						LocalVariableAddressRange range;   // Range of addresses where this program is valid
 						PDB_FLEXIBLE_ARRAY_MEMBER(LocalVariableAddressGap, gaps); // The value is not available in following gaps.
 					} S_DEFRANGE_REGISTER_REL;
