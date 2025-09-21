@@ -3,7 +3,15 @@
 
 #pragma once
 
-#include "Foundation/PDB_Platform.h"
+#include "Foundation/PDB_Warnings.h"
+
+// The following clang warnings must be disabled for the examples to build with 0 warnings
+#if PDB_COMPILER_CLANG
+#	pragma clang diagnostic ignored "-Wformat-nonliteral" 	// format string is not a string literal
+#	pragma clang diagnostic ignored "-Wswitch-default" 		// switch' missing 'default' label
+#   pragma clang diagnostic ignored "-Wcast-align"		 	// increases required alignment from X to Y
+#   pragma clang diagnostic ignored "-Wold-style-cast" 		// use of old-style cast
+#endif
 
 #if PDB_COMPILER_MSVC
 #	pragma warning(push, 0)
@@ -11,8 +19,7 @@
 #	pragma clang diagnostic push
 #endif
 
-#include "Foundation/PDB_Warnings.h"
-
+#if PDB_COMPILER_MSVC
 	// we compile without exceptions
 #	define _ALLOW_RTCc_IN_STL
 
@@ -25,6 +32,7 @@
 #	pragma warning (disable : 5026)		// move constructor was implicitly defined as deleted
 #	pragma warning (disable : 5027)		// move assignment operator was implicitly defined as deleted
 #	pragma warning (disable : 4774)		// format string expected in argument 1 is not a string literal
+#endif
 
 #ifdef _WIN32
 #	define NOMINMAX
