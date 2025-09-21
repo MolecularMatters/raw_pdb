@@ -283,7 +283,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 					{
 						// we have never seen incremental linking thunks stored inside a S_THUNK32 symbol, but better safe than sorry
 						const uint32_t rva = imageSectionStream.ConvertSectionOffsetToRVA(data.S_THUNK32.section, data.S_THUNK32.offset);
-						Printf(blockLevel, "Function: 'ILT/Thunk' | RVA 0x%X\n", rva);;
+						Printf(blockLevel, "Function: 'ILT/Thunk' | RVA 0x%X\n", rva);
 					}
 					else
 					{
@@ -354,7 +354,7 @@ void ExampleFunctionVariables(const PDB::RawFile& rawPdbFile, const PDB::DBIStre
 					// We only care about records inside functions.
 					if (blockLevel > 0)
 					{
-						PDB_ASSERT(false, "Unhandled record kind 0x%X with block level %u\n", record->header.kind, blockLevel);
+						PDB_ASSERT(false, "Unhandled record kind 0x%X with block level %u\n", static_cast<uint16_t>(record->header.kind), blockLevel);
 					}
 				}
 
