@@ -194,7 +194,7 @@ void ExampleLines(const PDB::RawFile& rawPdbFile, const PDB::DBIStream& dbiStrea
 
 				PDB_ASSERT(checksumHeader->checksumKind >= PDB::CodeView::DBI::ChecksumKind::None && 
 							checksumHeader->checksumKind <= PDB::CodeView::DBI::ChecksumKind::SHA256,
-							"Invalid checksum kind %hhu", checksumHeader->checksumKind);
+							"Invalid checksum kind %u", static_cast<uint16_t>(checksumHeader->checksumKind));
 
 				// store checksum values in filname struct
 				filename.namesFilenameOffset = checksumHeader->filenameOffset;

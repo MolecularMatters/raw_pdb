@@ -346,7 +346,7 @@ static const char* GetTypeName(const TypeTable& typeTable, uint32_t typeIndex, u
 			return nullptr;
 	
 		default:
-			PDB_ASSERT(false, "Unhandled TypeRecordKind 0x%X", typeRecord->header.kind);
+			PDB_ASSERT(false, "Unhandled TypeRecordKind 0x%X", static_cast<uint16_t>(typeRecord->header.kind));
 			break;
 		}
 	   
@@ -816,7 +816,7 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 			for (size_t j = 0; j < fieldRecord->data.LF_METHOD.count; j++)
 			{
 				size_t entrySize = 2 * sizeof(uint32_t);
-				PDB::CodeView::TPI::MethodListEntry* entry = (PDB::CodeView::TPI::MethodListEntry*)(methodList->data.LF_METHODLIST.mList + offsetInMethodList);
+				const PDB::CodeView::TPI::MethodListEntry* entry = (const PDB::CodeView::TPI::MethodListEntry*)(methodList->data.LF_METHODLIST.mList + offsetInMethodList);
 				if (!GetMethodPrototype(typeTable, typeTable.GetTypeRecord(entry->index), functionPrototype))
 					break;
 				printf(functionPrototype.c_str(), leafName);
@@ -854,10 +854,10 @@ static void DisplayFields(const TypeTable& typeTable, const PDB::CodeView::TPI::
 			// virtual base pointer offset from address point
 			// followed by virtual base offset from vbtable
 
-			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetAddressPointKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset);
+			const PDB::CodeView::TPI::TypeRecordKind vbpOffsetAddressPointKind = *(const PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset);
 			const uint8_t vbpOffsetAddressPointSize = GetLeafSize(vbpOffsetAddressPointKind);
 
-			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetVBTableKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset + vbpOffsetAddressPointSize);
+			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetVBTableKind = *(const PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset + vbpOffsetAddressPointSize);
 			const uint8_t vbpOffsetVBTableSize = GetLeafSize(vbpOffsetVBTableKind);
 
 			i += sizeof(PDB::CodeView::TPI::FieldList::Data::LF_VBCLASS);
@@ -960,7 +960,7 @@ std::string GetTypeName(const TypeTable& typeTable, uint32_t typeIndex)
 		}
 		else
 		{
-			PDB_ASSERT(false, "Unhandled referencedType kind 0x%X", referencedType->header.kind);
+			PDB_ASSERT(false, "Unhandled referencedType kind 0x%X", static_cast<uint16_t>(referencedType->header.kind));
 			return "not found";
 		}
 	}
@@ -1084,13 +1084,12 @@ void ExampleTypes(const PDB::TPIStream& tpiStream)
 template<typename T>
 static void TagRecursively(const TypeTable& typeTable, uint32_t typeIndex, T setName);
 
-#define TAG_AND_CHECK(typeIndex) if (setName(typeIndex)) TagRecursively(typeTable, typeIndex, setName);
+#define TAG_AND_CHECK(typeIndex) if (setName(typeIndex)) TagRecursively(typeTable, typeIndex, setName)
 
 template<typename T>
 static void TagChildren(const TypeTable& typeTable, const PDB::CodeView::TPI::Record* record, T setName)
 {
 	const char* leafName = nullptr;
-	uint16_t offset = 0;
 
 	auto maximumSize = record->header.size - sizeof(uint16_t);
 
@@ -1117,11 +1116,6 @@ static void TagChildren(const TypeTable& typeTable, const PDB::CodeView::TPI::Re
 
 		if (fieldRecord->kind == PDB::CodeView::TPI::TypeRecordKind::LF_MEMBER)
 		{
-			if (fieldRecord->data.LF_MEMBER.lfEasy.kind < PDB::CodeView::TPI::TypeRecordKind::LF_NUMERIC)
-				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[0]);
-			else
-				offset = *reinterpret_cast<const uint16_t*>(&fieldRecord->data.LF_MEMBER.offset[sizeof(PDB::CodeView::TPI::TypeRecordKind)]);
-
 			leafName = GetLeafName(fieldRecord->data.LF_MEMBER.offset, fieldRecord->data.LF_MEMBER.lfEasy.kind);
 			TAG_AND_CHECK(fieldRecord->data.LF_MEMBER.index);
 		}
@@ -1149,7 +1143,7 @@ static void TagChildren(const TypeTable& typeTable, const PDB::CodeView::TPI::Re
 			for (size_t j = 0; j < fieldRecord->data.LF_METHOD.count; j++)
 			{
 				size_t entrySize = sizeof(PDB::CodeView::TPI::MethodListEntry);
-				PDB::CodeView::TPI::MethodListEntry* entry = (PDB::CodeView::TPI::MethodListEntry*)(methodList->data.LF_METHODLIST.mList + offsetInMethodList);
+				const PDB::CodeView::TPI::MethodListEntry* entry = (const PDB::CodeView::TPI::MethodListEntry*)(methodList->data.LF_METHODLIST.mList + offsetInMethodList);
 				TAG_AND_CHECK(entry->index);
 				PDB::CodeView::TPI::MethodProperty methodProp = (PDB::CodeView::TPI::MethodProperty)entry->attributes.mprop;
 				if (methodProp == PDB::CodeView::TPI::MethodProperty::Intro || methodProp == PDB::CodeView::TPI::MethodProperty::PureIntro)
@@ -1175,10 +1169,10 @@ static void TagChildren(const TypeTable& typeTable, const PDB::CodeView::TPI::Re
 			// virtual base pointer offset from address point
 			// followed by virtual base offset from vbtable
 
-			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetAddressPointKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset);
+			const PDB::CodeView::TPI::TypeRecordKind vbpOffsetAddressPointKind = *(const PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset);
 			const uint8_t vbpOffsetAddressPointSize = GetLeafSize(vbpOffsetAddressPointKind);
 
-			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetVBTableKind = *(PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset + vbpOffsetAddressPointSize);
+			const  PDB::CodeView::TPI::TypeRecordKind vbpOffsetVBTableKind = *(const PDB::CodeView::TPI::TypeRecordKind*)(fieldRecord->data.LF_IVBCLASS.vbpOffset + vbpOffsetAddressPointSize);
 			const uint8_t vbpOffsetVBTableSize = GetLeafSize(vbpOffsetVBTableKind);
 
 			TAG_AND_CHECK(fieldRecord->data.LF_VBCLASS.vbpIndex);
@@ -1317,12 +1311,6 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 			return names[idx] != prev;
 		}
 	};
-	auto getName = [&names, minIndex](uint32_t typeIndex) -> const char* {
-		if (typeIndex < minIndex)
-			return nullptr;
-		size_t idx = typeIndex - minIndex;
-		return names[idx];
-	};
 
 	// collect base types and propagate their name
 	auto typeRecords = typeTable.GetTypeRecords();
@@ -1416,7 +1404,7 @@ void ExampleTPISize(const PDB::TPIStream& tpiStream, const char* outPath)
 		if (kindName)
 			fprintf(f, "%s;", kindName);
 		else
-			fprintf(f, "0x%04X;", (int)record->header.kind);
+			fprintf(f, "0x%04X;", static_cast<uint16_t>(record->header.kind));
 
 		if (typeName)
 			fprintf(f, "%s\n", typeName);
