@@ -150,6 +150,15 @@ PDB_NO_DISCARD PDB::ErrorCode PDB::DBIStream::HasValidImageSectionStream(const R
 
 	// find the debug header sub-stream
 	const uint32_t debugHeaderOffset = GetDebugHeaderSubstreamOffset(m_header);
+
+	// validate that we have enough data to read the debug header
+	// (the header field optionalDebugHeaderSize might claim there's a debug header,
+	// but the stream might not have enough data - this happens with some .ni.pdb files)
+	if (debugHeaderOffset + sizeof(DBI::DebugHeader) > m_stream.GetSize())
+	{
+		return ErrorCode::InvalidStream;
+	}
+
 	const DBI::DebugHeader& debugHeader = m_stream.ReadAtOffset<DBI::DebugHeader>(debugHeaderOffset);
 
 	if (debugHeader.sectionHeaderStreamIndex == DBI::DebugHeader::InvalidStreamIndex)
